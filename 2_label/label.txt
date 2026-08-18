@@ -1,0 +1,613 @@
+Skip to main content
+Skip to Main Content
+IEEE.org
+IEEE Xplore
+IEEE SA
+IEEE Spectrum
+More Sites
+Subscribe
+Donate
+Cart
+Create Account
+Personal Sign In
+IEEE Xplore logo - Link to home
+Browse 
+My Settings 
+Help 
+Institutional Sign In
+IEEE logo - Link to IEEE main site homepage
+Search by Content Type
+
+All
+
+ADVANCED SEARCH
+Journals & Magazines >IEEE Access >Volume: 11
+Optimal Trend Labeling in Financial Time Series
+Publisher: IEEE
+Cite This
+PDF
+Tomislav Kovačević; Andro Merćep; Stjepan Begušić; Zvonko Kostanjčar
+All Authors
+
+6
+Cites in
+Papers
+
+3080
+Full
+Text Views
+Open Access
+Comment(s)
+
+Under a Creative Commons License
+Abstract
+Document Sections
+I.
+Introduction
+II.
+Trend Classification
+III.
+Labeling Algorithm Robustness
+IV.
+Accuracy Simulation
+V.
+Trend Labeling Algorithms
+Show Full Outline
+Authors
+Figures
+References
+Citations
+Keywords
+Metrics
+Abstract:
+Predicting asset price trends is often posed as a classification problem, where trends are classified as positive or negative. Since asset price series are noisy and volatile, it is difficult to distinguish true trends from short-term fluctuations. To this end, several trend definitions have been proposed in the literature, but it is yet to be known how these trend definitions affect the performance of classification algorithms designed to learn such labels from historical data. In this paper, we define the robustness of the trend labeling algorithm as a measure of how well a classifier designed to learn such labels can withstand a change in the cumulative return considering the classifier’s generalization error. Moreover, we propose a noise model to simulate the desired accuracy score, which allows us to evaluate the robustness of a trend labeling algorithm without the need to train an actual classifier and consequently choose the optimal algorithm in terms of robustness. Experimental results confirm the adequacy of the proposed noise model and show that classification algorithms perform better when trained with such optimal labels.
+
+An evaluation framework for optimal trend labeling selection with respect to robustness.
+An evaluation framework for optimal trend labeling selection with respect to robustness.
+Published in: IEEE Access ( Volume: 11)
+Page(s): 83822 - 83832
+Date of Publication: 07 August 2023 
+Electronic ISSN: 2169-3536
+DOI: 10.1109/ACCESS.2023.3303283
+Publisher: IEEE
+Funding Agency:
+Recommended for You (Beta)
+SPPMFN: Efficient Multimodal Financial Time-Series Prediction Network With Self-Supervised Learning
+LSTM-based Financial Trend Prediction: Exploring the Use of Trend and Momentum Indicators
+Improving Stock Market Trend Forecasting Using ARIMA and Machine Learning
+Learn More
+SECTION I.Introduction
+Asset price series are known to fluctuate frequently as they are influenced by various factors such as market sentiment, economic news, geopolitical events, investor behavior, etc. Therefore, it is difficult to distinguish true trends from short-term fluctuations.
+
+In this context, several trend definitions have been proposed [1], [2], [3], [4], [5], [5], [6], [7], [8], mostly defining two trends: a positive one (uptrend) and a negative one (downtrend). These trend definitions result in a binary series where 0 indicates a downtrend and 1 indicates an uptrend, and the process of obtaining such series is called automated (or algorithmic) trend labeling. A positive trend indicates an increase in asset price over a given period of time, and thus a period in which an investor should open and hold a position in an asset, while a negative trend indicates a decrease in asset price over a given period of time, and thus a period in which an investor should hold a short position in an asset (in a market with short mechanism). If the short mechanism is not available, given the downtrend – the investor should close the position in an asset. The trend labels obtained this way motivated the development of classification algorithms for predicting trends in financial time series to maximize investors’ preferred financial performance measure (e.g. cumulative return).
+
+A. Related Work
+For the purpose of financial time series trend classification, previous research has mainly focused on feature engineering and the development of classification algorithms. However, these studies often suffer from the arbitrary selection of trend definition, with the primary goal of achieving the best classification metrics. In addition, this research often overlooks financial performance measures, although they should be in focus in terms of the initial motivation for developing these classifiers.
+
+For example, the authors in [9] presented a study on predicting stock market trends using high-order information from historical S&P 500 Index data. They presented a novel methodology involving sequence reconstruction and the use of motifs (frequent patterns), followed by the application of a Convolutional Neural Network. However, this study lacks a comprehensive discussion of trend definition, and no financial performance measures are provided.
+
+Similarly, the authors in [10] proposed an SVM-based approach for predicting stock market trends, but they also suffered from the problem of arbitrary trend definition and the lack of reported financial performance measures. In their study, a correlation-based SVM filter was used for feature selection, and a quasi-linear SVM was used for the prediction model.
+
+In another study, a Deep Learning-based stock trading model using a 2-D CNN for trend detection was proposed [11]. Researchers employed trend indicators and momentum indicators as input features and demonstrated the effectiveness of their model in terms of financial performance. However, the authors provided only limited commentary on the trend definition.
+
+For short-term prediction of stock trends, the authors in [12] introduced a unique two-stream Gated Recurrent Unit network and sentiment word embedding called Stock2Vec. Their approach incorporated financial news and a sentiment dictionary as input features for stock trend prediction, specifically for the S&P 500 Index and the VN Index. While they reported both classification metrics and financial performance measures, the trend labels were arbitrarily chosen, indicating the need for further research in this area.
+
+The research [13] provided detailed comments on trend definition in the development of Bayesian Regularized Neural Network for Bitcoin trend prediction. They used a comprehensive set of thirteen attributes from different sectors as input features and demonstrated the effectiveness of their model in terms of classification metrics. However, they overlooked reporting financial performance measures.
+
+To address these issues, recent studies involve a more systematic approach to trend prediction, reporting both classification and financial performance measures, and considering various parameters in trend labeling algorithms [6], [7]. These studies also suggest that in addition to optimizing the model hyperparameters and feature engineering, finding the optimal parameters of the labeling algorithm is often too computationally expensive.
+
+B. Motivation
+A classifier trained on labels obtained by two different labeling algorithms may result in an equal classification metric (e.g., accuracy score) on test data; however, one type of labels may yield a significantly better financial performance measure (e.g., cumulative return). On the contrary, for two completely different accuracy scores, a classifier trained on both types of labels may generate an approximately equal cumulative return. This finding has been supported by previous research, which demonstrated that a specific feature set and an Extreme Gradient Boosting (XGB) classifier can achieve equal accuracy scores when trained on two types of trend labels, although one labeling method generates a (significantly) greater cumulative return than the other [14]. This raises the question of which trend labeling algorithm is optimal and how to effectively compare them. Currently, when evaluating the performance of a classifier trained solely on one type of trend labels using classification metrics, it is difficult to interpret the impact of small increases or decreases in accuracy score on the corresponding financial performance measure.
+
+C. Our Work and Contributions
+Our study addresses the lack of a method for comparing trend labeling algorithms and the absence of an identified optimal trend labeling algorithm. The key contributions of our research are as follows:
+
+We propose a framework for optimal trend labeling selection that considers the robustness of labeling algorithms. Robustness is defined as a measure of how well a classifier trained on specific trend labels can withstand changes in cumulative return while taking into account the classifier’s generalization error.
+
+We introduce a noise model which generates noisy labels that result in desired accuracy score when applied to the true labels, allowing us to evaluate the robustness of labeling algorithms without having to train an actual classifier. The adequacy of the noise model is validated by training classifiers and by comparing their performance with simulation results.
+
+We demonstrate the existence of labeling algorithm parameters that yield the maximum possible cumulative return using the introduced noise model.
+
+We utilize the proposed framework for optimal trend labeling selection in order to determine the optimal trend labeling algorithm in terms of robustness.
+
+The rest of the paper is organized as follows: In Section II we formally introduce the problem of trend classification in financial time series. In Section III we define the robustness of the labeling algorithm. Motivated by the labeling algorithm robustness evaluation, in Section IV we introduce a noise model that allows us to simulate desired accuracy score. In Section V, we introduce three different trend labeling algorithms that we consider for the research. In Section VI, we explain the methodology used for the experiments. In Section VII, we present and discuss the results and introduce a framework for optimal trend labeling selection. The paper concludes in Section VIII with the main findings.
+
+SECTION II.Trend Classification
+Consider the historical asset price series pt , t=1,2,3…,T . At each timestamp t , t≤T−H+1 , we can calculate label yt as a function of future asset prices as of timestamp t given a forward-looking window of size H and parameters θ :
+yt=g(pt,pt+1,pt+2,…,pt+H−1;θ),(1)
+View SourceRight-click on figure for MathML and additional features.where g:RH+×RK→{0,1} . Function g is used to define trend labels. The label 1 indicates a positive trend (uptrend), while the label 0 indicates a negative trend (downtrend). To train an algorithm h for trend classification, at each timestamp t , t≥L , we need a corresponding feature vector xt∈X as a function of the previous asset prices up to timestamp t given a look-back window of size L and parameters ϕ :
+xt=f(pt−1,pt−2,pt−3,…,pt−L;ϕ),(2)
+View SourceRight-click on figure for MathML and additional features.where f:RL+×RM→RN . These labels and features construct training data D={(xt,yt)}T−H+1t=L , which are then used to train an algorithm h:X→{0,1} .
+
+SECTION III.Labeling Algorithm Robustness
+For an arbitrary labeling function g and price series p we have a trend series:
+y=[y1,y2,y3,…,yT−H+1],(3)
+View SourceRight-click on figure for MathML and additional features.where yt∈{0,1} . For the purpose of more clearly defining the robustness, we consider that the short mechanism is not available, accordingly, an uptrend suggests buying and holding a position in an asset, while a downtrend trend suggests closing a position. We define cumulative return of S uptrend segments as follows:
+R=∏i=1S(1+ri)−1,(4)
+View SourceRight-click on figure for MathML and additional features.where ri is the return of a single uptrend segment calculated as:
+ri=pt+Δt−pt⋅(1+φ)pt⋅(1+φ),(5)
+View SourceRight-click on figure for MathML and additional features.while φ defines the transaction fee for opening a position in an asset. Timestamp t marks the beginning of an uptrend, while Δt marks its duration as in Fig. 1. Considering that we do not take a position in the asset during the downtrend segment, these segments do not affect the cumulative return. This allows us to compute and compare cumulative returns R=c(y,φ) for different trend definitions y=g(p;θ) . However, comparing classification algorithms h trained to predict different trend definitions g is not as straightforward.
+
+FIGURE 1. - Asset price series with two uptrend segments of length 
+$\Delta t_{1}$
+ and 
+$\Delta t_{2}$
+ yielding returns 
+$r_{1}$
+ and 
+$r_{2}$
+, respectively.
+
+FIGURE 1.
+Asset price series with two uptrend segments of length Δt1 and Δt2 yielding returns r1 and r2 , respectively.
+
+Show All
+
+Classification algorithms have generalization error (out-of-sample error) when predicting previously unseen data. We usually compare these algorithms based on out-of-sample classification metrics, e.g. accuracy score (ACC):
+ACC=TP+TNTP+FP+TN+FN,(6)
+View SourceRight-click on figure for MathML and additional features.where TP, FP, TN, and FN are the number of true positives, false positives, true negatives, and false negatives. Nevertheless, another important question arises. To what extent is the cumulative return affected by classification algorithm generalization error? The difference between trend labels and trend predictions on out-of-sample data (along with the impact on cumulative return) can be inspected in Fig. 2. Misclassification leads to wrong timestamps of opening and closing positions in the asset, thus highly impacting cumulative return compared to the expected one.
+
+FIGURE 2. - Asset price trend missclasification results in smaller returns 
+$r_{1}', r_{2}'$
+ when compared to expected 
+$r_{1}, r_{2}$
+.
+
+FIGURE 2.
+Asset price trend missclasification results in smaller returns r′1,r′2 when compared to expected r1,r2 .
+
+Show All
+
+If we label price series trends with two different labeling algorithms g1 and g2 , it is reasonable to assume that one of the two algorithms has a greater cumulative return, e.g. g1 . However, if the classification algorithm h can be trained to predict these two trend definitions equally well (e.g., exactly one timestamp too late), the algorithm will have the same accuracy score for both, but the cumulative return could be significantly different and no longer necessarily greater for the labels obtained with g1 . This suggests that we are looking for a labeling algorithm whose cumulative return will be the least impacted by classification algorithm generalization error.
+
+We define robustness ρ of the labeling algorithm g as a measure of how well it can withstand changes in the cumulative return R based on the trend predictions of a classification algorithm h trained on such labels:
+ρ=ΔR/RΔACC/ACC,(7)
+View SourceRight-click on figure for MathML and additional features.where ΔR=R′−R represents the difference in the cumulative return R that would be realized for some expected accuracy score ACC and the cumulative return R′ realized for actual accuracy ACC′ . Equivalently, ΔACC=ACC′−ACC is the difference between the expected accuracy score ACC and the actual accuracy score ACC′ . A smaller absolute value of ρ indicates greater robustness. Given a labeling algorithm g and its parameters θ for which the trained classifier h results in approximately equal cumulative return R , we want to choose the parameters θ that have the optimal robustness. Similarly, with multiple labeling algorithms g1,g2,…,gn for which the trained classifier h results in approximately equal cumulative return R , we want to choose the labeling algorithm gi with the optimal robustness.
+
+SECTION IV.Accuracy Simulation
+Noisy labels have been used to evaluate and to increase the performance of classifiers when predicting previously unseen data [15], [16], [17]. For example, [15] uses a noise model that flips a certain proportion of the original labels to show that the noise layer in a convolutional neural network can learn such a noise distribution. The resulting classifier performed better when predicting test data. However, the aforementioned research used manually labeled data, which differs from the algorithmically generated asset price trend labels. To evaluate and optimize the robustness of trend labeling algorithms, instead of training a classifier algorithm h , we propose a noise model to simulate the generalization error of the classifier. Specifically, we propose the noise model that simulates an accuracy score by applying noise to the original obtained labels y as the output of g :
+y^=e(y,ψ),(8)
+View SourceRight-click on figure for MathML and additional features.where e:RT×R→RT is the noise model used to generate noisy labels y^ , for which the measured accuracy score between y^ and the y is approximately ψ . The noise model e generates the mask m as a sequence of random binary values, obtained as finite Bernoulli process of the same length as y and expected value ψ . Noisy labels y^ are then calculated as follows:
+y^=¬(y⊕m),(9)
+View SourceRight-click on figure for MathML and additional features.where ⊕ is the bitwise exclusive-or (XOR) operator. An example of noisy labels obtained using noise model e can be found in Fig. 3.
+
+FIGURE 3. - Process of obtaining noisy labels 
+$\hat { \boldsymbol {y}}$
+ that reflect the desired accuracy score 
+$\psi $
+.
+
+FIGURE 3.
+Process of obtaining noisy labels y^ that reflect the desired accuracy score ψ .
+
+Show All
+
+SECTION V.Trend Labeling Algorithms
+Several trend lableing algorithms have been proposed so far. They can be divided into multivariate (e.g., excess over mean [1], excess over median [2], return vs. benchmark [3]) and univariate (e.g. matrix flags [4], fixed-time horizon [5], triple-barrier [5], continuous trend detection [6] along with its modified version [7], trend scanning [8]). In this paper, we deal with univariate algorithms, namely those that have a single parameter θ . We have considered the most commonly used Fixed-time horizon labeling algorithm [5], the novel Continuous trend labeling algorithm [6], and we implement the “Oracle” labeling algorithm that yields uptrend segments that maximize cumulative return given transaction fee and fixed final label. Oracle labeling algorithm is a logical choice as an upper bound given the problem we address in this paper. These three algorithms are described in the following subsections.
+
+A. Fixed-Time Horizon Labeling
+For price series p , we define the H -step-ahead return of a forward-looking window of size H as:
+rt=pt+H−ptpt.(10)
+View SourceRight-click on figure for MathML and additional features.For each timestamp t<T−H , we assign a binary label yt by thresholding the H -step-ahead return rt using a predefined threshold level τ :
+yt={10if rt≥τ,otherwise.(11)
+View SourceRight-click on figure for MathML and additional features.Fixed-time horizon (FTH) labeling is widely used in the financial time series literature for its simplicity. However, it has several limitations: this algorithm only takes into account the starting price pt and ending price pt+H of the time horizon H (ignoring any price dynamics that may occur during that time period), it can result in positions with negative returns (which are not desirable for training a classification algorithm) and it often yields highly imbalanced datasets. Also, for H>1 , using the output of a classification algorithm trained with such labels is not trivial. It is necessary to take into account the duration of the forward-looking window and assign the initial capital accordingly. Somewhat simpler is the use for H=1 , and this is how the experiments were performed in this research. An example of trend labels obtained using FTH labeling given H=1,τ=0.0004 are displayed in Fig. 4.
+
+FIGURE 4. - An example of trend labels obtained using three different labeling algorithms for the same asset price series.
+
+FIGURE 4.
+An example of trend labels obtained using three different labeling algorithms for the same asset price series.
+
+Show All
+
+B. Continous Trend Labeling
+A novel method for continuous trend (CT) labeling is proposed in [6]. The labeling algorithm identifies continuous trends in financial markets by analyzing the price fluctuation between adjacent peak and trough points. When the market rises from the current low point by a certain proportion of fluctuation parameter ω or falls from the current high point by a certain proportion of fluctuation parameter ω , the two segments are labeled as rising and falling segments, respectively. CT labeling procedure is presented in Alg. 1. An example of trend labels obtained using CT labeling given ω=0.0004 are displayed in Fig. 4.
+
+Algorithm 1 Continuous Trend Labeling
+1:
+Input: p , ω
+
+2:
+Output: y
+
+3:
+FP←p1 , pH←p1 , HT←1 , pL←p1 , LT←1 , Cid←0 , FP_N←0 , N←len(p)
+
+4:
+for i←1toN do
+
+5:
+if (pi>FP+p1∗ω) then
+
+6:
+Set [pH , HT , FP_N , Cid ] ← [pi , ti , i , 1]
+
+7:
+else if (pi<FP−p1∗ω) then
+
+8:
+Set [pL , LT , FP_N , Cid ] ← [pi , ti , i , 0]
+
+9:
+end if
+
+10:
+end for
+
+11:
+for i←FP_N+1toN do
+
+12:
+if (Cid>0) then
+
+13:
+if (pi>pH) then
+
+14:
+Set [pH , HT ] ← [pi , ti ]
+
+15:
+else if (pi<xH−xH∗ω and LT≤HT ) then
+
+16:
+for j←1toN do
+
+17:
+if (tj>LT and tj≤HT ) then
+
+18:
+Set yj←1
+
+19:
+end if
+
+20:
+end for
+
+21:
+Set [pL , LT , Cid ] ← [pi , ti , 0]
+
+22:
+end if
+
+23:
+else
+
+24:
+if (pi<pL) then
+
+25:
+Set [pL , LT ] ← [pi , ti ]
+
+26:
+else if (pi>pL+pL∗ω and HT≤LT ) then
+
+27:
+for j←1toN do
+
+28:
+if (tj>HT and tj≤LT ) then
+
+29:
+Set yj←0
+
+30:
+end if
+
+31:
+end for
+
+32:
+Set [pH , HT , Cid ] ← [pi , ti , 1]
+
+33:
+end if
+
+34:
+end if
+
+35:
+end for
+
+C. Oracle Labeling
+It is relatively easy to find labels y∗ that greedily maximize cumulative return. However, finding labels that maximize the cumulative return given transnational fee φ=ϑ and fixed final label yT is a more complex problem. Formally, this optimization can be described as follows:
+y∗=argmaxyc(y,φ)subject to:φ=ϑ,yT=i,where i∈{0,1}.(12)
+View SourceRight-click on figure for MathML and additional features.Brute force implementation of this optimization has the complexity of O(2T) . However, this optimization can be solved using the dynamic programming (DP) approach [18], and thus obtain computational complexity of O(T) . A more detailed explanation of DP approach to this optimization can be found in Appendix A. It should be noted that transaction fee φ is defined by the stock exchange (and therefore used when calculating all cumulative returns in this research), while ϑ is the Oracle labeling algorithm parameter. An example of trend labels obtained using Oracle labeling given ϑ=0.0004 is displayed in Fig. 4.
+
+SECTION VI.Methodology
+Classification algorithms for trend prediction in financial time series are usually trained on historical data and used for a limited time in the future and are then retrained as new data become available. To simulate such an approach and to ensure consistency in algorithm development the time series split (TSS) method is often employed. It is a cross-validation method used to obtain sequential train and test data split, where test data appear later in time. We first split the data using TSS. After which, we calculate cumulative return on the test data for each of the three labeling algorithms (FTH, CT, Oracle) while varying their parameter θ . This is repeated for 5 different simulated accuracies ψ∈{1.0,0.9,0.8,0.7,0.6} . Then, we find optimal parameters θ∗ for each of the three labeling algorithms. This can be done using the following equation:
+θ∗=argmaxθE[R∗],(13)
+View SourceRight-click on figure for MathML and additional features.where R∗=c(y^,φ) , while y^ are noisy labels obtained using (9) for given ψ . For each parameter θ of the three labeling algorithms we sampled 500 realizations of masks m when generating y^ . Then, we label the train data, for each combination ψ , g , and corresponding θ∗ . We use the newly labeled data to train a classification algorithm h . This allows us to evaluate the actual accuracy score and a cumulative return of 15 different classifiers h (for each simulated accuracy score ψ and each labeling algorithm g ) and compare them to corresponding simulation results. The procedure described above concerns the adequacy of the noise model; if the cumulative return of an actual classifier is close to the expected simulated cumulative return for a similar accuracy score, we can conclude that the noise model is adequate.
+
+However, in case of a similar cumulative return of actually trained classifiers, we should choose the one with the best robustness. We first demonstrate how the difference in cumulative returns behaves for all three labeling algorithms and their parameter θ . The difference in cumulative return ΔR=R−R′ is calculated at thirteen distinct simulated accuracy scores ψ : starting from ψ=1 and gradually decreasing it by −5% increments, ending at ψ=0.54 . While calculating the difference in cumulative return, we consider the expected cumulative R to be the one for ψ from the previous step, while the realized cumulative return R′ for the one in the current step ψ′ . This is also done for 500 realizations of masks m when obtaining y^ . We then examine the robustness of the trained classifiers in terms of their actual accuracy and cumulative return on test set, under an assumed change in accuracy of ΔACC=−5% . Finally, we propose an algorithm for optimal labeling of financial time series trends according to the obtained results.
+
+A. Data and Preprocessing
+For the experiments, we considered Gold futures contract. The data collected includes minute closing prices from 2010 to 2022. We filtered out pre-market and after-market data for each asset separately, leaving only prices within regular trading hours. Any missing data during trading hours was interpolated using the latest available value at that time. Since we only allowed trading during regular trading hours, the labeling algorithms were implemented to enforce closing the position if it was still open at the end of the trading day. Such an approach is also common in practice in order to avoid overnight risk when trading is mostly conducted by institutional investors.
+
+B. Features
+Following the feature generation process described in Section II, we have obtained the feature vector xt for each timestamp t . The feature vector consists of four feature groups, which are explained in more detail below:
+
+Rolling asset statistical features, derived using the look-back window L=60 minutes. In particular, the features consist of: Returns, Volatility, Maximum Drawdown, Maximum Drawup, and Volume. These features provide information about recent asset price micro-trend.
+
+Rolling asset technical indicators derived using the look-back window L=28 minutes. These include Average Directional Index, Absolute Price Oscillator, Commodity Channel Index, Directional Movement Index, Money Flow Index, Relative Strength Index, Ultimate Oscillator, Williams %R and Normalized Average True Range. These are all bounded technical indicators whose values do not depend in any way on the price range of an asset. Technical indicator-based features provide information about recent momentum, volatility, money flow, etc., improving the model’s ability to predict future asset trend.
+
+Rolling asset-to-market index features derived with using look-back window L=60 minutes. For an asset, the features were calculated with respect to a market index (S&P 500), namely: Asset-To-Index Alpha, Asset-To-Index Beta (both derived from the Capital Asset Pricing Model), Index Returns, Index Volatility, Pearson Correlation Coefficient, and Return Distribution Dependencies. The relationship between the Gold futures price and the S&P 500 index varies with market regimes, as observed in [19]. By incorporating this relationship into the feature space, classifiers can benefit by capturing the change in market dynamics.
+
+Time features do not depend on the look-back window, but provide information about the period of the year and the time of the trading day. The exact minute of a trading day is beneficial for capturing intraday seasonality, such as high volatility at stock market open and close or decline in trading during midday, while the day of the year captures seasonality in economic activity, such as regularly scheduled economic reports whose release may lead to increased volatility.
+
+Rolling asset trend features derived using the look-back window L=2200 (5 days) reflecting the general trend of an asset and the general trend of a relationship between an asset and the S&P 500 Index. These features are a combination of asset statistical features asset-to-index features and consist of Maximum Drawdown, Maximum Drawup, Return Skewness, Return Kurtosis, Asset-To-Index Alpha, and Asset-To-Index Beta.
+
+The input feature calculation includes two look-back periods (L=28 and L=2200 ), but certain indicators, such as the Absolute Price Oscillator, require the specification of window size to determine a slower signal. In addition, certain features are lagged by 1 to 5 time steps to provide additional information to the model. This parameter configuration ϕ in (2) results in an input feature vector xt with 150 features. Reviewed literature [20] suggests researchers use similar input features as we do in this study. The main difference regarding input feature space is that we introduced time features to capture seasonality, and we utilize asset-to-market index features as a substitute for commonly used market trend indicators, like interest rate and unemployment rate, which are generally perceived as low-frequency data.
+
+C. Classification Algorithm
+Gradient Boosting is a popular machine learning algorithm for structured tabular data because it can be trained quickly and often outperforms even deep learning models [21]. As with any supervised learning method, it is a supervised learning algorithm that minimizes a given loss function L(y,h(x)) over a set of N training examples with input features xi∈RD and corresponding labels y . The algorithm constructs an additive model of M weak learners, Gi , belonging to the same class of models, such as shallow decision trees. The hypothesis function h(x) is defined as the weighted sum of the outputs of the weak learners:
+h(x)=∑i=1MβiGi(x),(14)
+View SourceRight-click on figure for MathML and additional features.where βi is the weight of the i -th weak learner.
+
+The algorithm trains the weak learners sequentially by adjusting their parameters to minimize the loss function. At each stage m , the algorithm computes the negative gradient of the loss function with respect to the current model output for each training example i :
+vi,m=−[∂L(yi,f(xi))∂h(xi)]h(xi)=hm−1(xi),(15)
+View SourceRight-click on figure for MathML and additional features.where hm−1 is the output of the model after the previous stage. The algorithm then trains a new weak learner Gm using the computed negative gradient vim as the labels. This is done by minimizing the least squares loss function:
+Gm=argminG∑i=1N(vim−G(xi))2.(16)
+View SourceRight-click on figure for MathML and additional features.After training the weak learner, the algorithm computes the weight βm that minimizes the loss function when the output of the current model and the output of the new weak learner are combined:
+βm=argminβ∑i=1NL(yi,hm−1(xi)+βGm(xi)).(17)
+View SourceRight-click on figure for MathML and additional features.The weight βm is used to adjust the output of the model hm−1 to include the new weak learner Gm :
+hm(x)=hm−1(x)+βmGm(x).(18)
+View SourceRight-click on figure for MathML and additional features.The algorithm repeats this process for a specified number of iterations or until the loss function converges. Finally, the predictions of the weak learners are combined using weighted majority voting to obtain the final prediction of the model. The procedure described above can be found in [22]. In this work, we used the Extreme Gradient Boosting model (XGBoost), a very efficient and widely used implementation of gradient-boosted trees [23].
+
+SECTION VII.Results
+In Fig. 5 we can inspect the expected cumulative returns of three different labeling algorithms (FTH, CT, Oracle) for 5 different simulated accuracy scores ψ in the test period. These expected cumulative returns are calculated using transnational fee φ=10−4 , as in the rest of the experiments. The first thing we can notice is that a perfect classifier (ψ = 1) would yield the greatest cumulative return when trained with the labels obtained as an output of Oracle labeling. We can also notice that the expected cumulative return for each of the algorithms decreases with different dynamics as ψ decreases. For each algorithm, depending on ψ , there is an interval of parameters θ∗∈[θ∗min,θ∗max] that yields the highest possible cumulative return. It is clear that this is an interval and not just a single parameter θ that yields maximal cumulative return because it takes a significant change in the value of θ to change the output of the labeling algorithm for the same price series. Also, it is apparent that the interval θ∗ expands when ψ decreases, and as the noisy labels y^ approach random behavior (they look more like a random series of 1s and 0s rather than the labels obtained as an output of the labeling algorithm), it does not matter which θ is chosen.
+
+FIGURE 5. - Evaluation of the expected cumulative return 
+$R=c(\hat { \boldsymbol {y}},\varphi)$
+ given five different simulated accuracy scores 
+$\psi $
+ for the three trend labeling algorithms and their corresponding parameters 
+$\theta $
+.
+
+FIGURE 5.
+Evaluation of the expected cumulative return R=c(y^,φ) given five different simulated accuracy scores ψ for the three trend labeling algorithms and their corresponding parameters θ .
+
+Show All
+
+The red line in Fig. 6 displays the results for the simulated accuracies ψ obtained for each of the three labeling algorithms and the corresponding optimal parameters θ∗ obtained with (13). The results of the actual trained classifiers are marked using a different color for the distinct simulated accuracy score. It can be observed that the classifier results are close to the simulation curve for all three labeling algorithms. This indicates that the noise model is suitable for selecting and comparing the parameters of the labeling algorithms θ as well as for selecting and comparing the labeling algorithms g . If the accuracy of the classifier is increased, either by a classifier with higher capacity, by a better input feature space, or by both, one can expect a higher cumulative return. It is noteworthy that CT labeling has the highest accuracy, but a more detailed analysis of the labels obtained using this algorithm indicates a large imbalance between the class examples. Furthermore, since certain θ∗ parameters are relatively close to each other in parameter set (resulting in similar or the same labels) at different simulated accuracy levels, the classifier is expected to achieve similar results. The exact numbers for the average accuracy score and cumulative returns on the test set are given in Table 1. During the training phase of the classifier for each of the three labeling algorithms, an additional 5-fold time series cross-validation was performed, which included Bayesian parameter optimization to tune the model hyperparameters. The resulting average accuracy scores for both the training and validation sets are presented in Table 2.
+
+TABLE 1 Average Test Data Results for Classifiers Trained on Labels Obtained Using Three Different Labeling Algorithms
+Table 1- 
+Average Test Data Results for Classifiers Trained on Labels Obtained Using Three Different Labeling Algorithms
+
+TABLE 2 Average Cross-Validation Accuracy Score for Classifiers Trained on Labels Obtained Using Three Different Labeling Algorithms
+Table 2- 
+Average Cross-Validation Accuracy Score for Classifiers Trained on Labels Obtained Using Three Different Labeling Algorithms
+
+FIGURE 6. - Comparison of the expected cumulative return for five distinct simulated accuracy scores (represented by the red line), across the three different trend labeling algorithms, and the results of the trained classifiers, trained on labels obtained using these three labeling algorithms.
+
+FIGURE 6.
+Comparison of the expected cumulative return for five distinct simulated accuracy scores (represented by the red line), across the three different trend labeling algorithms, and the results of the trained classifiers, trained on labels obtained using these three labeling algorithms.
+
+Show All
+
+Figure 7 showcases the expected difference in cumulative return for the three labeling algorithms. These differences are presented at thirteen distinct simulated accuracy scores, symbolized by ψ . In general, the expected difference in cumulative return is mostly ≤0 (except in some rare cases when ψ is close to 0.5). It is evident that the dynamics of the expected differences in cumulative return are extremely dependent on the parameters as well as on the labeling algorithm. It is apparent that the expected difference in cumulative return is greater at higher accuracy scores, suggesting smaller robustness (a small change in accuracy score would have a large effect on cumulative return). In addition, the expected difference in cumulative return with respect to the selected parameter is more noticeable at higher accuracy scores, suggesting that parameter selection plays a larger role in maximizing robustness on higher accuracy score levels.
+
+FIGURE 7. - Evaluation of the expected difference in cumulative return given 
+$\Delta ACC = -5\%$
+ for the three different trend labeling algorithms and corresponding parameters 
+$\theta $
+.
+
+FIGURE 7.
+Evaluation of the expected difference in cumulative return given ΔACC=−5% for the three different trend labeling algorithms and corresponding parameters θ .
+
+Show All
+
+The numbers presented in Table 1 reveal that in test period, the classifier trained on FTH labels yields cumulative return significantly lower than the other two methods – it’s lower by an order of magnitude. In contrast, when utilizing a classifier trained on FTH and Oracle labels for trend prediction in test period, the cumulative returns are approximately equal. This naturally leads us to evaluate the robustness of those two labeling algorithms. For both algorithms, we read R and ACC from Table 1, calculate ACC′=0.95⋅ACC , and simulate the expected cumulative return R given ψ=ACC′ . Using (7) we calculate ρOracle=6.23 and ρCT=16.49 . Additionally, it can be inspected from Fig. 7 that the expected relative change in cumulative return at these accuracy levels is smaller in the case of Oracle labeling. This suggests that in this specific case, we should choose Oracle labeling due to its greater robustness.
+
+Given a labeling algorithm y=g(p;θ) , for each of n_splits training and validation sets obtained using TSS, we can find the parameters θ∗ that yield the highest expected cumulative return R∗=c(y,φ) for the validation set. Second, we can label the training and validation set using g and corresponding θ∗ . Third, on each training and validation set, we can train the classifier h and measure its average accuracy score ACC across the validation set, as well as its average cumulative return R . We can repeat this procedure for each of the labeling algorithms of interest and select the one that has a significantly better average cumulative return on validation sets. Finally, if the trained classifiers yield a similar average cumulative return R for more than one trend labeling algorithm g , we can simulate the accuracy score ACC′ using noise model e and thus obtain y^ to calculate R′=c(y^,φ) . This enables us to evaluate the robustness ρ of these algorithms (it is expected that the accuracy score of the classifier will drop by a ΔACC when predicting previously unseen data resulting in an accuracy score ACC′ ) and select the algorithm g∗ that is the most robust. These steps are summed up in Alg 2.
+
+SECTION Algorithm 2Optimal Trend Labeling Selection Framework
+1:
+Input: p,X,g,θ,φ,e,n_splits,ΔACC
+
+2:
+Output: g∗
+
+3:
+results←{g:(R,ACC,R′,ACC′)}
+
+4:
+for g in g do
+
+5:
+acc←accuracy_array(n_splits)
+
+6:
+cret←cumulative_ret_array(n_splits)
+
+7:
+for (Xt,pt,Xv,pv) in TSS(X,p,n_splits ) do
+
+8:
+θ∗←argmaxθc(g(pv,θ),φ)
+
+9:
+yt←g(pt,θ∗)
+
+10:
+yv←g(pv,θ∗)
+
+11:
+model.fit(Xt,yt)
+
+12:
+ypred←model.predict(Xv)
+
+13:
+acc←accuracy_score(yv,ypred)
+
+14:
+cret←c(ypred,φ)
+
+15:
+end for
+
+16:
+ACC←mean(acc)
+
+17:
+R←mean(cret)
+
+18:
+ACC′←ACC⋅(1+ΔACC)
+
+19:
+sim_cret← cumulative_ret_array(n_splits)
+
+20:
+for (Xt,pt,Xv,pv) in TSS(X,p,n_splits ) do
+
+21:
+θ∗←argmaxθc(g(pv,θ),φ)
+
+22:
+y←g(pv,θ∗)
+
+23:
+sim_cret←c(e(y,ψ=ACC′),φ)
+
+24:
+end for
+
+25:
+R′←mean(sim_cret)
+
+26:
+results[g]←(R,ACC,R′,ACC′)
+
+27:
+end for
+
+28:
+g∗←argmaxg{R:g∈results}
+
+29:
+if ∀g′≠g∗,|{R:g∗∈results}−{R:g′∈results}|>ϵ then
+
+30:
+return g∗
+
+31:
+else
+
+32:
+return argming{|ρ(R,R′,ACC,ACC′)|:g∈results}
+
+33:
+end if
+
+SECTION VIII.Conclusion
+In this study, we introduce labeling algorithm robustness as a measure of the percentage change in cumulative return relative to the percentage change in the accuracy score of a classifier designed to learn such labels. For a trend labeling algorithm, it is desirable to have minimal absolute percentage change in cumulative return for a specific percentage change in accuracy. To evaluate the robustness of trend labeling algorithms without the need to train a classifier (a simulation of classifier predictions on new, previously unseen data), we propose a noise model that enables the simulation of the desired accuracy score. For three different labeling algorithms: Fixed-time horizon (FTH) labeling, Continuous trend (CT) Labeling, and Oracle labeling, we confirm the adequacy of the noise model by comparing the simulation results with empirical results. The accuracy score and cumulative return of trained classifiers turn out to be consistent with the simulation results for all three labeling algorithms. While testing the adequacy of the noise model, we found that for each level of simulated accuracy score, there is an interval θ∗∈[θ∗min,θ∗max] of labeling algorithm parameters that yield the highest cumulative return and this is true for all three considered algorithms. The results demonstrate that the FTH labeling algorithm yields a cumulative return that is an order of magnitude less than the cumulative return achieved using trend prediction from a classifier trained on labels obtained using the other two labeling algorithms. On the other hand, a classifier trained on labels obtained from CT labeling and Oracle labeling achieves significantly different accuracy scores (0.939 for CT labeling and 0.566 for Oracle labeling), but their cumulative returns are comparable. Robustness evaluation for a 5% drop in accuracy score for these two labeling algorithms indicates that Oracle labeling has the least absolute percentage change in cumulative return when considering such a drop in accuracy score. These results have motivated the development of a framework for optimal trend labeling selection that considers labeling algorithm robustness. Future work could consider other financial performance measures as well as other classification metrics to evaluate the robustness of trend labeling algorithms. In addition, other noise models could be considered for evaluating robustness.
+
+ACKNOWLEDGMENT
+The authors would like to thank the anonymous reviewers for their suggestions which ultimately helped to improve the quality of the article, and also would like to thank Fredi Šarić for the discussion related to this research.
+
+Appendix AOracle Trend Labeling Algorithm
+We define the state matrix S∈R(T−1)×2 , where each element Rit corresponds to the maximum cumulative return at timestamp t considering the state i∈{0,1} whose values represent the downtrend and the uptrend respectively. We also define the transition cost matrix P∈R(T−1)×2×2 , where each element Pi,jt corresponds to the change in cumulative return of the transition from state i at timestamp t−1 to state j at timestamp t . These transitions fall into two categories: (i) staying in the current state and (ii) moving to a new state. Remaining in a downtrend state does not change the cumulative return P0,0t=0 , but remaining in an uptrend state incurs transaction costs equal to the price change P1,1t=pt−pt−1 , while the change in a trend incurs costs equal to ϑ , i.e., P0,1t=−pt⋅ϑ , P1,0t=−pt⋅ϑ . The algorithm proceeds in two steps. First (forward pass), for each timestamp t the optimal value for each state i is computed by maximizing over the possible state transitions from the previous timestamp t−1 :
+Rit=max(Rjt−1+Pj,it).(19)
+View SourceRight-click on figure for MathML and additional features.Second (backward pass), for each timestamp t starting at t=T , we move backward to t=1 , finding the state i that maximizes Rjt−1+Pj,it . The pseudocode is outlined in Alg. 3.
+
+Algorithm 3 Oracle Labeling Algorithm
+1:
+Input: p , ϑ , yT
+
+2:
+Output: y
+
+3:
+S←init_state_matrix(0,yT,T)
+
+4:
+P←init_transition_cost_matrix(p,ϑ,T)
+
+5:
+for t←2toT do
+
+6:
+S0t←max(S0t−1+P0,0t−1,S1t−1+P1,0t−1)
+
+7:
+S1t←max(S0t−1+P0,1t−1,S1t−1+P1,1t−1)
+
+8:
+end for
+
+9:
+y←init_label_array(yT,T)
+
+10:
+κ←yT
+
+11:
+for t←T−1to1by−1 do
+
+12:
+idx←argmaxi∈{0,1}(Sit+Pi,κt)
+
+13:
+yt←idx
+
+14:
+κ←idx
+
+15:
+end for
+
+16:
+return y
+
+
+Authors
+
+Figures
+
+References
+
+Citations
+
+Keywords
+
+Metrics
+
+
+More Like This
+Optimization and Empirical Research on Credit Risk Measurement Model of State-owned Banks—Based on Basel III and Time Series Analysis
+2025 9th International Symposium on Innovative Approaches in Smart Technologies (ISAS)
+
+Published: 2025
+
+Alzheimer's Disease Prediction Using Machine Learning and Time Series Analysis
+2025 International Conference on Emerging Technologies in Computing and Communication (ETCC)
+
+Published: 2025
+
+Show More
+References
+
+References is not available for this document.
+IEEE Personal Account
+Change username/password
+Purchase Details
+Payment Options
+View Purchased Documents
+Profile Information
+Communications Preferences
+Profession and Education
+Technical interests
+Need Help?
+US & Canada: +1 800 678 4333
+Worldwide: +1 732 981 0060
+Contact & Support
+Follow
+About IEEE Xplore | Contact Us | Help | Accessibility | Terms of Use | Nondiscrimination Policy | IEEE Ethics Reporting | Sitemap | IEEE Privacy Policy
+
+A public charity, IEEE is the world's largest technical professional organization dedicated to advancing technology for the benefit of humanity.
+
+© Copyright 2026 IEEE - All rights reserved, including rights for text and data mining and training of artificial intelligence and similar technologies.

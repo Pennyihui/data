@@ -1,0 +1,66 @@
+{
+  "symbol": "BTCUSDT",
+  "generated_at": "2026-08-17T14:33:04.687599+00:00",
+  "files": {
+    "btc_context_1h_btcusdt.csv": {
+      "rows": 1440,
+      "cols": 35,
+      "note": "1h 上下文宽表 (K线+合约+情绪+宏观对齐)"
+    },
+    "fear_greed_index.csv": {
+      "rows": 3116,
+      "cols": 3,
+      "note": "恐惧贪婪指数 (日, 2018-02 至今)"
+    },
+    "funding_rate_btcusdt.csv": {
+      "rows": 7600,
+      "cols": 3,
+      "note": "资金费率历史 (8h, 2019-09 至今全历史)"
+    },
+    "global_ls_account_ratio_1h.csv": {
+      "rows": 500,
+      "cols": 4,
+      "note": "全市场多空账户比 (1h)"
+    },
+    "macro_daily.csv": {
+      "rows": 1259,
+      "cols": 7,
+      "note": "宏观日频宽表 (Yahoo, DXY/标普/纳指/VIX/黄金/10Y)"
+    },
+    "mark_price_klines_1h.csv": {
+      "rows": 500,
+      "cols": 5,
+      "note": "标记价格K线 (1h, 抗插针)"
+    },
+    "onchain_btc_daily.csv": {
+      "rows": 6436,
+      "cols": 13,
+      "note": "链上日频宽表 (blockchain.info, 2009 至今)"
+    },
+    "open_interest_1h.csv": {
+      "rows": 500,
+      "cols": 4,
+      "note": "未平仓合约 (1h, 最近500小时)"
+    },
+    "premium_index_snapshot.csv": {
+      "rows": 1,
+      "cols": 8,
+      "note": "标记价/指数价/下期资金费率快照"
+    },
+    "taker_buy_sell_ratio_1h.csv": {
+      "rows": 500,
+      "cols": 4,
+      "note": "主动买卖量比 (1h)"
+    },
+    "top_trader_ls_account_ratio_1h.csv": {
+      "rows": 500,
+      "cols": 4,
+      "note": "大户多空账户比 (1h)"
+    },
+    "top_trader_ls_position_ratio_1h.csv": {
+      "rows": 500,
+      "cols": 4,
+      "note": "大户多空持仓比 (1h)"
+    }
+  }
+}
