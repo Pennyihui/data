@@ -1,0 +1,406 @@
+{
+  "generated_at": "2026-08-18T15:20:31.866040+00:00",
+  "ratio_period": "1h",
+  "symbols": {
+    "BTCUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "ETHUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "SNDKUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "BTCUSDC": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "SPCXUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "ETHUSDC": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "XAUUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "SOLUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "SNXXUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "MUUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "SOXLUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "SKHYNIXUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "XAGUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "KORUUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "SKHYUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "CLUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "GPSUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "ZECUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "XRPUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "ACEUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "HYPEUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "TUTUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "PORTALUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "BTWUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "BZUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "DRAMUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "CYSUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "BNBUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "DOGEUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "SOLUSDC": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "PUMPUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "WLDUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "APRUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "LINKUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "SOXSUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "SAMSUNGUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "INTCUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "CRCLUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "ADAUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "AIOUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "1000PEPEUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "NBISUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "MRVLUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "MUUUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "AKEUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "QQQUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "VELVETUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "MSTRUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "HEMIUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "BEATUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "SUIUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "PAXGUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "EWYUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "NVDAUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "ONGUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "CBRSUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "CHIPUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "AAOIUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "LITEUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "GOOGLUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "NEARUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "HUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "SPCXUSD1": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "AVAXUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "AXTIUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "TRXUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "XAUTUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "TSLAUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "KAITOUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "XPINUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "ENAUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "ONDOUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "GRVTUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "CAPUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "AAPLUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "TAOUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "XRPUSDC": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "ZHIPUUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "AAVEUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "AMDUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "MVLLUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "BTCUSD1": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "FILUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "BNBUSDC": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "XMRUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "BICOUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "UNIUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "BTCU": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "GIGGLEUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "COWUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "STARUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "HOMEUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "LTCUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "MSFTUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "BEUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "TQQQUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "WLFIUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "BSBUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "FETUSDT": {
+      "files_ok": 8,
+      "failures": []
+    },
+    "COHRUSDT": {
+      "files_ok": 8,
+      "failures": []
+    }
+  }
+}
