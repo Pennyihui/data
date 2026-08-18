@@ -13,6 +13,9 @@ Data_pipeline/
 ├── get_pair_rankings.py          # 交易对排行（现货3632对/合约742对/全局市值100币）
 ├── get_multi_derivatives.py      # Top100 永续币衍生品数据（资金费率/OI/多空比/标记价, 断点续传）
 ├── build_funding_cross_section.py # 跨币种资金费率截面特征（市场拥挤度分布, 8h）
+├── build_oi_cross_section.py      # 跨币种 OI 截面特征（1h, 最近~21天）
+├── build_4h_research_table.py     # 4h 研究宽表（BTC K线+资金/OI截面+FNG+宏观, 2019-09起）
+├── plot_crowding.py               # 拥挤度历史可视化（资金费率截面 + OI 截面）
 ├── produce_csv.py                # 主线流水线（编排入口）
 ├── calculate_indicator_v2.py     # 技术指标库（2583行, 核心模块）
 ├── merge_csv.py                  # 多周期合并（4h/日/周）
