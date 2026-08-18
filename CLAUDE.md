@@ -12,6 +12,7 @@ Data_pipeline/
 ├── get_additional_data.py        # 扩展数据拉取（合约/情绪/链上/宏观 + 1h 上下文宽表）
 ├── get_pair_rankings.py          # 交易对排行（现货3632对/合约742对/全局市值100币）
 ├── get_multi_derivatives.py      # Top100 永续币衍生品数据（资金费率/OI/多空比/标记价, 断点续传）
+├── build_funding_cross_section.py # 跨币种资金费率截面特征（市场拥挤度分布, 8h）
 ├── produce_csv.py                # 主线流水线（编排入口）
 ├── calculate_indicator_v2.py     # 技术指标库（2583行, 核心模块）
 ├── merge_csv.py                  # 多周期合并（4h/日/周）
