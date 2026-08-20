@@ -1,0 +1,16 @@
+{
+  "batch_id": "USDCUSDT_peg_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\USDCUSDT_1h.csv",
+  "source": {
+    "api": "binance /api/v3/klines",
+    "symbol": "USDCUSDT",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T19:07:40.070305+00:00"
+  },
+  "ingested_at": "2026-08-20T19:08:15.466226+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "17d9aeac1a1779418fe979ee534de3dc767354c3497d155e6bfa936fc1082edd",
+  "file_size_bytes": 10135703,
+  "immutable": true
+}

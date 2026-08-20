@@ -219,8 +219,9 @@ def stage_l2(assets):
     print("  manifests 汇总完成")
 
 
-def stage_okx(assets, days=730):
-    """OKX 接入管线: L0 摄取 -> L1 标准化 -> L2 认证 -> basis 派生。"""
+def stage_okx(assets, days=None, version="v2"):
+    """OKX 接入管线: L0 摄取 -> L1 标准化 -> L2 认证 -> basis 派生。
+    days=None 时回填到上市日; version 为批次版本 (v2 深回填)。"""
     import pandas as pd
     import pyarrow.parquet as pq
     from .ingest_okx import ingest_okx_all
@@ -231,9 +232,9 @@ def stage_okx(assets, days=730):
                      write_certified_derivatives)
     from .schema import BASIS_COLUMNS
 
-    print(f"== OKX ({', '.join(assets)}, 近 {days} 天) ==")
+    print(f"== OKX ({', '.join(assets)}, days={days or '上市日至今'}) ==")
     print("-- L0 --")
-    ingest_okx_all(assets, days)
+    ingest_okx_all(assets, days, version=version)
 
     print("-- L1 --")
     for a in assets:
@@ -370,16 +371,186 @@ def stage_okx(assets, days=730):
     print("OKX 管线完成")
 
 
+def stage_stablecoins():
+    """阶段 3: 稳定币 (供应量/流向/peg + mint/burn 派生) L0->L1->L2。"""
+    import pandas as pd
+    import pyarrow.parquet as pq
+    from .ingest_stablecoins import ingest_stablecoins_all
+    from .l1_stablecoins import (normalize_flows, normalize_peg,
+                                 normalize_supply, write_stablecoin_parquet)
+    from .l2 import certify_derivatives, write_certified_derivatives
+
+    print("== 阶段3: 稳定币 ==")
+    print("-- L0 --")
+    ingest_stablecoins_all()
+
+    print("-- L1 --")
+    sup = normalize_supply()
+    if not sup.empty:
+        write_stablecoin_parquet(sup, "stablecoin_supply", "cmc", "date_utc")
+        print(f"  supply: {len(sup)} 行 ({sup.token.nunique()} 币, "
+              f"{sup.date_utc.min().date()}~{sup.date_utc.max().date()})")
+    fl = normalize_flows()
+    if not fl.empty:
+        write_stablecoin_parquet(fl, "stablecoin_flows", "ercin", "date_utc")
+        print(f"  flows: {len(fl)} 行 ({fl.metric.nunique()} 指标)")
+    peg = normalize_peg()
+    if not peg.empty:
+        write_stablecoin_parquet(peg, "stablecoin_peg", "binance", "time_utc")
+        print(f"  peg: {len(peg)} 行 ({peg.token.nunique()} 币)")
+
+    print("-- L2 --")
+    accum = {}
+
+    def acc(ds, s):
+        a = accum.setdefault(ds, {"row_count": 0, "duplicate_count": 0,
+                                  "gap_count": 0, "suspect_count": 0,
+                                  "coverage_start": None, "coverage_end": None})
+        a["row_count"] += s["row_count"]
+        a["suspect_count"] += s["suspect_count"]
+        if a["coverage_start"] is None or s["coverage_start"] < a["coverage_start"]:
+            a["coverage_start"] = s["coverage_start"]
+        if a["coverage_end"] is None or s["coverage_end"] > a["coverage_end"]:
+            a["coverage_end"] = s["coverage_end"]
+
+    for df, ds, venue, tc, core, keys in [
+        (sup, "stablecoin_supply", "cmc", "date_utc", ["circulating_supply"],
+         ["token", "date_utc"]),
+        (fl, "stablecoin_flows", "ercin", "date_utc", ["value_usd"],
+         ["metric", "date_utc"]),
+        (peg, "stablecoin_peg", "binance", "time_utc",
+         ["price", "peg_deviation"], ["token", "time_utc"])]:
+        if df.empty:
+            continue
+        cdf = certify_derivatives(df, tc, core_numeric_cols=core, key_cols=keys)
+        write_certified_derivatives(cdf, ds, venue, "all", tc)
+        acc(ds, {"row_count": len(cdf), "duplicate_count": 0, "gap_count": 0,
+                 "suspect_count": int(cdf["is_suspect"].sum()),
+                 "coverage_start": str(cdf[tc].min()),
+                 "coverage_end": str(cdf[tc].max())})
+
+    # mint/burn 派生 (供应量日差)
+    sup_cert = pq.read_table(os.path.join(CERTIFIED_DIR, "stablecoin_supply",
+                                          "cmc")).to_pandas()
+    sup_cert["date_utc"] = pd.to_datetime(sup_cert["date_utc"], utc=True)
+    mb = []
+    for tok, g in sup_cert.groupby("token"):
+        g = g.sort_values("date_utc")
+        chg = g["circulating_supply"].diff()
+        d = g[["token", "date_utc"]].copy()
+        d["supply_change"] = chg
+        d["mint"] = chg.clip(lower=0)
+        d["burn"] = (-chg).clip(lower=0)
+        d["venue_id"] = "cmc"
+        d["source_batch_id"] = "cmc_supply_v1"
+        mb.append(d)
+    mb = pd.concat(mb, ignore_index=True) if mb else pd.DataFrame()
+    if not mb.empty:
+        from .schema import STABLECOIN_MINT_BURN_COLUMNS
+        mb = mb[[c for c, _ in STABLECOIN_MINT_BURN_COLUMNS]]
+        cdf = certify_derivatives(mb, "date_utc", core_numeric_cols=["supply_change"],
+                                  key_cols=["token", "date_utc"])
+        write_certified_derivatives(cdf, "stablecoin_mint_burn", "cmc", "all", "date_utc")
+        acc("stablecoin_mint_burn",
+            {"row_count": len(cdf), "duplicate_count": 0, "gap_count": 0,
+             "suspect_count": int(cdf["is_suspect"].sum()),
+             "coverage_start": str(cdf["date_utc"].min()),
+             "coverage_end": str(cdf["date_utc"].max())})
+
+    for ds, s in accum.items():
+        build_dataset_manifest(ds, "*", "*", "*", "*", s, ["stablecoin_v1"],
+                               {"note": "阶段3 稳定币; supply=CMC流通量, "
+                                "flows=Ercin日频, peg=Binance稳定币对, "
+                                "mint/burn=供应量派生"})
+    print("阶段3 完成")
+
+
+def stage_coinbase(assets=("BTC", "ETH", "SOL", "XRP"), days=365):
+    """Coinbase 接入: L0 -> L1 -> L2 (第三交易所跨所验证)。"""
+    import pandas as pd
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+    from .ingest_coinbase import ASSETS as CB_ASSETS, ingest_coinbase_all
+    from .l1_coinbase import (normalize_coinbase_candles,
+                              normalize_coinbase_instruments)
+    from .l2 import certify_candles, write_certified
+
+    print(f"== Coinbase ({', '.join(assets)}, 近 {days} 天) ==")
+    ingest_coinbase_all(days=days)
+
+    print("-- L1 --")
+    for a in assets:
+        product = CB_ASSETS[a]
+        df = normalize_coinbase_candles("coinbase", product)
+        if df.empty:
+            continue
+        write_parquet(df, "market_candle_spot_1h", "coinbase", "spot",
+                      product, "1h")
+        print(f"  coinbase {product}: {len(df)} 行")
+    inst = normalize_coinbase_instruments()
+    if not inst.empty:
+        for c in inst.columns:
+            if "time" in c or c == "data_available_at":
+                inst[c] = pd.to_datetime(inst[c], utc=True, errors="coerce") \
+                    .astype("datetime64[us, UTC]")
+        root = os.path.join(L1_DIR, "instrument", "coinbase")
+        os.makedirs(root, exist_ok=True)
+        pq.write_table(pa.Table.from_pandas(inst, preserve_index=False),
+                       os.path.join(root, "instruments.parquet"), compression="snappy")
+        print(f"  coinbase instruments: {len(inst)} 行")
+
+    print("-- L2 --")
+    accum = {}
+
+    def acc(ds, s):
+        a = accum.setdefault(ds, {"row_count": 0, "duplicate_count": 0,
+                                  "gap_count": 0, "suspect_count": 0,
+                                  "coverage_start": None, "coverage_end": None})
+        a["row_count"] += s["row_count"]
+        a["suspect_count"] += s["suspect_count"]
+        if a["coverage_start"] is None or s["coverage_start"] < a["coverage_start"]:
+            a["coverage_start"] = s["coverage_start"]
+        if a["coverage_end"] is None or s["coverage_end"] > a["coverage_end"]:
+            a["coverage_end"] = s["coverage_end"]
+
+    for a in assets:
+        product = CB_ASSETS[a]
+        root = os.path.join(L1_DIR, "market_candle_spot_1h", "coinbase", "spot",
+                            product, "interval=1h")
+        if not os.path.isdir(root):
+            continue
+        df = pq.read_table(root).to_pandas()
+        if df.empty:
+            continue
+        df = certify_candles(df)
+        _, stats = write_certified(df, "market_candle_spot_1h", "coinbase",
+                                   "spot", product, "1h")
+        acc("market_candle_spot_1h", stats)
+        print(f"  coinbase {product}: certified")
+    for ds, s in accum.items():
+        build_dataset_manifest(ds, "coinbase", "spot", "*", "*", s,
+                               ["coinbase_v1"],
+                               {"note": "Coinbase REST candles 回填近 1 年, "
+                                "可扩展; 无 confirm 字段(全为已收盘 bar)"})
+    print("Coinbase 管线完成")
+
+
 def main():
     ap = argparse.ArgumentParser(description="data_foundation 管线 L0->L1->L2")
-    ap.add_argument("--stage", default="all", choices=["l0", "l1", "l2", "all", "okx"])
+    ap.add_argument("--stage", default="all",
+                    choices=["l0", "l1", "l2", "all", "okx", "coinbase", "stablecoins"])
     ap.add_argument("--assets", default=",".join(MVP_ASSETS))
-    ap.add_argument("--days", type=int, default=730, help="OKX 回看天数")
+    ap.add_argument("--days", type=int, default=None, help="OKX/Coinbase 回看天数(不填=OKX回填到上市日)")
+    ap.add_argument("--okx-version", default="v2", help="OKX 批次版本(v2 深回填)")
     args = ap.parse_args()
     assets = [x.strip() for x in args.assets.split(",") if x.strip()]
     print(f"资产({len(assets)}): {assets}")
     if args.stage == "okx":
-        stage_okx(assets, days=args.days)
+        stage_okx(assets, days=args.days, version=args.okx_version)
+    elif args.stage == "coinbase":
+        stage_coinbase(assets, days=args.days or 365)
+    elif args.stage == "stablecoins":
+        stage_stablecoins()
     else:
         if args.stage in ("l0", "all"):
             stage_l0(assets)

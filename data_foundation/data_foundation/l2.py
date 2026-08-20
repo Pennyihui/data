@@ -104,15 +104,18 @@ def write_certified(df: pd.DataFrame, dataset: str, venue_id: str, market_type: 
 
 
 def certify_derivatives(df: pd.DataFrame, time_col: str,
-                        core_numeric_cols: list[str] | None = None) -> pd.DataFrame:
-    """衍生品认证: 时间唯一/核心数值列有限/非负/不超可用时间。只标记不修改。
+                        core_numeric_cols: list[str] | None = None,
+                        key_cols: list[str] | None = None) -> pd.DataFrame:
+    """衍生品认证: 主键唯一/核心数值列有限/非负/不超可用时间。只标记不修改。
 
     core_numeric_cols: 该数据集的核心数值列, 只对这些列做有限性检查
     (辅助列如 mark_price_at_funding 早期可能缺失, 不视为异常)。
+    key_cols: 主键列 (缺省 [time_col]); 如 supply 的主键是 [token, date_utc]。
     """
     df = df.copy()
     core = core_numeric_cols or [c for c in df.select_dtypes(include=[np.number]).columns
                                  if c != time_col]
+    keys = key_cols or [time_col]
     reasons = {}
     ok = pd.Series(True, index=df.index)
 
@@ -123,7 +126,7 @@ def certify_derivatives(df: pd.DataFrame, time_col: str,
         for idx in df.index[m]:
             reasons.setdefault(idx, []).append(reason)
 
-    mark(df[time_col].duplicated(keep=False), f"{time_col}_duplicated")
+    mark(df[keys].duplicated(keep=False), "_".join(keys) + "_duplicated")
     for c in core:
         mark(~np.isfinite(df[c]), f"{c}_not_finite")
     if "open_interest_contracts" in df.columns:

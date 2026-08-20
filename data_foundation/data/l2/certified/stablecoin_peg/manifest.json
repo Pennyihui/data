@@ -1,21 +1,21 @@
 {
-  "dataset": "market_candle_spot_1h",
+  "dataset": "stablecoin_peg",
   "schema_version": "1.0.0",
   "source_batches": [
-    "coinbase_v1"
+    "stablecoin_v1"
   ],
-  "coverage_start": "2025-08-20 20:00:00+00:00",
+  "coverage_start": "2018-12-15 03:00:00+00:00",
   "coverage_end": "2026-08-20 19:00:00+00:00",
-  "row_count": 35000,
+  "row_count": 63752,
   "duplicate_count": 0,
   "gap_count": 0,
   "suspect_count": 0,
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-20T19:16:49.185553+00:00",
+  "certified_at": "2026-08-20T19:18:30.987553+00:00",
   "aggregation_rules": {
-    "note": "Coinbase REST candles 回填近 1 年, 可扩展; 无 confirm 字段(全为已收盘 bar)"
+    "note": "阶段3 稳定币; supply=CMC流通量, flows=Ercin日频, peg=Binance稳定币对, mint/burn=供应量派生"
   },
   "quality_rule_version": "1.0.0",
   "notes": []

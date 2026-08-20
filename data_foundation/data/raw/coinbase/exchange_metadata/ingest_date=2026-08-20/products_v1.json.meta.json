@@ -1,0 +1,15 @@
+{
+  "batch_id": "products_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\coinbase_products.json",
+  "source": {
+    "api": "coinbase /products",
+    "fetched_at": "2026-08-20T19:09:48.837944+00:00",
+    "note": "Coinbase REST 无上市时间字段"
+  },
+  "ingested_at": "2026-08-20T19:09:49.973946+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "318eea7e51568a796a0d4056cc78cf595ae622f2abafe9fae3231380ae8abbbd",
+  "file_size_bytes": 381125,
+  "immutable": true
+}

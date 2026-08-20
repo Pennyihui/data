@@ -75,15 +75,17 @@ def _ingest(tmp, dataset, batch_id, source, timestamp_unit="ms"):
                           timestamp_unit=timestamp_unit, ext="csv")
 
 
-def fetch_candles(inst_id: str, bar: str = "1H", days: int = 730,
-                  history_path: str = "/market/history-candles") -> list:
+def fetch_candles(inst_id: str, bar: str = "1H", days: int | None = 730,
+                  history_path: str = "/market/history-candles",
+                  max_pages: int = 400) -> list:
     """分页拉 K 线 (OKX 数组格式)。after 为时间戳毫秒(取更早数据)。
 
+    days=None 时回填到上市日 (直到 OKX 返回空)。
     mark/index 端点返回 6 字段 [ts,o,h,l,c,confirm], trade 端点返回 9 字段;
     recent 段必须与 history 段走同一端点, 否则 CSV 行宽混杂。
     """
     rows, end_ts = [], int(time.time() * 1000)
-    cursor = end_ts - days * 86400000
+    cursor = end_ts - days * 86400000 if days else 0
     # 先取最近一段: trade K线用 /market/candles, mark/index 用同路径(6字段)
     recent_path = "/market/candles" if history_path == "/market/history-candles" \
         else history_path
@@ -94,7 +96,7 @@ def fetch_candles(inst_id: str, bar: str = "1H", days: int = 730,
     except Exception:  # noqa: BLE001
         pass
     pages = 0
-    while pages < 200:
+    while pages < max_pages:
         data = _get(history_path, {"instId": inst_id, "bar": bar, "limit": 300,
                                    "after": cursor})
         if not data:
@@ -102,7 +104,7 @@ def fetch_candles(inst_id: str, bar: str = "1H", days: int = 730,
         rows.extend(data)
         cursor = int(data[-1][0]) - 1
         pages += 1
-        if cursor < end_ts - days * 86400000:
+        if days and cursor < end_ts - days * 86400000:
             break
         time.sleep(0.15)
     seen, uniq = set(), []
@@ -147,8 +149,13 @@ def _already_ingested(venue: str, dataset: str, batch_id: str, inst_key: str) ->
     return False
 
 
-def ingest_okx_all(assets: list[str], days: int = 730) -> list[str]:
-    """入口: 抓取 OKX 全部数据集到 L0 (断点续传)。返回写入的批次文件。"""
+def ingest_okx_all(assets: list[str], days: int | None = 730,
+                   version: str = "v2") -> list[str]:
+    """入口: 抓取 OKX 全部数据集到 L0 (断点续传)。
+
+    days=None 时 K线/mark/index 回填到上市日; version 用于批次标识
+    (v2 触发重新抓取更早历史, v1 批次保留, L1 去重)。
+    """
     written = []
     now = datetime.now(timezone.utc).isoformat()
     # instruments
@@ -167,42 +174,42 @@ def ingest_okx_all(assets: list[str], days: int = 730) -> list[str]:
                     "fetched_at": now}, timestamp_unit="ms", ext="json"))
     for a in assets:
         spot_inst, swap_inst = f"{a}-USDT", f"{a}-USDT-SWAP"
-        bid = f"{a}USDT_okx_v1"
+        bid = f"{a}USDT_okx_{version}"
         # spot 1H
         if not _already_ingested("okx", "spot_klines_1h", bid, "instId"):
-            rows = fetch_candles(spot_inst)
+            rows = fetch_candles(spot_inst, days=days)
             tmp = _write_csv(rows, CANDLE_HEADERS, f"okx_{a}_spot_1h.csv")
             written.append(_ingest(tmp, "spot_klines_1h", bid,
                                    {"api": "okx /market/history-candles", "instId": spot_inst,
                                     "bar": "1H", "days": days, "fetched_at": now}))
         # swap 1H
         if not _already_ingested("okx", "perpetual_klines_1h", bid, "instId"):
-            rows = fetch_candles(swap_inst)
+            rows = fetch_candles(swap_inst, days=days)
             tmp = _write_csv(rows, CANDLE_HEADERS, f"okx_{a}_swap_1h.csv")
             written.append(_ingest(tmp, "perpetual_klines_1h", bid,
                                    {"api": "okx /market/history-candles", "instId": swap_inst,
                                     "bar": "1H", "days": days, "fetched_at": now}))
-        # funding
+        # funding (OKX 仅保留 ~3 个月, 无需重复)
         if not _already_ingested("okx", "derivatives_funding", bid, "instId"):
-            rows = fetch_funding(swap_inst, days)
+            rows = fetch_funding(swap_inst, days or 365)
             tmp = _write_csv([[r["fundingTime"], r["fundingRate"], r.get("realizedRate", ""),
                                r["instId"], r.get("method", "")] for r in rows],
                              FUNDING_HEADERS, f"okx_{a}_funding.csv")
             written.append(_ingest(tmp, "derivatives_funding", bid,
                                    {"api": "okx /public/funding-rate-history",
                                     "instId": swap_inst, "days": days, "fetched_at": now}))
-        # mark / index (近期 30 天)
+        # mark / index (历史端点, 回填)
         for dataset, path, inst in [("derivatives_mark_price",
-                                     "/market/mark-price-candles", swap_inst),
+                                     "/market/history-mark-price-candles", swap_inst),
                                     ("derivatives_index_price",
-                                     "/market/index-candles", spot_inst)]:
+                                     "/market/history-index-candles", spot_inst)]:
             if _already_ingested("okx", dataset, bid, "instId"):
                 continue
-            rows = fetch_candles(inst, days=30, history_path=path)
+            rows = fetch_candles(inst, days=days, history_path=path)
             tmp = _write_csv(rows, MARK_HEADERS, f"okx_{a}_{dataset.split('_')[1]}.csv")
             written.append(_ingest(tmp, dataset, bid,
                                    {"api": f"okx {path}", "instId": inst,
-                                    "bar": "1H", "days": 30, "fetched_at": now}))
+                                    "bar": "1H", "days": days, "fetched_at": now}))
         # OI 当前快照
         if not _already_ingested("okx", "derivatives_open_interest", bid, "instId"):
             oi = _get("/public/open-interest", {"instId": swap_inst})

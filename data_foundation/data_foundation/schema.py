@@ -127,6 +127,47 @@ BASIS_COLUMNS = [
     ("source_batch_id", "string"),
 ]
 
+# 稳定币供应量 (日频) — CMC 流通量
+STABLECOIN_SUPPLY_COLUMNS = [
+    ("venue_id", "string"),
+    ("token", "string"),                  # USDT | USDC | DAI
+    ("date_utc", "timestamp[us, tz=UTC]"),
+    ("circulating_supply", "float64"),
+    ("rank", "float64"),
+    ("source_batch_id", "string"),
+]
+
+# 稳定币交易所流向 (日频) — Ercin
+STABLECOIN_FLOWS_COLUMNS = [
+    ("venue_id", "string"),
+    ("date_utc", "timestamp[us, tz=UTC]"),
+    ("metric", "string"),                 # exchange_inflow_total | outflow | netflow | reserve | supply_ratio
+    ("value_usd", "float64"),
+    ("source_batch_id", "string"),
+]
+
+# 稳定币 peg (1h) — Binance 稳定币对
+STABLECOIN_PEG_COLUMNS = [
+    ("venue_id", "string"),
+    ("token", "string"),
+    ("time_utc", "timestamp[us, tz=UTC]"),
+    ("price", "float64"),
+    ("peg_deviation", "float64"),         # price - 1 (美元偏离)
+    ("data_available_at", "timestamp[us, tz=UTC]"),
+    ("source_batch_id", "string"),
+]
+
+# 稳定币 mint/burn (日频) — 由供应量派生
+STABLECOIN_MINT_BURN_COLUMNS = [
+    ("venue_id", "string"),
+    ("token", "string"),
+    ("date_utc", "timestamp[us, tz=UTC]"),
+    ("supply_change", "float64"),         # 当日供应量变化
+    ("mint", "float64"),                  # 增加量 (>=0)
+    ("burn", "float64"),                  # 减少量 (>=0)
+    ("source_batch_id", "string"),
+]
+
 # 多空账户比/大户持仓比/主动买卖比 (1h) — 情绪/仓位
 DERIVATIVES_RATIO_COLUMNS = [
     ("venue_id", "string"),
@@ -153,6 +194,10 @@ DATASETS = {
     "derivatives_mark_price": DERIVATIVES_MARK_COLUMNS,
     "derivatives_index_price": DERIVATIVES_INDEX_COLUMNS,
     "basis_1h": BASIS_COLUMNS,
+    "stablecoin_supply": STABLECOIN_SUPPLY_COLUMNS,
+    "stablecoin_flows": STABLECOIN_FLOWS_COLUMNS,
+    "stablecoin_peg": STABLECOIN_PEG_COLUMNS,
+    "stablecoin_mint_burn": STABLECOIN_MINT_BURN_COLUMNS,
     "derivatives_ratio": DERIVATIVES_RATIO_COLUMNS,
 }
 

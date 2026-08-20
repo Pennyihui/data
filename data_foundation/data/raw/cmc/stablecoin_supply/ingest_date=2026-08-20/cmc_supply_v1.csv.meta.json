@@ -1,0 +1,15 @@
+{
+  "batch_id": "cmc_supply_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\cmc_daily_circulating_supply_ranking.csv",
+  "source": {
+    "api": "coinmarketcap data-api v3 historical",
+    "note": "circulating supply 日频, 2013+",
+    "fetched_at": "2026-08-20T19:08:41.961992+00:00"
+  },
+  "ingested_at": "2026-08-20T19:08:42.279187+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "84e7f629feb0a2a4ac3ef9f89236347bb0824c68d17219c326f583296193fbf1",
+  "file_size_bytes": 8475913,
+  "immutable": true
+}

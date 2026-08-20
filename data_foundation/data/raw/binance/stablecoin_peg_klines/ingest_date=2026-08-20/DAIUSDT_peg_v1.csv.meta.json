@@ -1,0 +1,16 @@
+{
+  "batch_id": "DAIUSDT_peg_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\DAIUSDT_1h.csv",
+  "source": {
+    "api": "binance /api/v3/klines",
+    "symbol": "DAIUSDT",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T19:07:40.070305+00:00"
+  },
+  "ingested_at": "2026-08-20T19:08:16.005152+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "48dda628596e6e482f4cb9e914434eb3178c9767b2d89a140a8f23feaed1d871",
+  "file_size_bytes": 70569,
+  "immutable": true
+}
