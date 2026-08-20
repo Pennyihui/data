@@ -6,12 +6,12 @@
     "instId": "BTC-USDT-SWAP",
     "bar": "1H",
     "days": 30,
-    "fetched_at": "2026-08-20T17:46:38.576617+00:00"
+    "fetched_at": "2026-08-20T18:45:26.708939+00:00"
   },
-  "ingested_at": "2026-08-20T17:54:28.635132+00:00",
+  "ingested_at": "2026-08-20T18:45:40.955354+00:00",
   "timestamp_unit": "ms",
   "timezone": "UTC",
-  "checksum_sha256": "07108ff24c15b68d86e18c3db0bad5dca42406059f23b5302efec8db3d31af10",
-  "file_size_bytes": 53511,
+  "checksum_sha256": "f9d784e90bd8898ea810ca9a7d04ea22943c61cc6049b4ea78af864b1dc099ea",
+  "file_size_bytes": 43418,
   "immutable": true
 }

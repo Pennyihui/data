@@ -1,0 +1,25 @@
+{
+  "dataset": "basis_1h",
+  "schema_version": "1.0.0",
+  "source_batches": [
+    "BTCUSDT_okx_v1",
+    "ETHUSDT_okx_v1",
+    "SOLUSDT_okx_v1",
+    "XRPUSDT_okx_v1"
+  ],
+  "coverage_start": "2024-08-13 06:00:00+00:00",
+  "coverage_end": "2026-08-20 17:00:00+00:00",
+  "row_count": 70796,
+  "duplicate_count": 0,
+  "gap_count": 0,
+  "suspect_count": 0,
+  "timestamp_unit": "us",
+  "timezone": "UTC",
+  "certification_status": "certified",
+  "certified_at": "2026-08-20T18:47:19.460936+00:00",
+  "aggregation_rules": {
+    "note": "OKX 1H; basis=swap/spot-1; OI 仅当前快照(OKX 无历史 OI 接口)"
+  },
+  "quality_rule_version": "1.0.0",
+  "notes": []
+}

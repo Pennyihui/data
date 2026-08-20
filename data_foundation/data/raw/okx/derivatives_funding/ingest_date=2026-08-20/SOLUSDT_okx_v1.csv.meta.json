@@ -1,0 +1,16 @@
+{
+  "batch_id": "SOLUSDT_okx_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\okx_SOL_funding.csv",
+  "source": {
+    "api": "okx /public/funding-rate-history",
+    "instId": "SOL-USDT-SWAP",
+    "days": 730,
+    "fetched_at": "2026-08-20T18:25:34.710740+00:00"
+  },
+  "ingested_at": "2026-08-20T18:28:37.951739+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "7f32e6a3bac9ac7d7cac67100bc6b8c0a2a8787108f88332cb8d5287cc5b26b4",
+  "file_size_bytes": 22868,
+  "immutable": true
+}

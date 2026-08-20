@@ -27,7 +27,7 @@ BASE = "https://www.okx.com/api/v5"
 CANDLE_HEADERS = ["ts", "open", "high", "low", "close", "vol",
                   "volCcy", "volCcyQuote", "confirm"]
 FUNDING_HEADERS = ["fundingTime", "fundingRate", "realizedRate", "instId", "method"]
-MARK_HEADERS = ["ts", "open", "high", "low", "close"]
+MARK_HEADERS = ["ts", "open", "high", "low", "close", "confirm"]
 
 
 def _get(path, params, retries=8, timeout=30):
@@ -50,12 +50,23 @@ def _get(path, params, retries=8, timeout=30):
 
 
 def _write_csv(rows, headers, tmp_name):
+    # Defensive shaping: pad/trim every row to the header width so a mixed
+    # endpoint response can never corrupt the CSV into ragged columns.
+    n = len(headers)
+    shaped = []
+    for r in rows:
+        r = list(r)
+        if len(r) > n:
+            r = r[:n]
+        elif len(r) < n:
+            r = r + [""] * (n - len(r))
+        shaped.append(r)
     tmp = os.path.join(RAW_DIR, "_tmp", tmp_name)
     os.makedirs(os.path.dirname(tmp), exist_ok=True)
     with open(tmp, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(headers)
-        w.writerows(rows)
+        w.writerows(shaped)
     return tmp
 
 
@@ -66,12 +77,18 @@ def _ingest(tmp, dataset, batch_id, source, timestamp_unit="ms"):
 
 def fetch_candles(inst_id: str, bar: str = "1H", days: int = 730,
                   history_path: str = "/market/history-candles") -> list:
-    """分页拉 K 线 (OKX 数组格式)。after 为时间戳毫秒(取更早数据)。"""
+    """分页拉 K 线 (OKX 数组格式)。after 为时间戳毫秒(取更早数据)。
+
+    mark/index 端点返回 6 字段 [ts,o,h,l,c,confirm], trade 端点返回 9 字段;
+    recent 段必须与 history 段走同一端点, 否则 CSV 行宽混杂。
+    """
     rows, end_ts = [], int(time.time() * 1000)
     cursor = end_ts - days * 86400000
-    # 先取最近一段 (candles), 再用 history-candles 向前翻
+    # 先取最近一段: trade K线用 /market/candles, mark/index 用同路径(6字段)
+    recent_path = "/market/candles" if history_path == "/market/history-candles" \
+        else history_path
     try:
-        recent = _get("/market/candles", {"instId": inst_id, "bar": bar, "limit": 300})
+        recent = _get(recent_path, {"instId": inst_id, "bar": bar, "limit": 300})
         rows.extend(recent)
         cursor = min(int(r[0]) for r in recent) - 1
     except Exception:  # noqa: BLE001

@@ -1,0 +1,17 @@
+{
+  "batch_id": "XRPUSDT_okx_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\okx_XRP_swap_1h.csv",
+  "source": {
+    "api": "okx /market/history-candles",
+    "instId": "XRP-USDT-SWAP",
+    "bar": "1H",
+    "days": 730,
+    "fetched_at": "2026-08-20T18:25:34.710740+00:00"
+  },
+  "ingested_at": "2026-08-20T18:36:15.755468+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "a57b5729782296b742e7e748d882222b8061c3f308ac023be64751a8489ff36b",
+  "file_size_bytes": 1320881,
+  "immutable": true
+}

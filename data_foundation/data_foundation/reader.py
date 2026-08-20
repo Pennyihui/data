@@ -27,9 +27,12 @@ def _dataset_root(dataset: str, venue: str, instrument: str, interval: str | Non
 
 
 def load_candles(venue: str, instrument: str, interval: str = "1h",
-                 as_of=None, cols: list[str] | None = None) -> pd.DataFrame:
+                 as_of=None, cols: list[str] | None = None,
+                 market_type: str = "spot") -> pd.DataFrame:
     """读取 certified market_candle。as_of 做 PIT 过滤 (data_available_at <= as_of)。"""
-    root = _dataset_root(f"market_candle_spot_{interval}", venue, instrument, interval)
+    ds = f"market_candle_{market_type}_{interval}"
+    root = os.path.join(CERTIFIED_DIR, ds, venue, market_type, instrument,
+                        f"interval={interval}")
     if not os.path.isdir(root):
         raise FileNotFoundError(root)
     df = pq.read_table(root).to_pandas()

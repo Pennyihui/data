@@ -6,12 +6,12 @@
     "instId": "ETH-USDT-SWAP",
     "bar": "1H",
     "days": 30,
-    "fetched_at": "2026-08-20T17:46:38.576617+00:00"
+    "fetched_at": "2026-08-20T18:45:26.708939+00:00"
   },
-  "ingested_at": "2026-08-20T18:00:53.135148+00:00",
+  "ingested_at": "2026-08-20T18:45:57.340834+00:00",
   "timestamp_unit": "ms",
   "timezone": "UTC",
-  "checksum_sha256": "caef96003a0f099b4d8c0aaa2e437ecaac98f2b89d063a471a8a4085dcd14282",
-  "file_size_bytes": 54152,
+  "checksum_sha256": "9aa1086944c112c34cae98f304f1bd4ab0826457de7bfa84475d2b0d6be80515",
+  "file_size_bytes": 43649,
   "immutable": true
 }
