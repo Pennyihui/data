@@ -1,0 +1,17 @@
+{
+  "batch_id": "LTCUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\LTCUSDT\\top_trader_ls_position_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "LTCUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:04.683232+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:04.684486+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "08e1770a71c9cf8f431cc701086359c48d9dbfeeb17a6ecaa29c90747fb25f2e",
+  "file_size_bytes": 21049,
+  "immutable": true
+}

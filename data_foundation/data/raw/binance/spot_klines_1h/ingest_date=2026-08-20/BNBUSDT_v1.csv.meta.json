@@ -1,0 +1,17 @@
+{
+  "batch_id": "BNBUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\klines_1h\\BNBUSDT.csv",
+  "source": {
+    "api": "binance /api/v3/klines",
+    "symbol": "BNBUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "fetched_at": "2026-08-20T15:14:58.791228+00:00"
+  },
+  "ingested_at": "2026-08-20T15:14:59.310360+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "ef33b46f6077c8e337443c86ed28b1038defa4f4173335dfec3c467b09c4bb4d",
+  "file_size_bytes": 12456329,
+  "immutable": true
+}

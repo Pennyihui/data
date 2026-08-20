@@ -1,0 +1,17 @@
+{
+  "batch_id": "LINKUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\LINKUSDT\\taker_buy_sell_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "LINKUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:04.386668+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:04.397767+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "eaa35b46a03f52226ae1e9ca97bc8e665af8524ba875d7c6d9e2400bea40f820",
+  "file_size_bytes": 25870,
+  "immutable": true
+}

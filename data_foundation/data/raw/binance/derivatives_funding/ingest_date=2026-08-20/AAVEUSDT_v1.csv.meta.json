@@ -1,0 +1,17 @@
+{
+  "batch_id": "AAVEUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\AAVEUSDT\\funding_rate.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "AAVEUSDT",
+    "market_type": "perpetual",
+    "interval": "8h",
+    "fetched_at": "2026-08-20T15:15:04.958895+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:04.962158+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "8e227353c20bb01b10effffbb9ed1b1ba975044f3a4b3a1605ae095f0aec3612",
+  "file_size_bytes": 273554,
+  "immutable": true
+}

@@ -1,0 +1,17 @@
+{
+  "batch_id": "AVAXUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\AVAXUSDT\\open_interest_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "AVAXUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:03.669034+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:03.670048+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "66408e103a7e9acf8c6af7cc00155ffb279dfbff8574feb7860c0c0d867ee2c0",
+  "file_size_bytes": 37567,
+  "immutable": true
+}

@@ -1,0 +1,17 @@
+{
+  "batch_id": "ARBUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\ARBUSDT\\taker_buy_sell_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "ARBUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T16:40:12.370662+00:00"
+  },
+  "ingested_at": "2026-08-20T16:40:12.371664+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "366cb9ddc71aa99e15b840eb1525a1fd096cda1f9e93cf199975968fd0754048",
+  "file_size_bytes": 27124,
+  "immutable": true
+}

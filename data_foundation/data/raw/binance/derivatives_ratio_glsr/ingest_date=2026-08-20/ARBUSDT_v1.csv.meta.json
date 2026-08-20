@@ -1,0 +1,17 @@
+{
+  "batch_id": "ARBUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\ARBUSDT\\global_ls_account_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "ARBUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T16:40:12.295025+00:00"
+  },
+  "ingested_at": "2026-08-20T16:40:12.297424+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "ff3515387b687f1cefc7c3926ae64e297f066815beb504b650b5f6cded211c93",
+  "file_size_bytes": 21049,
+  "immutable": true
+}

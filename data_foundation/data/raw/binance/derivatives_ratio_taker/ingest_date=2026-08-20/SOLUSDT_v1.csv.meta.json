@@ -1,0 +1,17 @@
+{
+  "batch_id": "SOLUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\SOLUSDT\\taker_buy_sell_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "SOLUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:02.716381+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:02.718207+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "91e6fa532e406f2efab7857245de56c60ef8b53a6c147f113b6c261758aa75fd",
+  "file_size_bytes": 25961,
+  "immutable": true
+}

@@ -1,0 +1,17 @@
+{
+  "batch_id": "DOGEUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\DOGEUSDT\\funding_rate.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "DOGEUSDT",
+    "market_type": "perpetual",
+    "interval": "8h",
+    "fetched_at": "2026-08-20T15:15:03.432608+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:03.434657+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "4bda58fd8a23d8c4426b6afc1c21260fd0425d533b932232bba112dcfa67d9d0",
+  "file_size_bytes": 279483,
+  "immutable": true
+}

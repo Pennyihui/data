@@ -1,0 +1,14 @@
+{
+  "batch_id": "exchange_info_perpetual_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\data_foundation\\data\\raw\\_tmp\\exchange_info_perpetual.json",
+  "source": {
+    "api": "binance perpetual exchangeInfo",
+    "fetched_at": "2026-08-20T16:40:20.847793+00:00"
+  },
+  "ingested_at": "2026-08-20T16:40:20.849937+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "7d5c496a08550c32073412158d20f70b866d621b0ea16cad6d6a3f338f3a5428",
+  "file_size_bytes": 1170264,
+  "immutable": true
+}

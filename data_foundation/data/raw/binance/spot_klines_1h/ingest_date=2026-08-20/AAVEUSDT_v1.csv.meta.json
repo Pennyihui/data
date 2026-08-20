@@ -1,0 +1,17 @@
+{
+  "batch_id": "AAVEUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\klines_1h\\AAVEUSDT.csv",
+  "source": {
+    "api": "binance /api/v3/klines",
+    "symbol": "AAVEUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "fetched_at": "2026-08-20T15:15:01.639021+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:01.844378+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "19b87dcb84e16436eba74f621e5806d6b09009e34824b6def7e0d365309649ea",
+  "file_size_bytes": 8128132,
+  "immutable": true
+}

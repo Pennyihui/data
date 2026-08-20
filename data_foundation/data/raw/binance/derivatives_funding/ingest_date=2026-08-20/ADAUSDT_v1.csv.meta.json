@@ -1,0 +1,17 @@
+{
+  "batch_id": "ADAUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\ADAUSDT\\funding_rate.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "ADAUSDT",
+    "market_type": "perpetual",
+    "interval": "8h",
+    "fetched_at": "2026-08-20T15:15:03.229065+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:03.230614+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "ac91b70c3720884897dd591d9eae7ffad60f0e1bdd8bc779f8afa5c165e4e7cf",
+  "file_size_bytes": 298875,
+  "immutable": true
+}

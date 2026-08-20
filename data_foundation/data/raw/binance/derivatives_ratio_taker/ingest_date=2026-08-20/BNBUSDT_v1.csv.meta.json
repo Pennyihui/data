@@ -1,0 +1,17 @@
+{
+  "batch_id": "BNBUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\BNBUSDT\\taker_buy_sell_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "BNBUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:02.942980+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:02.945499+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "c2b60440530a14bb1d693a2059f30ce39247680fe35e9f8b24516f8ace08edd1",
+  "file_size_bytes": 24226,
+  "immutable": true
+}

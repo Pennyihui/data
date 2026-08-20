@@ -1,0 +1,17 @@
+{
+  "batch_id": "ARBUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\klines_1h\\ARBUSDT.csv",
+  "source": {
+    "api": "binance /api/v3/klines",
+    "symbol": "ARBUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "fetched_at": "2026-08-20T16:40:11.920744+00:00"
+  },
+  "ingested_at": "2026-08-20T16:40:11.924838+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "c5413551327194ddf1a85301eba642742085abb10fe4eb61f276a0b7322bddca",
+  "file_size_bytes": 4732758,
+  "immutable": true
+}

@@ -1,0 +1,17 @@
+{
+  "batch_id": "POLUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\POLUSDT\\funding_rate.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "POLUSDT",
+    "market_type": "perpetual",
+    "interval": "8h",
+    "fetched_at": "2026-08-20T16:40:12.415594+00:00"
+  },
+  "ingested_at": "2026-08-20T16:40:12.417634+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "cf57ef2a65c50b332a1ba4e257818135b4b8eb221f23a86ab1b10eb73e60c687",
+  "file_size_bytes": 200818,
+  "immutable": true
+}

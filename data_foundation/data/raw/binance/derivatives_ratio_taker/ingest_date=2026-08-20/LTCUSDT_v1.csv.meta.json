@@ -1,0 +1,17 @@
+{
+  "batch_id": "LTCUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\LTCUSDT\\taker_buy_sell_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "LTCUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:04.709604+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:04.712747+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "a6aeffa199794e0c3c5f783c019b6f3e130dc4a8fdc4d7ccfae61249aabe605f",
+  "file_size_bytes": 24665,
+  "immutable": true
+}

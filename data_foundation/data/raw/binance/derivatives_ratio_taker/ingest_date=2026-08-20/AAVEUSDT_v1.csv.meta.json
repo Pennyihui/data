@@ -1,0 +1,17 @@
+{
+  "batch_id": "AAVEUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\AAVEUSDT\\taker_buy_sell_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "AAVEUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:05.236204+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:05.241147+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "a6bb088355a35c105548f241342f173beae3db0f37534fb7567d40664919d6c6",
+  "file_size_bytes": 24544,
+  "immutable": true
+}

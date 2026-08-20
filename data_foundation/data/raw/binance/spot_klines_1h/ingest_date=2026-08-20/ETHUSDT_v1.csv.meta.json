@@ -1,0 +1,17 @@
+{
+  "batch_id": "ETHUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\klines_1h\\ETHUSDT.csv",
+  "source": {
+    "api": "binance /api/v3/klines",
+    "symbol": "ETHUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "fetched_at": "2026-08-20T15:14:58.232557+00:00"
+  },
+  "ingested_at": "2026-08-20T15:14:58.488547+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "8ac029b63e9c1138306bb8a971291075390b0765f14d9ab642159e4b9e700b39",
+  "file_size_bytes": 13173753,
+  "immutable": true
+}

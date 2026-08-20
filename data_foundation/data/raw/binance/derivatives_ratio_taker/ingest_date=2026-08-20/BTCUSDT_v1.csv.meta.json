@@ -1,0 +1,17 @@
+{
+  "batch_id": "BTCUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\BTCUSDT\\taker_buy_sell_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "BTCUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:02.155210+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:02.156959+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "fc9e45a79fbc4594e7d7d8a09d04363aadd945fad41098aec801061c1727e3b8",
+  "file_size_bytes": 23759,
+  "immutable": true
+}

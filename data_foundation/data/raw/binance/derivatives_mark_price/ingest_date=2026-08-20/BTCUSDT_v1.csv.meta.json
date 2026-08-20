@@ -1,0 +1,17 @@
+{
+  "batch_id": "BTCUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\BTCUSDT\\mark_price_klines_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "BTCUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:02.021665+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:02.021665+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "24580926f0014afa0c4403f33463b97f5812a8dcfaa92499fd513ff4d24ca15d",
+  "file_size_bytes": 40534,
+  "immutable": true
+}

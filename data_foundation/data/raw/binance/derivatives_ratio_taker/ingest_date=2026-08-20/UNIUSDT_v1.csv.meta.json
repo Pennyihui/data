@@ -1,0 +1,17 @@
+{
+  "batch_id": "UNIUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\UNIUSDT\\taker_buy_sell_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "UNIUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:04.937750+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:04.938839+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "18e13a9e85b7715d5bd302344191d963753d5095fcd6081fa84a5f298afc2f46",
+  "file_size_bytes": 26053,
+  "immutable": true
+}

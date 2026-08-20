@@ -1,0 +1,17 @@
+{
+  "batch_id": "DOGEUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\DOGEUSDT\\global_ls_account_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "DOGEUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:03.528550+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:03.530151+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "5234cb48757bd9e209ddf6299f6b309328e7eb170e1a3087f8d8f2a70dbb9d89",
+  "file_size_bytes": 21049,
+  "immutable": true
+}

@@ -1,0 +1,17 @@
+{
+  "batch_id": "BTCUSDT_okx_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\okx_BTC_index.csv",
+  "source": {
+    "api": "okx /market/index-candles",
+    "instId": "BTC-USDT",
+    "bar": "1H",
+    "days": 30,
+    "fetched_at": "2026-08-20T17:46:38.576617+00:00"
+  },
+  "ingested_at": "2026-08-20T17:54:34.900071+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "7b6f52e36e6e8e79871eebf4528aac52163a9b0333a71640342c73219a47c60f",
+  "file_size_bytes": 57967,
+  "immutable": true
+}

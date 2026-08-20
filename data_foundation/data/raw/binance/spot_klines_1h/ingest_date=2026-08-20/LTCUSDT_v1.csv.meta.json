@@ -1,0 +1,17 @@
+{
+  "batch_id": "LTCUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\klines_1h\\LTCUSDT.csv",
+  "source": {
+    "api": "binance /api/v3/klines",
+    "symbol": "LTCUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "fetched_at": "2026-08-20T15:15:00.914798+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:01.241010+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "e68dfcf1a1c3b10112f0893bba4fd11ef7e8b82c1eea4a20fb19a75d42f5c918",
+  "file_size_bytes": 12102727,
+  "immutable": true
+}

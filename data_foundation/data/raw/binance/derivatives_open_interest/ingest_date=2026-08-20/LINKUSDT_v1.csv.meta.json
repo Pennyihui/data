@@ -1,0 +1,17 @@
+{
+  "batch_id": "LINKUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\LINKUSDT\\open_interest_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "LINKUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:04.094868+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:04.096598+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "0898f3293b5fd7f38dd85365b05359699f47e806b4ea251e19acfc2830c2da43",
+  "file_size_bytes": 37842,
+  "immutable": true
+}

@@ -1,0 +1,17 @@
+{
+  "batch_id": "XRPUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\XRPUSDT\\top_trader_ls_account_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "XRPUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:03.122437+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:03.123936+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "853fbdb0e5fb5587cef87b0db3fa9a6d8b085ac68dc1f3f2ad0422fe5c2c0a08",
+  "file_size_bytes": 21049,
+  "immutable": true
+}

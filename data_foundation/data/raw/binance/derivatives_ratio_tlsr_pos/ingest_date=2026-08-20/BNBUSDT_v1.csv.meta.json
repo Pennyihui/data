@@ -1,0 +1,17 @@
+{
+  "batch_id": "BNBUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\BNBUSDT\\top_trader_ls_position_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "BNBUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:02.918014+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:02.919018+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "95fee2990ff731c751fe9229c0e85924ac27a9b5b8422cb3d9f998a2bef669a5",
+  "file_size_bytes": 21049,
+  "immutable": true
+}

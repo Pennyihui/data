@@ -1,0 +1,17 @@
+{
+  "batch_id": "UNIUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\klines_1h\\UNIUSDT.csv",
+  "source": {
+    "api": "binance /api/v3/klines",
+    "symbol": "UNIUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "fetched_at": "2026-08-20T15:15:01.328517+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:01.509319+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "5067074269a4ed4bfa2b0aae4fa06b1d36f868e266b670bea21dc5adb4fbdaf1",
+  "file_size_bytes": 8105807,
+  "immutable": true
+}

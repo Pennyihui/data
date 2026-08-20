@@ -219,19 +219,174 @@ def stage_l2(assets):
     print("  manifests 汇总完成")
 
 
+def stage_okx(assets, days=730):
+    """OKX 接入管线: L0 摄取 -> L1 标准化 -> L2 认证 -> basis 派生。"""
+    import pandas as pd
+    import pyarrow.parquet as pq
+    from .ingest_okx import ingest_okx_all
+    from .l1_okx import (normalize_okx_candles, normalize_okx_funding,
+                         normalize_okx_instruments, normalize_okx_mark_index,
+                         normalize_okx_oi)
+    from .l2 import (certify_candles, certify_derivatives, write_certified,
+                     write_certified_derivatives)
+    from .schema import BASIS_COLUMNS
+
+    print(f"== OKX ({', '.join(assets)}, 近 {days} 天) ==")
+    print("-- L0 --")
+    ingest_okx_all(assets, days)
+
+    print("-- L1 --")
+    for a in assets:
+        sym = f"{a}USDT"
+        for mtype, ds in [("spot", "market_candle_spot_1h"),
+                          ("perpetual", "market_candle_perpetual_1h")]:
+            df = normalize_okx_candles("okx", sym, mtype)
+            if df.empty:
+                continue
+            inst = df["instrument_id"].iloc[0]
+            write_parquet(df, ds, "okx", mtype, inst, "1h")
+        inst_swap = f"{a}-USDT-SWAP"
+        inst_spot = f"{a}-USDT"
+        fd = normalize_okx_funding("okx", sym)
+        if not fd.empty:
+            write_derivatives_parquet(fd, "derivatives_funding", "okx",
+                                      inst_swap, "funding_time_utc")
+        mk = normalize_okx_mark_index("okx", sym, "mark")
+        if not mk.empty:
+            write_derivatives_parquet(mk, "derivatives_mark_price", "okx",
+                                      inst_swap, "open_time_utc")
+        ix = normalize_okx_mark_index("okx", sym, "index")
+        if not ix.empty:
+            write_derivatives_parquet(ix, "derivatives_index_price", "okx",
+                                      inst_spot, "open_time_utc")
+        oi = normalize_okx_oi("okx", sym)
+        if not oi.empty:
+            write_derivatives_parquet(oi, "derivatives_open_interest", "okx",
+                                      inst_swap, "timestamp_utc")
+        print(f"  okx {a}: spot/swap/funding/mark/index/OI 标准化")
+    inst_df = normalize_okx_instruments()
+    if not inst_df.empty:
+        import pyarrow as pa
+        for c in inst_df.columns:
+            if "time" in c or c == "data_available_at":
+                inst_df[c] = pd.to_datetime(inst_df[c], utc=True, errors="coerce") \
+                    .astype("datetime64[us, UTC]")
+        root = os.path.join(L1_DIR, "instrument", "okx")
+        os.makedirs(root, exist_ok=True)
+        pq.write_table(pa.Table.from_pandas(inst_df, preserve_index=False),
+                       os.path.join(root, "instruments.parquet"), compression="snappy")
+        print(f"  okx instruments: {len(inst_df)} 行")
+
+    print("-- L2 --")
+    accum = {}
+
+    def acc(ds, stats):
+        s = accum.setdefault(ds, {"row_count": 0, "duplicate_count": 0,
+                                  "gap_count": 0, "suspect_count": 0,
+                                  "coverage_start": None, "coverage_end": None})
+        s["row_count"] += stats["row_count"]
+        s["duplicate_count"] += stats["duplicate_count"]
+        s["gap_count"] += stats["gap_count"]
+        s["suspect_count"] += stats["suspect_count"]
+        if s["coverage_start"] is None or stats["coverage_start"] < s["coverage_start"]:
+            s["coverage_start"] = stats["coverage_start"]
+        if s["coverage_end"] is None or stats["coverage_end"] > s["coverage_end"]:
+            s["coverage_end"] = stats["coverage_end"]
+
+    for a in assets:
+        for mtype, ds in [("spot", "market_candle_spot_1h"),
+                          ("perpetual", "market_candle_perpetual_1h")]:
+            inst = f"{a}-USDT" if mtype == "spot" else f"{a}-USDT-SWAP"
+            root = os.path.join(L1_DIR, ds, "okx", mtype, inst, "interval=1h")
+            if not os.path.isdir(root):
+                continue
+            df = pq.read_table(root).to_pandas()
+            if df.empty:
+                continue
+            n_unclosed = int((~df["is_closed"]).sum())
+            df = df[df["is_closed"]]  # 设计: 未收盘不进正式快照
+            df = certify_candles(df)
+            _, stats = write_certified(df, ds, "okx", mtype, inst, "1h")
+            stats["row_count"] += n_unclosed  # 未收盘行计入总量但不进快照
+            acc(ds, stats)
+        inst_swap = f"{a}-USDT-SWAP"
+        for fn, ds, tc, core in [
+            (normalize_okx_funding, "derivatives_funding", "funding_time_utc",
+             ["funding_rate"]),
+            (lambda v, s: normalize_okx_mark_index(v, s, "mark"),
+             "derivatives_mark_price", "open_time_utc",
+             ["mark_open", "mark_high", "mark_low", "mark_close"]),
+            (lambda v, s: normalize_okx_mark_index(v, s, "index"),
+             "derivatives_index_price", "open_time_utc",
+             ["index_open", "index_high", "index_low", "index_close"]),
+            (normalize_okx_oi, "derivatives_open_interest", "timestamp_utc",
+             ["open_interest_contracts", "open_interest_notional"])]:
+            ddf = fn("okx", f"{a}USDT")
+            if ddf.empty:
+                continue
+            ddf = certify_derivatives(ddf, tc, core_numeric_cols=core)
+            write_certified_derivatives(ddf, ds, "okx", inst_swap, tc)
+            acc(ds, {"row_count": len(ddf), "duplicate_count": 0, "gap_count": 0,
+                     "suspect_count": int(ddf["is_suspect"].sum()),
+                     "coverage_start": str(ddf[tc].min()),
+                     "coverage_end": str(ddf[tc].max())})
+        print(f"  okx {a}: certified")
+
+    print("-- basis --")
+    for a in assets:
+        try:
+            spot = pq.read_table(os.path.join(
+                CERTIFIED_DIR, "market_candle_spot_1h", "okx", "spot",
+                f"{a}-USDT", "interval=1h")).to_pandas()[["open_time_utc", "close"]]
+            swap = pq.read_table(os.path.join(
+                CERTIFIED_DIR, "market_candle_perpetual_1h", "okx", "perpetual",
+                f"{a}-USDT-SWAP", "interval=1h")).to_pandas()[["open_time_utc", "close"]]
+        except Exception:  # noqa: BLE001
+            continue
+        spot["open_time_utc"] = pd.to_datetime(spot["open_time_utc"], utc=True)
+        swap["open_time_utc"] = pd.to_datetime(swap["open_time_utc"], utc=True)
+        m = spot.merge(swap, on="open_time_utc", suffixes=("_spot", "_swap"))
+        m["venue_id"] = "okx"
+        m["instrument_id"] = f"{a}-USDT"
+        m["basis"] = m["close_swap"] / m["close_spot"] - 1
+        m["data_available_at"] = m["open_time_utc"] + pd.Timedelta(hours=1)
+        m["source_batch_id"] = "okx_basis_v1"
+        m = m.rename(columns={"close_spot": "spot_close", "close_swap": "swap_close"})
+        m = m[[c for c, _ in BASIS_COLUMNS]]
+        write_certified_derivatives(m, "basis_1h", "okx", f"{a}-USDT",
+                                    "open_time_utc")
+        acc("basis_1h", {"row_count": len(m), "duplicate_count": 0, "gap_count": 0,
+                         "suspect_count": 0,
+                         "coverage_start": str(m["open_time_utc"].min()),
+                         "coverage_end": str(m["open_time_utc"].max())})
+        print(f"  basis {a}: {len(m)} 行")
+
+    for ds, s in accum.items():
+        src_batches = [f"{a}USDT_okx_v1" for a in assets]
+        rules = {"note": "OKX 1H; basis=swap/spot-1; OI 仅当前快照(OKX 无历史 OI 接口)"}
+        if ds in ("market_candle_spot_1h", "market_candle_perpetual_1h"):
+            rules = {"note": "OKX 1H; 未收盘行(confirm=0)不计入 certified"}
+        build_dataset_manifest(ds, "okx", "spot", "*", "*", s, src_batches, rules)
+    print("OKX 管线完成")
+
+
 def main():
     ap = argparse.ArgumentParser(description="data_foundation 管线 L0->L1->L2")
-    ap.add_argument("--stage", default="all", choices=["l0", "l1", "l2", "all"])
+    ap.add_argument("--stage", default="all", choices=["l0", "l1", "l2", "all", "okx"])
     ap.add_argument("--assets", default=",".join(MVP_ASSETS))
+    ap.add_argument("--days", type=int, default=730, help="OKX 回看天数")
     args = ap.parse_args()
     assets = [x.strip() for x in args.assets.split(",") if x.strip()]
     print(f"资产({len(assets)}): {assets}")
-    if args.stage in ("l0", "all"):
-        stage_l0(assets)
-    if args.stage in ("l1", "all"):
-        stage_l1(assets)
-    if args.stage in ("l2", "all"):
-        stage_l2(assets)
+    if args.stage == "okx":
+        stage_okx(assets, days=args.days)
+    else:
+        if args.stage in ("l0", "all"):
+            stage_l0(assets)
+        if args.stage in ("l1", "all"):
+            stage_l1(assets)
+        if args.stage in ("l2", "all"):
+            stage_l2(assets)
     print("完成")
 
 

@@ -1,0 +1,17 @@
+{
+  "batch_id": "BTCUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\BTCUSDT\\top_trader_ls_account_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "BTCUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:02.098037+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:02.099035+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "f8163bb2791141d7b5f4b4a11b8b39299ca2cd87d0a64e106604cbfd01cd45a0",
+  "file_size_bytes": 21049,
+  "immutable": true
+}

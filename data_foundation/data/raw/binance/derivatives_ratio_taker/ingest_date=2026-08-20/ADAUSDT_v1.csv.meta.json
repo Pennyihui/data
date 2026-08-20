@@ -1,0 +1,17 @@
+{
+  "batch_id": "ADAUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\ADAUSDT\\taker_buy_sell_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "ADAUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:03.405370+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:03.406426+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "5680eca755403a26ef702423e349062395bfe677c4dc0b58ee7b39ef2a71a5f7",
+  "file_size_bytes": 27621,
+  "immutable": true
+}

@@ -1,0 +1,17 @@
+{
+  "batch_id": "ARBUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\ARBUSDT\\top_trader_ls_position_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "ARBUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T16:40:12.340555+00:00"
+  },
+  "ingested_at": "2026-08-20T16:40:12.340555+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "b5a6137328dd0dfd3852a003bb008d9b2157b0fda2123bb11953fdb25db03a26",
+  "file_size_bytes": 21049,
+  "immutable": true
+}

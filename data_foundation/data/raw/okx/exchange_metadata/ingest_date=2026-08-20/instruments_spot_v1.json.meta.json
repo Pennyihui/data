@@ -1,0 +1,15 @@
+{
+  "batch_id": "instruments_spot_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\okx_instruments_spot.json",
+  "source": {
+    "api": "okx /public/instruments",
+    "instType": "SPOT",
+    "fetched_at": "2026-08-20T17:46:38.576617+00:00"
+  },
+  "ingested_at": "2026-08-20T17:46:39.263585+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "2c6c1bb450426c71f7b2340524e819b14312dcbf102a4cbea5f35a91dbed631a",
+  "file_size_bytes": 1682212,
+  "immutable": true
+}

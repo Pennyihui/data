@@ -1,0 +1,17 @@
+{
+  "batch_id": "XRPUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\XRPUSDT\\funding_rate.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "XRPUSDT",
+    "market_type": "perpetual",
+    "interval": "8h",
+    "fetched_at": "2026-08-20T15:15:02.967333+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:02.968339+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "44a68546e7ceeab019b7c185509e7a32e6f95cc278e5b130c3a0c43fa909a041",
+  "file_size_bytes": 300396,
+  "immutable": true
+}

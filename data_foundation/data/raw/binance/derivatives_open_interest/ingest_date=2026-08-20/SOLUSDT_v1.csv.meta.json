@@ -1,0 +1,17 @@
+{
+  "batch_id": "SOLUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\SOLUSDT\\open_interest_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "SOLUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:02.566752+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:02.567983+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "4818a518161c3520f32af7202e546f8cbfa6f7504275c91b291b50f1ce26f2f1",
+  "file_size_bytes": 38067,
+  "immutable": true
+}

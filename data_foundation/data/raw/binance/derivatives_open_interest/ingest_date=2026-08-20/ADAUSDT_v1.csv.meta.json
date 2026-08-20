@@ -1,0 +1,17 @@
+{
+  "batch_id": "ADAUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\ADAUSDT\\open_interest_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "ADAUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:03.259264+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:03.262258+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "a06c363fa4fb33d4b2ac94a0931d615cbb2bf96afc4e79c5d30e2f60e00d0a49",
+  "file_size_bytes": 39773,
+  "immutable": true
+}

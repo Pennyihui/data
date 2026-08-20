@@ -1,0 +1,17 @@
+{
+  "batch_id": "LTCUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\LTCUSDT\\open_interest_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "LTCUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:04.567763+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:04.569286+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "8d1ec78e2b86bb53f721136bb1ecee9765e390e31d2e700893d966217b3f2f15",
+  "file_size_bytes": 37067,
+  "immutable": true
+}

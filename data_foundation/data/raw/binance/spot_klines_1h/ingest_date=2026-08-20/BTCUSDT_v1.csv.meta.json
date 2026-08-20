@@ -1,0 +1,17 @@
+{
+  "batch_id": "BTCUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\klines_1h\\BTCUSDT.csv",
+  "source": {
+    "api": "binance /api/v3/klines",
+    "symbol": "BTCUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "fetched_at": "2026-08-20T15:14:57.817273+00:00"
+  },
+  "ingested_at": "2026-08-20T15:14:58.151207+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "f0c253200898da8d8525e1aa9729c55fa77596d5760235d52a498246d476a74e",
+  "file_size_bytes": 13462711,
+  "immutable": true
+}

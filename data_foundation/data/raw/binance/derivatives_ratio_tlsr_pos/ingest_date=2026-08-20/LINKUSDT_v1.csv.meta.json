@@ -1,0 +1,17 @@
+{
+  "batch_id": "LINKUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\LINKUSDT\\top_trader_ls_position_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "LINKUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:04.316029+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:04.322162+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "4654983c2ed52a061673122918f5673adefa5e464ba1a5f8beaf3fbc6508f01a",
+  "file_size_bytes": 21049,
+  "immutable": true
+}

@@ -1,0 +1,17 @@
+{
+  "batch_id": "DOGEUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\klines_1h\\DOGEUSDT.csv",
+  "source": {
+    "api": "binance /api/v3/klines",
+    "symbol": "DOGEUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "fetched_at": "2026-08-20T15:15:00.019601+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:00.192386+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "37e4fb062485e6f5a615d958e203b1e140c8826a533ed39619a90bc164f498ed",
+  "file_size_bytes": 10031456,
+  "immutable": true
+}

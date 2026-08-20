@@ -1,0 +1,17 @@
+{
+  "batch_id": "LINKUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\LINKUSDT\\funding_rate.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "LINKUSDT",
+    "market_type": "perpetual",
+    "interval": "8h",
+    "fetched_at": "2026-08-20T15:15:03.956107+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:03.962126+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "276184f37c99223247013da89d02bc74b230bc8e592fb63344f8f1c4d1bb7a90",
+  "file_size_bytes": 301124,
+  "immutable": true
+}

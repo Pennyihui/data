@@ -1,0 +1,17 @@
+{
+  "batch_id": "BNBUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\BNBUSDT\\mark_price_klines_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "BNBUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:02.837074+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:02.838073+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "78674d109aac41ad5603f26b4f3802a04129b4b4092c9fd3f506ff42018e6e7f",
+  "file_size_bytes": 36534,
+  "immutable": true
+}

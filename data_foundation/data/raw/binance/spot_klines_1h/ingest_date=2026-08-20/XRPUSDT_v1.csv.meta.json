@@ -1,0 +1,17 @@
+{
+  "batch_id": "XRPUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\klines_1h\\XRPUSDT.csv",
+  "source": {
+    "api": "binance /api/v3/klines",
+    "symbol": "XRPUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "fetched_at": "2026-08-20T15:14:59.392244+00:00"
+  },
+  "ingested_at": "2026-08-20T15:14:59.558256+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "1e59833815969998f98a221980767978b563d279e932c27b2e62aadd14e72c87",
+  "file_size_bytes": 11674696,
+  "immutable": true
+}

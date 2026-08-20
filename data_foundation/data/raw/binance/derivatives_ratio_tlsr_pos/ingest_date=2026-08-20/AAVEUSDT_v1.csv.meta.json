@@ -1,0 +1,17 @@
+{
+  "batch_id": "AAVEUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\AAVEUSDT\\top_trader_ls_position_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "AAVEUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:05.165127+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:05.167681+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "d97b8df51c0c148550a4a2d1e6dfc093804daa105832532616326fc3f97d0def",
+  "file_size_bytes": 21049,
+  "immutable": true
+}

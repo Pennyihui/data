@@ -1,0 +1,17 @@
+{
+  "batch_id": "POLUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\POLUSDT\\open_interest_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "POLUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T16:40:12.440770+00:00"
+  },
+  "ingested_at": "2026-08-20T16:40:12.443400+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "9259cccc793e0812c811262001023562fd76536bd8f4d56d6920d74f52fb05cb",
+  "file_size_bytes": 39567,
+  "immutable": true
+}

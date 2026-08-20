@@ -1,0 +1,14 @@
+{
+  "batch_id": "exchange_info_spot_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\data_foundation\\data\\raw\\_tmp\\exchange_info_spot.json",
+  "source": {
+    "api": "binance spot exchangeInfo",
+    "fetched_at": "2026-08-20T16:40:14.785668+00:00"
+  },
+  "ingested_at": "2026-08-20T16:40:14.802154+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "0c97a9f50fd9bd267e20c2f49e282beb3887989240ec9a6ea70c8c359dc9062e",
+  "file_size_bytes": 18797139,
+  "immutable": true
+}

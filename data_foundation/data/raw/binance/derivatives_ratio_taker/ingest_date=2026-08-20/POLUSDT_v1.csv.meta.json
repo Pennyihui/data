@@ -1,0 +1,17 @@
+{
+  "batch_id": "POLUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\POLUSDT\\taker_buy_sell_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "POLUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T16:40:12.567909+00:00"
+  },
+  "ingested_at": "2026-08-20T16:40:12.570307+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "5f56d5c3e92db7a5ed51046c56d3505f09382c7bd3741fffa233a887efc2cbe2",
+  "file_size_bytes": 26748,
+  "immutable": true
+}

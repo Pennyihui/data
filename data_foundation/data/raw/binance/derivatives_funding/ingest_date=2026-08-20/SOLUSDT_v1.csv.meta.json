@@ -1,0 +1,17 @@
+{
+  "batch_id": "SOLUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\SOLUSDT\\funding_rate.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "SOLUSDT",
+    "market_type": "perpetual",
+    "interval": "8h",
+    "fetched_at": "2026-08-20T15:15:02.521391+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:02.522388+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "05b6ef8c6f2d2f45e2bdbaacc58d0025ab8ca22a9eed2624e89fa3ba55843750",
+  "file_size_bytes": 280979,
+  "immutable": true
+}

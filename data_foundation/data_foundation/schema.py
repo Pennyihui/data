@@ -22,6 +22,7 @@ MARKET_CANDLE_COLUMNS = [
     ("close", "float64"),
     ("volume_base", "float64"),
     ("volume_quote", "float64"),
+    ("volume_contracts", "float64"),      # 合约张数 (OKX swap 等, 不与其他量混用)
     ("trade_count", "int64"),
     ("taker_buy_volume_base", "float64"),
     ("taker_buy_volume_quote", "float64"),
@@ -69,6 +70,7 @@ DERIVATIVES_FUNDING_COLUMNS = [
     ("funding_time_utc", "timestamp[us, tz=UTC]"),   # 主键组成部分
     ("funding_rate", "float64"),
     ("mark_price_at_funding", "float64"),
+    ("realized_rate", "float64"),                     # 实际结算费率 (OKX realizedRate)
     ("data_available_at", "timestamp[us, tz=UTC]"),
     ("source_batch_id", "string"),
 ]
@@ -99,6 +101,32 @@ DERIVATIVES_MARK_COLUMNS = [
     ("source_batch_id", "string"),
 ]
 
+# 指数价 K 线 (1h) — OKX index-candles
+DERIVATIVES_INDEX_COLUMNS = [
+    ("venue_id", "string"),
+    ("instrument_id", "string"),
+    ("symbol", "string"),
+    ("open_time_utc", "timestamp[us, tz=UTC]"),
+    ("index_open", "float64"),
+    ("index_high", "float64"),
+    ("index_low", "float64"),
+    ("index_close", "float64"),
+    ("data_available_at", "timestamp[us, tz=UTC]"),
+    ("source_batch_id", "string"),
+]
+
+# 基差 (1h, 永续 vs 现货) — 派生
+BASIS_COLUMNS = [
+    ("venue_id", "string"),
+    ("instrument_id", "string"),          # 如 BTC-USDT (永续 instrument 为 -SWAP)
+    ("open_time_utc", "timestamp[us, tz=UTC]"),
+    ("spot_close", "float64"),
+    ("swap_close", "float64"),
+    ("basis", "float64"),                 # swap/spot - 1
+    ("data_available_at", "timestamp[us, tz=UTC]"),
+    ("source_batch_id", "string"),
+]
+
 # 多空账户比/大户持仓比/主动买卖比 (1h) — 情绪/仓位
 DERIVATIVES_RATIO_COLUMNS = [
     ("venue_id", "string"),
@@ -118,10 +146,13 @@ DATASETS = {
     "market_candle_spot_1h": MARKET_CANDLE_COLUMNS,
     "market_candle_spot_1d": MARKET_CANDLE_COLUMNS,
     "market_candle_spot_1w": MARKET_CANDLE_COLUMNS,
+    "market_candle_perpetual_1h": MARKET_CANDLE_COLUMNS,
     "instrument": INSTRUMENT_COLUMNS,
     "derivatives_funding": DERIVATIVES_FUNDING_COLUMNS,
     "derivatives_open_interest": DERIVATIVES_OI_COLUMNS,
     "derivatives_mark_price": DERIVATIVES_MARK_COLUMNS,
+    "derivatives_index_price": DERIVATIVES_INDEX_COLUMNS,
+    "basis_1h": BASIS_COLUMNS,
     "derivatives_ratio": DERIVATIVES_RATIO_COLUMNS,
 }
 

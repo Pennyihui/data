@@ -1,0 +1,17 @@
+{
+  "batch_id": "BNBUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\BNBUSDT\\funding_rate.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "BNBUSDT",
+    "market_type": "perpetual",
+    "interval": "8h",
+    "fetched_at": "2026-08-20T15:15:02.738649+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:02.741648+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "62c825b51ac1a12b8d8a4841b19de87edf36e4aa7830a926f440dad7a8d287aa",
+  "file_size_bytes": 303029,
+  "immutable": true
+}

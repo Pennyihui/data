@@ -1,0 +1,17 @@
+{
+  "batch_id": "UNIUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\UNIUSDT\\funding_rate.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "UNIUSDT",
+    "market_type": "perpetual",
+    "interval": "8h",
+    "fetched_at": "2026-08-20T15:15:04.739068+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:04.741503+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "461d1933bb4c1f6c73a433ba34f0a5b999ee9f0eb2edc1180bf959438ead94f0",
+  "file_size_bytes": 271866,
+  "immutable": true
+}

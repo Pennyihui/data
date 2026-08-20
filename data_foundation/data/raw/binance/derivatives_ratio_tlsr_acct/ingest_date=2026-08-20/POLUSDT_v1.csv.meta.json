@@ -1,0 +1,17 @@
+{
+  "batch_id": "POLUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\POLUSDT\\top_trader_ls_account_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "POLUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T16:40:12.516293+00:00"
+  },
+  "ingested_at": "2026-08-20T16:40:12.518635+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "54d881aefa0d2057287a0f7aaf1391ee10777be5425b050a4545e9aac3182004",
+  "file_size_bytes": 21049,
+  "immutable": true
+}

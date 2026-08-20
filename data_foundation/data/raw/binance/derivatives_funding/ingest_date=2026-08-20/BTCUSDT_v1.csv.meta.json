@@ -1,0 +1,17 @@
+{
+  "batch_id": "BTCUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\BTCUSDT\\funding_rate.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "BTCUSDT",
+    "market_type": "perpetual",
+    "interval": "8h",
+    "fetched_at": "2026-08-20T15:15:01.898838+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:01.901937+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "0843cd9ec562f8444ab5da6bde49bd293d604da5d2d5f70d36acbdb9d47c8b64",
+  "file_size_bytes": 326028,
+  "immutable": true
+}

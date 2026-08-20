@@ -1,0 +1,17 @@
+{
+  "batch_id": "UNIUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_new\\additional\\multi_symbol\\UNIUSDT\\top_trader_ls_account_ratio_1h.csv",
+  "source": {
+    "api": "binance fapi",
+    "symbol": "UNIUSDT",
+    "market_type": "perpetual",
+    "interval": "1h",
+    "fetched_at": "2026-08-20T15:15:04.872781+00:00"
+  },
+  "ingested_at": "2026-08-20T15:15:04.874777+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "af86a514b8707a0da3a47e17fc41a91a62a7c8945807e3647d6b484943df6eec",
+  "file_size_bytes": 21049,
+  "immutable": true
+}
