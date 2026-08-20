@@ -1,0 +1,6 @@
+# 数据层本地存储(体积大, 不入库; 约 350MB)
+data/
+
+# Python
+__pycache__/
+*.pyc
