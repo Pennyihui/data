@@ -1,0 +1,17 @@
+{
+  "batch_id": "ETHUSDT_okx_v2",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\okx_ETH_mark.csv",
+  "source": {
+    "api": "okx /market/history-mark-price-candles",
+    "instId": "ETH-USDT-SWAP",
+    "bar": "1H",
+    "days": null,
+    "fetched_at": "2026-08-20T19:00:25.276870+00:00"
+  },
+  "ingested_at": "2026-08-20T20:11:42.170274+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "09024ee2d69ff8dddfdabf454bbb0aab8f0932dbe3fed576a448abe9630ac75c",
+  "file_size_bytes": 2783527,
+  "immutable": true
+}

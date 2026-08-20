@@ -1,0 +1,17 @@
+{
+  "batch_id": "SOLUSDT_okx_v2",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\okx_SOL_mark.csv",
+  "source": {
+    "api": "okx /market/history-mark-price-candles",
+    "instId": "SOL-USDT-SWAP",
+    "bar": "1H",
+    "days": null,
+    "fetched_at": "2026-08-20T19:00:25.276870+00:00"
+  },
+  "ingested_at": "2026-08-20T20:34:43.747287+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "20a0d39ea419efb5aa2842cf4db5106f155c7111baaed789de55d498e3777ee7",
+  "file_size_bytes": 2145634,
+  "immutable": true
+}

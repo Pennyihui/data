@@ -535,10 +535,93 @@ def stage_coinbase(assets=("BTC", "ETH", "SOL", "XRP"), days=365):
     print("Coinbase 管线完成")
 
 
+def stage_onchain(days=1, hours=24):
+    """阶段 4: 链上 (ERC-20 转账解码/聚合 + DEX 量 + BTC mempool + Chainlink)。"""
+    import pandas as pd
+    from .ingest_onchain import ingest_onchain_all
+    from .l1_onchain import (add_timestamps, aggregate_daily, decode_transfers,
+                             normalize_dex_volume, normalize_mempool_blocks,
+                             normalize_mempool_fees, normalize_oracle_snapshot,
+                             write_onchain_parquet)
+    from .l2 import certify_derivatives, write_certified_derivatives
+
+    print(f"== 阶段4: 链上 (近 {days} 天 ERC-20, 近 {hours}h mempool) ==")
+    print("-- L0 --")
+    ingest_onchain_all(days=days, hours=hours)
+
+    print("-- L1 --")
+    tt = add_timestamps(decode_transfers())
+    if not tt.empty:
+        write_onchain_parquet(tt, "token_transfer", "ethereum", "block_timestamp_utc")
+        print(f"  token_transfer: {len(tt)} 行 ({tt.token.nunique()} 币)")
+        agg = aggregate_daily(tt)
+        write_onchain_parquet(agg, "onchain_daily_aggregate", "ethereum", "date_utc")
+        print(f"  onchain_daily_aggregate: {len(agg)} 行")
+        print(agg.to_string(index=False))
+    dv = normalize_dex_volume()
+    if not dv.empty:
+        write_onchain_parquet(dv, "dex_volume", "defillama", "date_utc")
+        print(f"  dex_volume: {len(dv)} 行 ({dv.dex_name.nunique()} DEX, "
+              f"{dv.date_utc.min().date()}~{dv.date_utc.max().date()})")
+    blk = normalize_mempool_blocks()
+    if not blk.empty:
+        write_onchain_parquet(blk, "btc_blocks", "mempool", "block_timestamp_utc")
+        print(f"  btc_blocks: {len(blk)} 块")
+    fee = normalize_mempool_fees()
+    if not fee.empty:
+        write_onchain_parquet(fee, "btc_fees", "mempool", "fetched_at")
+        print(f"  btc_fees: {fee.to_dict('records')}")
+    ora = normalize_oracle_snapshot()
+    if not ora.empty:
+        write_onchain_parquet(ora, "oracle_snapshot", "chainlink", "fetched_at")
+        print(f"  oracle_snapshot: {len(ora)} 对 {ora[['pair','price']].to_dict('records')}")
+
+    print("-- L2 --")
+    accum = {}
+
+    def acc(ds, s):
+        a = accum.setdefault(ds, {"row_count": 0, "duplicate_count": 0,
+                                  "gap_count": 0, "suspect_count": 0,
+                                  "coverage_start": None, "coverage_end": None})
+        a["row_count"] += s["row_count"]
+        a["suspect_count"] += s["suspect_count"]
+        if a["coverage_start"] is None or s["coverage_start"] < a["coverage_start"]:
+            a["coverage_start"] = s["coverage_start"]
+        if a["coverage_end"] is None or s["coverage_end"] > a["coverage_end"]:
+            a["coverage_end"] = s["coverage_end"]
+
+    for df, ds, venue, tc, core, keys in [
+        (tt, "token_transfer", "ethereum", "block_timestamp_utc",
+         ["value_decimal"], ["tx_hash", "log_index", "token"]),
+        (agg, "onchain_daily_aggregate", "ethereum", "date_utc",
+         ["volume_token"], ["token", "date_utc"]),
+        (dv, "dex_volume", "defillama", "date_utc", ["volume_usd"],
+         ["dex_name", "date_utc"]),
+        (blk, "btc_blocks", "mempool", "block_timestamp_utc",
+         ["fees_total", "fee_rate_avg"], ["block_height"]),
+        (fee, "btc_fees", "mempool", "fetched_at", [], ["fetched_at"]),
+        (ora, "oracle_snapshot", "chainlink", "fetched_at", ["price"], ["pair"])]:
+        if df.empty:
+            continue
+        cdf = certify_derivatives(df, tc, core_numeric_cols=core, key_cols=keys)
+        write_certified_derivatives(cdf, ds, venue, "all", tc)
+        acc(ds, {"row_count": len(cdf), "duplicate_count": 0, "gap_count": 0,
+                 "suspect_count": int(cdf["is_suspect"].sum()),
+                 "coverage_start": str(cdf[tc].min()),
+                 "coverage_end": str(cdf[tc].max())})
+    for ds, s in accum.items():
+        build_dataset_manifest(ds, "*", "*", "*", "*", s, ["onchain_v1"],
+                               {"note": "阶段4 链上; ERC-20 日志近1天, "
+                                "时间戳为边界块线性插值(±10min), "
+                                "DEX量/费率/预言机为聚合快照"})
+    print("阶段4 完成")
+
+
 def main():
     ap = argparse.ArgumentParser(description="data_foundation 管线 L0->L1->L2")
     ap.add_argument("--stage", default="all",
-                    choices=["l0", "l1", "l2", "all", "okx", "coinbase", "stablecoins"])
+                    choices=["l0", "l1", "l2", "all", "okx", "coinbase",
+                             "stablecoins", "onchain"])
     ap.add_argument("--assets", default=",".join(MVP_ASSETS))
     ap.add_argument("--days", type=int, default=None, help="OKX/Coinbase 回看天数(不填=OKX回填到上市日)")
     ap.add_argument("--okx-version", default="v2", help="OKX 批次版本(v2 深回填)")
@@ -551,6 +634,8 @@ def main():
         stage_coinbase(assets, days=args.days or 365)
     elif args.stage == "stablecoins":
         stage_stablecoins()
+    elif args.stage == "onchain":
+        stage_onchain()
     else:
         if args.stage in ("l0", "all"):
             stage_l0(assets)

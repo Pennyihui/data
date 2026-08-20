@@ -1,0 +1,17 @@
+{
+  "batch_id": "SOLUSDT_okx_v2",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\okx_SOL_index.csv",
+  "source": {
+    "api": "okx /market/history-index-candles",
+    "instId": "SOL-USDT",
+    "bar": "1H",
+    "days": null,
+    "fetched_at": "2026-08-20T19:00:25.276870+00:00"
+  },
+  "ingested_at": "2026-08-20T20:40:07.754346+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "9ca68319bf159c71aa626f57eb7e90a42910eb9e28880a59a669e0e22dbe0eb4",
+  "file_size_bytes": 2164456,
+  "immutable": true
+}

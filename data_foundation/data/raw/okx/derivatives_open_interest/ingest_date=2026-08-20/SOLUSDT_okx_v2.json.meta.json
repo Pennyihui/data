@@ -1,0 +1,16 @@
+{
+  "batch_id": "SOLUSDT_okx_v2",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\okx_SOL_oi.json",
+  "source": {
+    "api": "okx /public/open-interest",
+    "instId": "SOL-USDT-SWAP",
+    "fetched_at": "2026-08-20T19:00:25.276870+00:00",
+    "note": "OKX 无历史 OI 接口, 仅当前快照"
+  },
+  "ingested_at": "2026-08-20T20:40:08.575701+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "fa3540c538ff154e8d4ba805af6b34a7b742e014c80e38e5bd7b3b3ca0b10b27",
+  "file_size_bytes": 169,
+  "immutable": true
+}

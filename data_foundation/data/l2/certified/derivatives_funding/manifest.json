@@ -16,7 +16,7 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-20T18:47:19.455353+00:00",
+  "certified_at": "2026-08-20T21:08:40.311785+00:00",
   "aggregation_rules": {
     "note": "OKX 1H; basis=swap/spot-1; OI 仅当前快照(OKX 无历史 OI 接口)"
   },

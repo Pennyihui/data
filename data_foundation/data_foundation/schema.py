@@ -168,6 +168,67 @@ STABLECOIN_MINT_BURN_COLUMNS = [
     ("source_batch_id", "string"),
 ]
 
+# 链上: ERC-20 转账解码 (阶段 4)
+TOKEN_TRANSFER_COLUMNS = [
+    ("chain_id", "string"),
+    ("token", "string"),
+    ("block_number", "int64"),
+    ("block_timestamp_utc", "timestamp[us, tz=UTC]"),
+    ("tx_hash", "string"),
+    ("log_index", "int64"),
+    ("from_address", "string"),
+    ("to_address", "string"),
+    ("value_raw", "string"),
+    ("value_decimal", "float64"),
+    ("is_mint", "bool"),
+    ("is_burn", "bool"),
+]
+
+# 链上日频聚合
+ONCHAIN_DAILY_AGGREGATE_COLUMNS = [
+    ("chain_id", "string"),
+    ("token", "string"),
+    ("date_utc", "timestamp[us, tz=UTC]"),
+    ("transfer_count", "int64"),
+    ("unique_from", "int64"),
+    ("unique_to", "int64"),
+    ("volume_token", "float64"),
+    ("large_transfer_count", "int64"),
+    ("mint_count", "int64"),
+    ("burn_count", "int64"),
+]
+
+# DEX 日频成交量 (DefiLlama)
+DEX_VOLUME_COLUMNS = [
+    ("venue_id", "string"),
+    ("dex_name", "string"),
+    ("date_utc", "timestamp[us, tz=UTC]"),
+    ("volume_usd", "float64"),
+]
+
+# BTC mempool 区块 (费率统计)
+BTC_BLOCKS_COLUMNS = [
+    ("venue_id", "string"),
+    ("block_height", "int64"),
+    ("block_timestamp_utc", "timestamp[us, tz=UTC]"),
+    ("tx_count", "int64"),
+    ("size", "int64"),
+    ("fees_total", "float64"),
+    ("fees_base", "float64"),
+    ("fee_rate_avg", "float64"),
+    ("fee_rate_median", "float64"),
+]
+
+# Chainlink 预言机快照
+ORACLE_SNAPSHOT_COLUMNS = [
+    ("venue_id", "string"),
+    ("pair", "string"),
+    ("price", "float64"),
+    ("updated_at", "timestamp[us, tz=UTC]"),
+    ("fetched_at", "timestamp[us, tz=UTC]"),
+    ("round_id", "int64"),
+]
+
 # 多空账户比/大户持仓比/主动买卖比 (1h) — 情绪/仓位
 DERIVATIVES_RATIO_COLUMNS = [
     ("venue_id", "string"),
@@ -198,6 +259,11 @@ DATASETS = {
     "stablecoin_flows": STABLECOIN_FLOWS_COLUMNS,
     "stablecoin_peg": STABLECOIN_PEG_COLUMNS,
     "stablecoin_mint_burn": STABLECOIN_MINT_BURN_COLUMNS,
+    "token_transfer": TOKEN_TRANSFER_COLUMNS,
+    "onchain_daily_aggregate": ONCHAIN_DAILY_AGGREGATE_COLUMNS,
+    "dex_volume": DEX_VOLUME_COLUMNS,
+    "btc_blocks": BTC_BLOCKS_COLUMNS,
+    "oracle_snapshot": ORACLE_SNAPSHOT_COLUMNS,
     "derivatives_ratio": DERIVATIVES_RATIO_COLUMNS,
 }
 

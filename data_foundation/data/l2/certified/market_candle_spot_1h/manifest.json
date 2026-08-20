@@ -2,20 +2,23 @@
   "dataset": "market_candle_spot_1h",
   "schema_version": "1.0.0",
   "source_batches": [
-    "coinbase_v1"
+    "BTCUSDT_okx_v1",
+    "ETHUSDT_okx_v1",
+    "SOLUSDT_okx_v1",
+    "XRPUSDT_okx_v1"
   ],
-  "coverage_start": "2025-08-20 20:00:00+00:00",
+  "coverage_start": "2018-01-11 11:00:00+00:00",
   "coverage_end": "2026-08-20 19:00:00+00:00",
-  "row_count": 35000,
+  "row_count": 277935,
   "duplicate_count": 0,
   "gap_count": 0,
   "suspect_count": 0,
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-20T19:16:49.185553+00:00",
+  "certified_at": "2026-08-20T21:08:40.309711+00:00",
   "aggregation_rules": {
-    "note": "Coinbase REST candles 回填近 1 年, 可扩展; 无 confirm 字段(全为已收盘 bar)"
+    "note": "OKX 1H; 未收盘行(confirm=0)不计入 certified"
   },
   "quality_rule_version": "1.0.0",
   "notes": []

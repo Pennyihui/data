@@ -1,0 +1,16 @@
+{
+  "batch_id": "BTCUSDT_okx_v2",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\okx_BTC_oi.json",
+  "source": {
+    "api": "okx /public/open-interest",
+    "instId": "BTC-USDT-SWAP",
+    "fetched_at": "2026-08-20T19:00:25.276870+00:00",
+    "note": "OKX 无历史 OI 接口, 仅当前快照"
+  },
+  "ingested_at": "2026-08-20T19:42:32.665175+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "477e25a92e8246f80920b4e47e325d67438c33288700dd3a2224310fae59ba92",
+  "file_size_bytes": 167,
+  "immutable": true
+}
