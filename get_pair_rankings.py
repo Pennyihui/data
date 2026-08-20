@@ -221,14 +221,14 @@ def build_pair_history(symbols, days, start_date, fapi, out_dir, label):
 def fetch_coingecko_daily(coin_id, days=90, start_date=None):
     """单币种日频 价格/市值/成交额。
 
-    免 key 最多 365 天; 设置环境变量 COINGECKO_API_KEY (免费 demo key) 后
-    可用 days=max 取全历史 (如 BTC 自 2013)。
+    免费公开 API / demo key 最多 365 天 (错误码 10012 明确拒绝更长时间,
+    需付费套餐)。设置环境变量 COINGECKO_API_KEY (免费 demo key, 形如
+    CG-xxxx) 可提升限流额度并以 x_cg_demo_api_key 参数传入。
     """
     key = os.environ.get("COINGECKO_API_KEY", "").strip()
+    params = {"vs_currency": "usd", "interval": "daily", "days": min(days, 365)}
     if key:
-        params = {"vs_currency": "usd", "days": "max", "interval": "daily"}
-    else:
-        params = {"vs_currency": "usd", "days": min(days, 365), "interval": "daily"}
+        params["x_cg_demo_api_key"] = key
     j = _get_json(f"{CG_BASE}/coins/{coin_id}/market_chart", params)
     out = {}
     for key2, col in [("prices", "price_usd"), ("market_caps", "market_cap"),
