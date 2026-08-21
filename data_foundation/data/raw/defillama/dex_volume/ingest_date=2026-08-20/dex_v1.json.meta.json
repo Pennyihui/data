@@ -1,0 +1,23 @@
+{
+  "batch_id": "dex_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\dex_volume.json",
+  "source": {
+    "api": "defillama /overview/dexs",
+    "whitelist": [
+      "Uniswap",
+      "PancakeSwap",
+      "Raydium",
+      "Curve",
+      "Orca",
+      "Trader Joe",
+      "Aerodrome"
+    ],
+    "fetched_at": "2026-08-20T23:34:44.227368+00:00"
+  },
+  "ingested_at": "2026-08-20T23:34:44.231469+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "d08c0e45d795e22bd7ba3fbe2c626f1b432dd88f023f8df49ab6317304a576f0",
+  "file_size_bytes": 108028,
+  "immutable": true
+}

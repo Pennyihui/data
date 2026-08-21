@@ -71,7 +71,7 @@ def block_timestamps() -> dict:
     for p in _raw_files("ethereum", "erc20_transfer_logs", "window_blocks"):
         with open(p, encoding="utf-8") as f:
             w = json.load(f)
-        return {int(k): int(v) for k, v in w.items()
+        return {k: int(str(v), 0) for k, v in w.items()
                 if k in ("start_block", "end_block", "start_timestamp",
                          "end_timestamp")}
     return {}
@@ -183,7 +183,7 @@ def normalize_oracle_snapshot() -> pd.DataFrame:
                 "price": r["answer"] / 1e8,
                 "updated_at": pd.to_datetime(r["updatedAt"], unit="s", utc=True),
                 "fetched_at": pd.to_datetime(j.get("fetched_at"), utc=True),
-                "round_id": r["roundId"],
+                "round_id": str(r["roundId"]),   # uint256 超 int64, 用字符串
             })
         return pd.DataFrame(rows)
     return pd.DataFrame()

@@ -1,0 +1,14 @@
+{
+  "batch_id": "blocks_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\mempool_blocks.json",
+  "source": {
+    "api": "mempool.space /api/v1/blocks",
+    "hours": 24
+  },
+  "ingested_at": "2026-08-20T23:00:14.129892+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "3fcad74953a72c1680eca03e46da7389eb3db629f930254b1da84f194b5c794c",
+  "file_size_bytes": 321627,
+  "immutable": true
+}

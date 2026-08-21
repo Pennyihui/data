@@ -226,7 +226,7 @@ ORACLE_SNAPSHOT_COLUMNS = [
     ("price", "float64"),
     ("updated_at", "timestamp[us, tz=UTC]"),
     ("fetched_at", "timestamp[us, tz=UTC]"),
-    ("round_id", "int64"),
+    ("round_id", "string"),               # uint256 超 int64, 用字符串
 ]
 
 # 多空账户比/大户持仓比/主动买卖比 (1h) — 情绪/仓位

@@ -21,9 +21,8 @@ from .config import RAW_DIR
 from .l0 import list_raw_batches, write_raw_file
 
 UA = {"User-Agent": "Mozilla/5.0 (data-foundation)"}
-# 公共 RPC 故障切换链 (顺序尝试)
-RPCS = ["https://rpc.mevblocker.io", "https://eth.drpc.org",
-        "https://1rpc.io/eth", "https://eth.llamarpc.com"]
+# 公共 RPC (getLogs 需支持任意历史区间: mevblocker/drpc 实测可用)
+RPCS = ["https://rpc.mevblocker.io", "https://eth.drpc.org"]
 MEMPOOL = "https://mempool.space/api"
 LLAMA = "https://api.llama.fi"
 
@@ -32,6 +31,8 @@ TOKENS = {
     "USDC": {"address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", "decimals": 6},
     "DAI": {"address": "0x6B175474E89094C44Da98b954EedeAC495271d0F", "decimals": 18},
 }
+# 日志抓取范围 (USDT 24h 日志量 ~50万条/250MB, MVP 先取 USDC+DAI)
+LOG_TOKENS = ["USDC", "DAI"]
 TRANSFER = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
 CHAINLINK = {
     "BTC-USD": "0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43",
@@ -39,8 +40,8 @@ CHAINLINK = {
 }
 
 
-def _rpc(method, params, retries=6, timeout=40):
-    last = None
+def _rpc(method, params, retries=2, timeout=12):
+    errors = []
     for i in range(retries):
         for rpc in RPCS:
             try:
@@ -51,11 +52,11 @@ def _rpc(method, params, retries=6, timeout=40):
                 j = r.json()
                 if "result" in j:
                     return j["result"]
-                last = f"{rpc}: {str(j)[:80]}"
+                errors.append(f"{rpc}: {str(j)[:80]}")
             except Exception as e:  # noqa: BLE001
-                last = f"{rpc}: {str(e)[:80]}"
-        time.sleep(min(2 * (i + 1), 12))
-    raise RuntimeError(last)
+                errors.append(f"{rpc}: {str(e)[:80]}")
+        time.sleep(2 * (i + 1))
+    raise RuntimeError("; ".join(errors[-4:]))
 
 
 def _already(venue: str, dataset: str, batch_id: str) -> bool:
@@ -78,14 +79,15 @@ def ingest_erc20_logs(days: int = 1) -> list[str]:
     written = []
     latest = int(_rpc("eth_blockNumber", []), 16)
     start_block = latest - days * 7200
-    for tok, meta in TOKENS.items():
+    for tok in LOG_TOKENS:
+        meta = TOKENS[tok]
         bid = f"{tok}_transfer_logs_v1"
         if _already("ethereum", "erc20_transfer_logs", bid):
             continue
         all_logs, frm = [], start_block
         while frm <= latest:
-            span = 500
-            while span >= 25:
+            span = 200
+            while span >= 10:
                 to = min(frm + span - 1, latest)
                 try:
                     logs = _rpc("eth_getLogs", [{"address": meta["address"],
@@ -145,8 +147,9 @@ def ingest_mempool(hours: int = 24) -> list[str]:
         blocks, height = [], None
         end_ts = time.time()
         for _ in range(30):
-            path = "/api/v1/blocks" if height is None else f"/api/v1/blocks/{height}"
-            r = requests.get(f"{MEMPOOL}{path}", timeout=25, headers=UA)
+            path = f"{MEMPOOL}/v1/blocks" if height is None \
+                else f"{MEMPOOL}/v1/blocks/{height}"
+            r = requests.get(path, timeout=25, headers=UA)
             r.raise_for_status()
             page = r.json()
             if not page:
@@ -168,20 +171,32 @@ def ingest_dex_volume() -> list[str]:
     if _already("defillama", "dex_volume", "dex_v1"):
         return []
     last = None
+    DEX_WHITELIST = ["Uniswap", "PancakeSwap", "Raydium", "Curve",
+                     "Orca", "Trader Joe", "Aerodrome"]
     for i in range(8):
         try:
             r = requests.get(
-                f"{LLAMA}/overview/dexs?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true&dataType=dailyVolume",
-                timeout=40, headers=UA)
+                f"{LLAMA}/overview/dexs?dataType=dailyVolume",
+                timeout=90, headers=UA)
             r.raise_for_status()
             j = r.json()
-            out = {d["name"]: d.get("totalDataChart", []) for d in j
-                   if isinstance(d, dict) and d.get("totalDataChart")}
+            out = {"all_dexs": j.get("totalDataChart", [])}
+            for day in j.get("totalDataChartBreakdown", []):
+                if not isinstance(day, dict):
+                    continue
+                ts = day.get("date")
+                dexs = day.get("dexs", {})
+                for dex in DEX_WHITELIST:
+                    if dex in dexs and isinstance(dexs[dex], dict):
+                        out.setdefault(dex, []).append(
+                            [ts, dexs[dex].get("volume", 0)])
             written = [_save("dex_volume.json", json.dumps(out), "defillama",
                              "dex_volume", "dex_v1",
                              {"api": "defillama /overview/dexs",
+                              "whitelist": DEX_WHITELIST,
                               "fetched_at": datetime.now(timezone.utc).isoformat()})]
-            print(f"  dex: {len(out)} 个 DEX")
+            n = sum(len(v) for v in out.values())
+            print(f"  dex: {len(out)} 个系列, {n} 行", flush=True)
             return written
         except Exception as e:  # noqa: BLE001
             last = e
@@ -195,11 +210,13 @@ def ingest_chainlink() -> list[str]:
     out = {}
     for pair, addr in CHAINLINK.items():
         res = _rpc("eth_call", [{"to": addr, "data": "0xfeaf968c"}, "latest"])
-        # latestRoundData: roundId, answer, startedAt, updatedAt, answeredInRound
-        vals = [int(x, 16) for x in res[2:]] if len(res) > 2 else []
-        if len(vals) >= 4:
-            out[pair] = {"roundId": vals[0], "answer": vals[1],
-                         "startedAt": vals[2], "updatedAt": vals[3]}
+        # latestRoundData 返回 5 个 32 字节词: roundId, answer, startedAt, updatedAt, answeredInRound
+        hex_body = res[2:] if res.startswith("0x") else res
+        words = [int(hex_body[i:i + 64], 16) for i in range(0, len(hex_body), 64)]
+        if len(words) >= 5:
+            out[pair] = {"roundId": words[0], "answer": words[1],
+                         "startedAt": words[2], "updatedAt": words[3],
+                         "answeredInRound": words[4]}
         time.sleep(0.4)
     out["fetched_at"] = datetime.now(timezone.utc).isoformat()
     return [_save("chainlink.json", json.dumps(out), "ethereum",

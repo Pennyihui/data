@@ -128,7 +128,7 @@ def certify_derivatives(df: pd.DataFrame, time_col: str,
 
     mark(df[keys].duplicated(keep=False), "_".join(keys) + "_duplicated")
     for c in core:
-        mark(~np.isfinite(df[c]), f"{c}_not_finite")
+        mark(~np.isfinite(pd.to_numeric(df[c], errors="coerce")), f"{c}_not_finite")
     if "open_interest_contracts" in df.columns:
         mark(df["open_interest_contracts"] < 0, "oi_contracts<0")
     if "open_interest_notional" in df.columns:

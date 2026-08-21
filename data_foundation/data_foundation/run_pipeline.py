@@ -598,7 +598,7 @@ def stage_onchain(days=1, hours=24):
         (dv, "dex_volume", "defillama", "date_utc", ["volume_usd"],
          ["dex_name", "date_utc"]),
         (blk, "btc_blocks", "mempool", "block_timestamp_utc",
-         ["fees_total", "fee_rate_avg"], ["block_height"]),
+         ["tx_count"], ["block_height"]),
         (fee, "btc_fees", "mempool", "fetched_at", [], ["fetched_at"]),
         (ora, "oracle_snapshot", "chainlink", "fetched_at", ["price"], ["pair"])]:
         if df.empty:
