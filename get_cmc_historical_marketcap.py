@@ -106,7 +106,8 @@ def main():
     if missing:
         print(f"CMC 未找到: {missing}")
 
-    wide_frames, t0 = {}, time.time()
+    wide_mc, wide_vol, wide_sup = {}, {}, {}
+    t0 = time.time()
     for i, sym in enumerate(symbols, 1):
         if sym not in idmap:
             continue
@@ -115,27 +116,31 @@ def main():
             if df.empty:
                 print(f"[{i}/{len(symbols)}] {sym}: 无数据", flush=True)
                 continue
-            wide_frames[sym] = df.set_index("date")["market_cap"]
+            d = df.set_index("date")
+            wide_mc[sym] = d["market_cap"]
+            wide_vol[sym] = d["volume"]
+            wide_sup[sym] = d["circ_supply"]
             print(f"[{i}/{len(symbols)}] {sym}: {len(df)} 天 "
                   f"({df.date.min().date()} ~ {df.date.max().date()})", flush=True)
         except Exception as e:  # noqa: BLE001
             print(f"[{i}/{len(symbols)}] {sym} 失败: {str(e)[:80]}", flush=True)
 
-    wide = pd.DataFrame(wide_frames).sort_index()
-    wide.to_csv(os.path.join(OUT_DIR, "cmc_daily_marketcap_wide.csv"),
-                encoding="utf-8-sig", float_format="%.8f")
-
-    for metric, fname in [("market_cap", "cmc_daily_marketcap_ranking.csv")]:
-        long = wide.stack().reset_index()
-        long.columns = ["date", "symbol", metric]
-        long = long[long[metric].notna()]
-        long["rank"] = long.groupby("date")[metric].rank(ascending=False,
+    for wide, suffix in [(wide_mc, "marketcap"), (wide_vol, "volume"),
+                         (wide_sup, "circulating_supply")]:
+        w = pd.DataFrame(wide).sort_index()
+        w.to_csv(os.path.join(OUT_DIR, f"cmc_daily_{suffix}_wide.csv"),
+                 encoding="utf-8-sig", float_format="%.8f")
+        long = w.stack().reset_index()
+        long.columns = ["date", "symbol", suffix]
+        long = long[long[suffix].notna()]
+        long["rank"] = long.groupby("date")[suffix].rank(ascending=False,
                                                          method="first").astype(int)
         long = long.sort_values(["date", "rank"]).reset_index(drop=True)
-        long.to_csv(os.path.join(OUT_DIR, fname), index=False,
-                    encoding="utf-8-sig", float_format="%.8f")
-        print(f"{fname}: {len(long)} 行 ({long.date.min().date()} ~ "
-              f"{long.date.max().date()}, {long.symbol.nunique()} 币)")
+        long.to_csv(os.path.join(OUT_DIR, f"cmc_daily_{suffix}_ranking.csv"),
+                    index=False, encoding="utf-8-sig", float_format="%.8f")
+        print(f"cmc_daily_{suffix}_ranking.csv: {len(long)} 行 "
+              f"({long.date.min().date()} ~ {long.date.max().date()}, "
+              f"{long.symbol.nunique()} 币)")
 
     print(f"\n完成, 耗时 {(time.time()-t0)/60:.1f} 分钟")
 

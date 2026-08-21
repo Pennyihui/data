@@ -4,3 +4,4 @@ __pycache__/
 
 # fetch-proxy tooling (contains proxy node credentials)
 .fetch-proxy/
+data_new/features_1h/
