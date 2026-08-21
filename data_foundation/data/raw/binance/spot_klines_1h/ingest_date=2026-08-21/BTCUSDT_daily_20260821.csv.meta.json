@@ -1,0 +1,21 @@
+{
+  "batch_id": "BTCUSDT_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_BTCUSDT_1h.csv",
+  "source": {
+    "api": "https://data-api.binance.vision/api/v3/klines",
+    "base_host": "https://data-api.binance.vision",
+    "symbol": "BTCUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "days": 3,
+    "startTime_ms": 1787058000000,
+    "endTime_ms": 1787318123055,
+    "fetched_at": "2026-08-21T13:15:23.055879+00:00"
+  },
+  "ingested_at": "2026-08-21T13:15:23.085395+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "2ee629704fe5d570cdc3d8b6b9462ba85ca808243978ebd13ee14e0a3ac96651",
+  "file_size_bytes": 12750,
+  "immutable": true
+}

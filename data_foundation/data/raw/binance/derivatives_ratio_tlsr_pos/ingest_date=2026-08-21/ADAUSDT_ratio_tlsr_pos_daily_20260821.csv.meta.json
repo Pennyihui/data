@@ -1,0 +1,17 @@
+{
+  "batch_id": "ADAUSDT_ratio_tlsr_pos_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_ADAUSDT_ratio_tlsr_pos.csv",
+  "source": {
+    "api": "fapi /futures/data/topLongShortPositionRatio",
+    "symbol": "ADAUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:08:52.821285+00:00"
+  },
+  "ingested_at": "2026-08-21T15:08:52.829539+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "8f15d1e8f1fe317042da14777a64ddce9d1cd9f1c0ffe91c97a121e393bb7e81",
+  "file_size_bytes": 21046,
+  "immutable": true
+}

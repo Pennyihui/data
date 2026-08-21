@@ -1,0 +1,17 @@
+{
+  "batch_id": "ETHUSDT_ratio_taker_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_ETHUSDT_ratio_taker.csv",
+  "source": {
+    "api": "fapi /futures/data/takerlongshortRatio",
+    "symbol": "ETHUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:08:44.609230+00:00"
+  },
+  "ingested_at": "2026-08-21T15:08:44.632438+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "99c82d82c74c790ec15cfce2c2343f704368a952b9b962d48623f90620aa4f57",
+  "file_size_bytes": 25154,
+  "immutable": true
+}

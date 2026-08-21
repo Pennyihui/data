@@ -1,0 +1,17 @@
+{
+  "batch_id": "DOGEUSDT_funding_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_DOGEUSDT_funding.csv",
+  "source": {
+    "api": "fapi /fapi/v1/fundingRate",
+    "symbol": "DOGEUSDT",
+    "days": 30,
+    "startTime_ms": 1784736592497,
+    "fetched_at": "2026-08-21T16:09:54.920851+00:00"
+  },
+  "ingested_at": "2026-08-21T16:09:54.928081+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "ce10c10ea70598a0976cd6ce931aeef1c67a6d581011efed92c9078b040ad8f6",
+  "file_size_bytes": 4288,
+  "immutable": true
+}

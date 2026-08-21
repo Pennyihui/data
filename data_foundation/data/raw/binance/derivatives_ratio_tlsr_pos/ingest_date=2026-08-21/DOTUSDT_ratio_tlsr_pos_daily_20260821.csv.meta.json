@@ -1,0 +1,17 @@
+{
+  "batch_id": "DOTUSDT_ratio_tlsr_pos_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_DOTUSDT_ratio_tlsr_pos.csv",
+  "source": {
+    "api": "fapi /futures/data/topLongShortPositionRatio",
+    "symbol": "DOTUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:09:04.474728+00:00"
+  },
+  "ingested_at": "2026-08-21T15:09:04.497828+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "285f4e552c8c7fcc8b61c37918e2917978fd1056b9ae5b58b7d451ec720220f5",
+  "file_size_bytes": 21046,
+  "immutable": true
+}

@@ -1,0 +1,17 @@
+{
+  "batch_id": "ADAUSDT_ratio_glsr_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_ADAUSDT_ratio_glsr.csv",
+  "source": {
+    "api": "fapi /futures/data/globalLongShortAccountRatio",
+    "symbol": "ADAUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:08:51.303351+00:00"
+  },
+  "ingested_at": "2026-08-21T15:08:51.304357+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "3269c5e27f2cce926e00293da69c00f77d2f92a1f2ab9ed7a9ee0bef566fa815",
+  "file_size_bytes": 21046,
+  "immutable": true
+}

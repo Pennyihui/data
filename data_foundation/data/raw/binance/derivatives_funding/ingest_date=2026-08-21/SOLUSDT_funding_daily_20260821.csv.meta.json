@@ -1,0 +1,17 @@
+{
+  "batch_id": "SOLUSDT_funding_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_SOLUSDT_funding.csv",
+  "source": {
+    "api": "fapi /fapi/v1/fundingRate",
+    "symbol": "SOLUSDT",
+    "days": 30,
+    "startTime_ms": 1784736592497,
+    "fetched_at": "2026-08-21T16:09:53.584184+00:00"
+  },
+  "ingested_at": "2026-08-21T16:09:53.585403+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "b591df2d18388aff98fffde05be5dd4c9991c3df104cb55b2be6e0efb296e220",
+  "file_size_bytes": 4387,
+  "immutable": true
+}

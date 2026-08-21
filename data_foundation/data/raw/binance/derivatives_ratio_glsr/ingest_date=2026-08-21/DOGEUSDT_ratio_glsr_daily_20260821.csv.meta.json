@@ -1,0 +1,17 @@
+{
+  "batch_id": "DOGEUSDT_ratio_glsr_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_DOGEUSDT_ratio_glsr.csv",
+  "source": {
+    "api": "fapi /futures/data/globalLongShortAccountRatio",
+    "symbol": "DOGEUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:08:54.791316+00:00"
+  },
+  "ingested_at": "2026-08-21T15:08:54.792320+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "6b87a3f7ac556053d94496f8515abd7b7cfc60693b99a75d77532059041da871",
+  "file_size_bytes": 21046,
+  "immutable": true
+}

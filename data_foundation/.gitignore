@@ -4,4 +4,9 @@ __pycache__/
 
 # 临时抓取中间件(不入库)
 data/raw/_tmp/
+# 大体积原始日志 (本地存储)
 data/raw/ethereum/erc20_transfer_logs/
+data/raw/arbitrum/
+# 大体积 token_transfer L1/L2 (3.27M 行, 本地存储; 聚合表 onchain_daily_aggregate 入库)
+data/l1/token_transfer/
+data/l2/certified/token_transfer/

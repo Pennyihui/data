@@ -1,0 +1,21 @@
+{
+  "batch_id": "LINKUSDT_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_LINKUSDT_1h.csv",
+  "source": {
+    "api": "https://data-api.binance.vision/api/v3/klines",
+    "base_host": "https://data-api.binance.vision",
+    "symbol": "LINKUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "days": 3,
+    "startTime_ms": 1787058000000,
+    "endTime_ms": 1787318135869,
+    "fetched_at": "2026-08-21T13:15:35.869142+00:00"
+  },
+  "ingested_at": "2026-08-21T13:15:35.869142+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "9444054c96ea8089e068f916e6d5e9eb270d13d9e583916890e432160502af02",
+  "file_size_bytes": 11763,
+  "immutable": true
+}

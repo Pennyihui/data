@@ -1,0 +1,17 @@
+{
+  "batch_id": "AAVEUSDT_ratio_taker_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_AAVEUSDT_ratio_taker.csv",
+  "source": {
+    "api": "fapi /futures/data/takerlongshortRatio",
+    "symbol": "AAVEUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:09:08.632415+00:00"
+  },
+  "ingested_at": "2026-08-21T15:09:08.634988+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "e49aac0ab6726a0c11be167ea395dfd942de89d80978199eef6ff7fc82cd1cee",
+  "file_size_bytes": 24528,
+  "immutable": true
+}

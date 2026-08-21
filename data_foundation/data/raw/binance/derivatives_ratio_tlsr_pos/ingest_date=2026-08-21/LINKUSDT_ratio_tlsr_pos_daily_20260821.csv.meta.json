@@ -1,0 +1,17 @@
+{
+  "batch_id": "LINKUSDT_ratio_tlsr_pos_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_LINKUSDT_ratio_tlsr_pos.csv",
+  "source": {
+    "api": "fapi /futures/data/topLongShortPositionRatio",
+    "symbol": "LINKUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:08:59.325278+00:00"
+  },
+  "ingested_at": "2026-08-21T15:08:59.326281+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "a29604a55793b07b446fb1053e4c02a48fc87470aa602721dfe27776e2aebfcb",
+  "file_size_bytes": 21046,
+  "immutable": true
+}

@@ -1,0 +1,21 @@
+{
+  "batch_id": "DOGEUSDT_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_DOGEUSDT_1h.csv",
+  "source": {
+    "api": "https://data-api.binance.vision/api/v3/klines",
+    "base_host": "https://data-api.binance.vision",
+    "symbol": "DOGEUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "days": 3,
+    "startTime_ms": 1787058000000,
+    "endTime_ms": 1787318132144,
+    "fetched_at": "2026-08-21T13:15:32.144822+00:00"
+  },
+  "ingested_at": "2026-08-21T13:15:32.147316+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "34690b10bc5d6870261ed836435869b5ee4d88d07c01d558326c4d9809c7c3ce",
+  "file_size_bytes": 11960,
+  "immutable": true
+}

@@ -1,0 +1,17 @@
+{
+  "batch_id": "AAVEUSDT_funding_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_AAVEUSDT_funding.csv",
+  "source": {
+    "api": "fapi /fapi/v1/fundingRate",
+    "symbol": "AAVEUSDT",
+    "days": 30,
+    "startTime_ms": 1784736592497,
+    "fetched_at": "2026-08-21T16:09:57.155520+00:00"
+  },
+  "ingested_at": "2026-08-21T16:09:57.156549+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "a1ff5e9a52311a2506a74c58bb6b232e0d42519f7f7b19bab55c3b16108f1af5",
+  "file_size_bytes": 4393,
+  "immutable": true
+}

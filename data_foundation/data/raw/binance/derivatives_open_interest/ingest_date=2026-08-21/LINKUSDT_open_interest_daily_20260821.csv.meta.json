@@ -1,0 +1,17 @@
+{
+  "batch_id": "LINKUSDT_open_interest_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_LINKUSDT_open_interest.csv",
+  "source": {
+    "api": "fapi /futures/data/openInterestHist",
+    "symbol": "LINKUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:08:57.974168+00:00"
+  },
+  "ingested_at": "2026-08-21T15:08:57.975288+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "5edda83ecc12d5fe63e52993c566dc1978f1c295182a519d1b2f117c51dce8ee",
+  "file_size_bytes": 37983,
+  "immutable": true
+}

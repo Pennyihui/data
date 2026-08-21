@@ -1,0 +1,17 @@
+{
+  "batch_id": "LTCUSDT_ratio_tlsr_acct_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_LTCUSDT_ratio_tlsr_acct.csv",
+  "source": {
+    "api": "fapi /futures/data/topLongShortAccountRatio",
+    "symbol": "LTCUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:09:00.662535+00:00"
+  },
+  "ingested_at": "2026-08-21T15:09:00.663861+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "7a334a8bb05b72162e24c5bad7e6c80d4a9ddc1bd1d1185b97e02add4710a8d3",
+  "file_size_bytes": 21046,
+  "immutable": true
+}

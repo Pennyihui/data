@@ -1,0 +1,17 @@
+{
+  "batch_id": "ETHUSDT_open_interest_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_ETHUSDT_open_interest.csv",
+  "source": {
+    "api": "fapi /futures/data/openInterestHist",
+    "symbol": "ETHUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:08:43.014845+00:00"
+  },
+  "ingested_at": "2026-08-21T15:08:43.016886+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "7c35f2b7a5333fd736728b6391557d347d611de0a09b7df8cabdfd2cd818fe41",
+  "file_size_bytes": 38564,
+  "immutable": true
+}

@@ -1,0 +1,21 @@
+{
+  "batch_id": "ETHUSDT_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_ETHUSDT_1h.csv",
+  "source": {
+    "api": "https://data-api.binance.vision/api/v3/klines",
+    "base_host": "https://data-api.binance.vision",
+    "symbol": "ETHUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "days": 3,
+    "startTime_ms": 1787058000000,
+    "endTime_ms": 1787318124497,
+    "fetched_at": "2026-08-21T13:15:24.497104+00:00"
+  },
+  "ingested_at": "2026-08-21T13:15:24.501951+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "1c48742484e69ba04c343b67b178956df16ef3dec80f8f42ae1340db07f2d498",
+  "file_size_bytes": 12602,
+  "immutable": true
+}

@@ -1,0 +1,17 @@
+{
+  "batch_id": "BNBUSDT_open_interest_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_BNBUSDT_open_interest.csv",
+  "source": {
+    "api": "fapi /futures/data/openInterestHist",
+    "symbol": "BNBUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:08:47.111124+00:00"
+  },
+  "ingested_at": "2026-08-21T15:08:47.112130+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "2af927026f8e36ad7203aca45e1a72e7b674a1663b3c9c8554f3eb722977695c",
+  "file_size_bytes": 37564,
+  "immutable": true
+}

@@ -1,0 +1,15 @@
+{
+  "batch_id": "index_eth_usd_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\deribit_index_eth_usd.json",
+  "source": {
+    "api": "deribit /public/get_index_price",
+    "index_name": "eth_usd",
+    "fetched_at": "2026-08-21T12:52:07.040564+00:00"
+  },
+  "ingested_at": "2026-08-21T12:52:20.412955+00:00",
+  "timestamp_unit": "iso",
+  "timezone": "UTC",
+  "checksum_sha256": "40080b2c62f5b0cd71409a367bb52e75063f981ea31932744d9b70bcc6b7cdd6",
+  "file_size_bytes": 59,
+  "immutable": true
+}

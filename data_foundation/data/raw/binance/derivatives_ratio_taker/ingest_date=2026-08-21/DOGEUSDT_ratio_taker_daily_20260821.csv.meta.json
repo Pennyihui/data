@@ -1,0 +1,17 @@
+{
+  "batch_id": "DOGEUSDT_ratio_taker_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_DOGEUSDT_ratio_taker.csv",
+  "source": {
+    "api": "fapi /futures/data/takerlongshortRatio",
+    "symbol": "DOGEUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:08:55.918710+00:00"
+  },
+  "ingested_at": "2026-08-21T15:08:55.920987+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "ddffa10d4a4ef57e73f8545e290da4fd8b2fe24592b7368bbbb9d514c7227b71",
+  "file_size_bytes": 28216,
+  "immutable": true
+}

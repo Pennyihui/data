@@ -229,6 +229,16 @@ ORACLE_SNAPSHOT_COLUMNS = [
     ("round_id", "string"),               # uint256 超 int64, 用字符串
 ]
 
+# Solana 链上快照 (getTokenSupply USDC 供应量; 完整转账解码需索引器, 快照级)
+SOLANA_SNAPSHOT_COLUMNS = [
+    ("venue_id", "string"),
+    ("slot", "int64"),
+    ("block_height", "int64"),
+    ("usdc_supply", "float64"),           # USDC 流通量 (mint EPjFWdd5...)
+    ("tps", "float64"),                   # 最近性能样本交易/秒 (可空)
+    ("fetched_at", "timestamp[us, tz=UTC]"),
+]
+
 # 多空账户比/大户持仓比/主动买卖比 (1h) — 情绪/仓位
 DERIVATIVES_RATIO_COLUMNS = [
     ("venue_id", "string"),
@@ -264,6 +274,7 @@ DATASETS = {
     "dex_volume": DEX_VOLUME_COLUMNS,
     "btc_blocks": BTC_BLOCKS_COLUMNS,
     "oracle_snapshot": ORACLE_SNAPSHOT_COLUMNS,
+    "solana_snapshot": SOLANA_SNAPSHOT_COLUMNS,
     "derivatives_ratio": DERIVATIVES_RATIO_COLUMNS,
 }
 

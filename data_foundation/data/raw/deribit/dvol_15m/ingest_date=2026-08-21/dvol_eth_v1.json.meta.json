@@ -1,0 +1,19 @@
+{
+  "batch_id": "dvol_eth_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\deribit_dvol_eth.json",
+  "source": {
+    "api": "deribit /public/get_volatility_index_data",
+    "currency": "ETH",
+    "resolution_seconds": 3600,
+    "resolution_label": "1H",
+    "days": 90,
+    "fetched_at": "2026-08-21T12:52:07.040564+00:00",
+    "note": "官方 resolution 枚举仅 [1,60,3600,43200,'1D'] 秒, 无 15M 粒度; 当前取 1H; 数据为 OHLC 数组"
+  },
+  "ingested_at": "2026-08-21T12:52:16.040642+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "a720719671341f3c5273c49115adf18ba30d414724d5ec9bcfa62981f784d815",
+  "file_size_bytes": 96383,
+  "immutable": true
+}

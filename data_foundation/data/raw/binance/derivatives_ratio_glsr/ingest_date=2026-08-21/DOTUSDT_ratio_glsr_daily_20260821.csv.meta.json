@@ -1,0 +1,17 @@
+{
+  "batch_id": "DOTUSDT_ratio_glsr_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_DOTUSDT_ratio_glsr.csv",
+  "source": {
+    "api": "fapi /futures/data/globalLongShortAccountRatio",
+    "symbol": "DOTUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:09:03.372368+00:00"
+  },
+  "ingested_at": "2026-08-21T15:09:03.373380+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "1ed449281eaec3404c6197abd867e6c7356941db994a1cd47b395c4a35b1dbb9",
+  "file_size_bytes": 21046,
+  "immutable": true
+}

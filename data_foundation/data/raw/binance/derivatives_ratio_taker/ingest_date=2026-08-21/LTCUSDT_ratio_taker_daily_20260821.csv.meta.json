@@ -1,0 +1,17 @@
+{
+  "batch_id": "LTCUSDT_ratio_taker_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_LTCUSDT_ratio_taker.csv",
+  "source": {
+    "api": "fapi /futures/data/takerlongshortRatio",
+    "symbol": "LTCUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:09:01.543972+00:00"
+  },
+  "ingested_at": "2026-08-21T15:09:01.564915+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "a0bdc956f05681a7df82a9c9ee33f4a7c3172064ec17fdbf8d4af8e9709094d9",
+  "file_size_bytes": 24666,
+  "immutable": true
+}

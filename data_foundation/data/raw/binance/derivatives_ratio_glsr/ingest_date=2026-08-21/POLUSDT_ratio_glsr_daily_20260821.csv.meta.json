@@ -1,0 +1,17 @@
+{
+  "batch_id": "POLUSDT_ratio_glsr_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_POLUSDT_ratio_glsr.csv",
+  "source": {
+    "api": "fapi /futures/data/globalLongShortAccountRatio",
+    "symbol": "POLUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:09:11.091595+00:00"
+  },
+  "ingested_at": "2026-08-21T15:09:11.092974+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "0b253f3991a7cedc34e7a851a2beebd5a85634fc2dbeca399dac5b414308e1ea",
+  "file_size_bytes": 21046,
+  "immutable": true
+}

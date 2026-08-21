@@ -1,0 +1,78 @@
+{
+  "last_run": "2026-08-21T16:22:30.699897+00:00",
+  "date": "20260821",
+  "sources": {
+    "binance_klines": {
+      "status": "ok",
+      "detail": "",
+      "elapsed_sec": 0.7,
+      "batches": 0,
+      "notes": [
+        "binance 现货端点: https://api.binance.com"
+      ]
+    },
+    "binance_funding": {
+      "status": "ok",
+      "detail": "",
+      "elapsed_sec": 0.8,
+      "batches": 0,
+      "notes": []
+    },
+    "binance_stats": {
+      "status": "ok",
+      "detail": "",
+      "elapsed_sec": 2.6,
+      "batches": 0,
+      "notes": []
+    },
+    "okx": {
+      "status": "ok",
+      "detail": "",
+      "elapsed_sec": 0.9,
+      "batches": 0,
+      "notes": []
+    },
+    "coinbase": {
+      "status": "ok",
+      "detail": "",
+      "elapsed_sec": 0.1,
+      "batches": 0,
+      "notes": []
+    },
+    "stablecoins": {
+      "status": "ok",
+      "detail": "",
+      "elapsed_sec": 0.1,
+      "batches": 0,
+      "notes": []
+    },
+    "onchain": {
+      "status": "ok",
+      "detail": "",
+      "elapsed_sec": 8.8,
+      "batches": 0,
+      "notes": []
+    },
+    "rebuild": {
+      "status": "ok",
+      "detail": "",
+      "elapsed_sec": 295.7,
+      "batches": 6,
+      "notes": [
+        "binance_l1=ok",
+        "binance_l2=ok",
+        "okx=ok",
+        "coinbase=ok",
+        "stablecoins=ok",
+        "onchain=ok"
+      ]
+    }
+  },
+  "failed": [],
+  "history": [
+    {
+      "date": "20260821",
+      "failed": []
+    }
+  ]
+}

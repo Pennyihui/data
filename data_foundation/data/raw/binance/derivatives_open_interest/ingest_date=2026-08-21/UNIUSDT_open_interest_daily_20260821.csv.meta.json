@@ -1,0 +1,17 @@
+{
+  "batch_id": "UNIUSDT_open_interest_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_UNIUSDT_open_interest.csv",
+  "source": {
+    "api": "fapi /futures/data/openInterestHist",
+    "symbol": "UNIUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:09:05.205099+00:00"
+  },
+  "ingested_at": "2026-08-21T15:09:05.206101+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "5f16cc40f6e9bc03503ec03e3862a49352a81f257e528aa493cefd49775e9e47",
+  "file_size_bytes": 38064,
+  "immutable": true
+}

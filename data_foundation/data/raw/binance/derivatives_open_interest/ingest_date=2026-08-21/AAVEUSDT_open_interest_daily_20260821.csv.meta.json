@@ -1,0 +1,17 @@
+{
+  "batch_id": "AAVEUSDT_open_interest_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_AAVEUSDT_open_interest.csv",
+  "source": {
+    "api": "fapi /futures/data/openInterestHist",
+    "symbol": "AAVEUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:09:07.166696+00:00"
+  },
+  "ingested_at": "2026-08-21T15:09:07.167734+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "bf5e9d047045dd64d405a522da6ae13d15e2f29b700fa86518770867fed935d6",
+  "file_size_bytes": 36564,
+  "immutable": true
+}

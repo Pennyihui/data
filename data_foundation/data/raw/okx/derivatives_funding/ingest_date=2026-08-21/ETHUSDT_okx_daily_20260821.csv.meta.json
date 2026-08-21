@@ -1,0 +1,16 @@
+{
+  "batch_id": "ETHUSDT_okx_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_okx_ETH_funding.csv",
+  "source": {
+    "api": "okx /public/funding-rate-history",
+    "instId": "ETH-USDT-SWAP",
+    "days": 90,
+    "fetched_at": "2026-08-21T13:20:16.468242+00:00"
+  },
+  "ingested_at": "2026-08-21T13:20:16.473570+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "f5fc66a7a07b49377d1a0436df1450f6087a44200459d87c4984a1cc3a51d150",
+  "file_size_bytes": 23244,
+  "immutable": true
+}

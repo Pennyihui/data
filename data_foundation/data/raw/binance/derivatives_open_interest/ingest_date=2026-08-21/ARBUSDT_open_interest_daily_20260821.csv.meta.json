@@ -1,0 +1,17 @@
+{
+  "batch_id": "ARBUSDT_open_interest_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_ARBUSDT_open_interest.csv",
+  "source": {
+    "api": "fapi /futures/data/openInterestHist",
+    "symbol": "ARBUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:09:09.068007+00:00"
+  },
+  "ingested_at": "2026-08-21T15:09:09.110935+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "9466cdabec6adbfed00924f2d5be3ba2a434af90d5f9bb5a8b372bedfe34ed70",
+  "file_size_bytes": 39064,
+  "immutable": true
+}

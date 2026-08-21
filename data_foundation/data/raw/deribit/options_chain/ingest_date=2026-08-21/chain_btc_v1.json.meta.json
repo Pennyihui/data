@@ -1,0 +1,16 @@
+{
+  "batch_id": "chain_btc_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\deribit_chain_btc.json",
+  "source": {
+    "api": "deribit /public/get_book_summary_by_currency",
+    "currency": "BTC",
+    "kind": "option",
+    "fetched_at": "2026-08-21T12:52:07.040564+00:00"
+  },
+  "ingested_at": "2026-08-21T12:52:17.718520+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "022f75636d0d297202e1f6044d29c6f08845e47a328264c727487fa31c87c3dc",
+  "file_size_bytes": 519692,
+  "immutable": true
+}

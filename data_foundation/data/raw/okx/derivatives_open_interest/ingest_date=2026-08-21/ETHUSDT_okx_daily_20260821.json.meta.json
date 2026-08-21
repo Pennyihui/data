@@ -1,0 +1,16 @@
+{
+  "batch_id": "ETHUSDT_okx_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_okx_ETH_oi.json",
+  "source": {
+    "api": "okx /public/open-interest",
+    "instId": "ETH-USDT-SWAP",
+    "fetched_at": "2026-08-21T13:20:27.968130+00:00",
+    "note": "OKX 无历史 OI 接口, 仅当前快照"
+  },
+  "ingested_at": "2026-08-21T13:20:27.971025+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "5ba50024d4faf9ea754e751ddf337485c614ebfd7d08393f9c97d36c309fa9a6",
+  "file_size_bytes": 168,
+  "immutable": true
+}

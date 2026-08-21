@@ -1,0 +1,17 @@
+{
+  "batch_id": "AVAXUSDT_funding_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_AVAXUSDT_funding.csv",
+  "source": {
+    "api": "fapi /fapi/v1/fundingRate",
+    "symbol": "AVAXUSDT",
+    "days": 30,
+    "startTime_ms": 1784736592497,
+    "fetched_at": "2026-08-21T16:09:55.250767+00:00"
+  },
+  "ingested_at": "2026-08-21T16:09:55.252275+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "6ff761320846dfc2758bd57a7f06c7fa1a49b4d41e9ef76d71dd155e52fa7c86",
+  "file_size_bytes": 4291,
+  "immutable": true
+}

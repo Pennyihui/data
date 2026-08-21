@@ -1,0 +1,28 @@
+{
+  "dataset": "options_term_structure",
+  "schema_version": "1.0.0",
+  "source_batches": [
+    "chain_btc_v1",
+    "chain_eth_v1"
+  ],
+  "coverage_start": "2026-08-21 12:52:07.040564+00:00",
+  "coverage_end": "2026-08-21 12:52:07.040564+00:00",
+  "row_count": 24,
+  "duplicate_count": 0,
+  "gap_count": 0,
+  "suspect_count": 0,
+  "timestamp_unit": "us",
+  "timezone": "UTC",
+  "certification_status": "certified",
+  "certified_at": "2026-08-21T16:28:45.585114+00:00",
+  "aggregation_rules": {
+    "method": "按 (currency, snapshot_utc, expiry_utc) 聚合: ATM IV=min|strike-underlying| 期权的 mark_iv, median_iv=该到期所有有效 IV 中位数, option_count=有效 IV 期权数",
+    "inputs": [
+      "options_chain_snapshot"
+    ]
+  },
+  "quality_rule_version": "1.0.0",
+  "notes": [],
+  "finalized_at": "2026-08-21T16:28:45.585114+00:00",
+  "note_agg": "stats recomputed across all venues by finalize.py"
+}

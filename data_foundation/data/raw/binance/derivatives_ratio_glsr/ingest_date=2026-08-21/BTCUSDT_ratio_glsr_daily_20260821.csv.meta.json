@@ -1,0 +1,17 @@
+{
+  "batch_id": "BTCUSDT_ratio_glsr_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_BTCUSDT_ratio_glsr.csv",
+  "source": {
+    "api": "fapi /futures/data/globalLongShortAccountRatio",
+    "symbol": "BTCUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:08:39.909077+00:00"
+  },
+  "ingested_at": "2026-08-21T15:08:39.942376+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "e4ce8db390311fbef159d5056b71ba1721290450516505ae506baee415ab5453",
+  "file_size_bytes": 21046,
+  "immutable": true
+}

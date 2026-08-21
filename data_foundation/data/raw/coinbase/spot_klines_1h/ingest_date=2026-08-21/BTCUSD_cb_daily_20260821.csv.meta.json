@@ -1,0 +1,17 @@
+{
+  "batch_id": "BTCUSD_cb_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_cb_BTC_1h.csv",
+  "source": {
+    "api": "coinbase /products/{id}/candles",
+    "product": "BTC-USD",
+    "granularity": 3600,
+    "days": 3,
+    "fetched_at": "2026-08-21T13:21:04.692335+00:00"
+  },
+  "ingested_at": "2026-08-21T13:21:04.725521+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "79ad3dfc8734bc32520fc121ced1c2f96bc5f6c31f452f90a77dec4cad129cea",
+  "file_size_bytes": 4333,
+  "immutable": true
+}

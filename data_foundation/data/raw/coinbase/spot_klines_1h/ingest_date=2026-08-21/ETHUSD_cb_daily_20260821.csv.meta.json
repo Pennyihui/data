@@ -1,0 +1,17 @@
+{
+  "batch_id": "ETHUSD_cb_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_cb_ETH_1h.csv",
+  "source": {
+    "api": "coinbase /products/{id}/candles",
+    "product": "ETH-USD",
+    "granularity": 3600,
+    "days": 3,
+    "fetched_at": "2026-08-21T13:21:09.456687+00:00"
+  },
+  "ingested_at": "2026-08-21T13:21:09.462473+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "dc0898bbdd5b326928415a7f17c9cf28fa65106b9c7aab0e3520e16f2a37f0cd",
+  "file_size_bytes": 4144,
+  "immutable": true
+}

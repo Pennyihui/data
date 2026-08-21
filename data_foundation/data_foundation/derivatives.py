@@ -99,9 +99,16 @@ def normalize_ratio(venue_id: str, symbol: str, metric: str) -> pd.DataFrame:
     df["symbol"] = symbol
     df["timestamp_utc"] = pd.to_datetime(df["time"], utc=True)
     df["metric"] = metric
-    df["long_account"] = pd.to_numeric(df.get("longAccount"), errors="coerce")
-    df["long_short_ratio"] = pd.to_numeric(df.get("longShortRatio"), errors="coerce")
-    df["short_account"] = pd.to_numeric(df.get("shortAccount"), errors="coerce")
+    if metric == "taker":
+        # takerlongshortRatio 字段不同: buySellRatio/sellVol/buyVol
+        # (buyVol=主动买量, sellVol=主动卖量)
+        df["long_account"] = pd.to_numeric(df.get("buyVol"), errors="coerce")
+        df["long_short_ratio"] = pd.to_numeric(df.get("buySellRatio"), errors="coerce")
+        df["short_account"] = pd.to_numeric(df.get("sellVol"), errors="coerce")
+    else:
+        df["long_account"] = pd.to_numeric(df.get("longAccount"), errors="coerce")
+        df["long_short_ratio"] = pd.to_numeric(df.get("longShortRatio"), errors="coerce")
+        df["short_account"] = pd.to_numeric(df.get("shortAccount"), errors="coerce")
     df["data_available_at"] = df["timestamp_utc"]
     df["source_batch_id"] = f"binance_{metric}_v1"
     df = df.drop_duplicates(["timestamp_utc", "metric"], keep="first").sort_values("timestamp_utc")

@@ -1,0 +1,17 @@
+{
+  "batch_id": "XRPUSDT_funding_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_XRPUSDT_funding.csv",
+  "source": {
+    "api": "fapi /fapi/v1/fundingRate",
+    "symbol": "XRPUSDT",
+    "days": 30,
+    "startTime_ms": 1784736592497,
+    "fetched_at": "2026-08-21T16:09:54.221722+00:00"
+  },
+  "ingested_at": "2026-08-21T16:09:54.223768+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "2ecb22fa099fda8301f90cd01f998265c7765aa012e4e5dcb8d08859702960ca",
+  "file_size_bytes": 4291,
+  "immutable": true
+}

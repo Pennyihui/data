@@ -1,0 +1,17 @@
+{
+  "batch_id": "DOTUSDT_ratio_taker_daily_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_DOTUSDT_ratio_taker.csv",
+  "source": {
+    "api": "fapi /futures/data/takerlongshortRatio",
+    "symbol": "DOTUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-21T15:09:04.854330+00:00"
+  },
+  "ingested_at": "2026-08-21T15:09:04.855837+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "7b81eb8ae83136b2bc33a7e095c34b8d92274e66c69e7e58fb1ea7122975e4e7",
+  "file_size_bytes": 26263,
+  "immutable": true
+}

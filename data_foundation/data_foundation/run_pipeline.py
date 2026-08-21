@@ -536,13 +536,13 @@ def stage_coinbase(assets=("BTC", "ETH", "SOL", "XRP"), days=365):
 
 
 def stage_onchain(days=1, hours=24):
-    """阶段 4: 链上 (ERC-20 转账解码/聚合 + DEX 量 + BTC mempool + Chainlink)。"""
+    """阶段 4: 链上 (Ethereum+Arbitrum ERC-20 解码/聚合 + Solana 快照 + DEX 量 + BTC mempool + Chainlink)。"""
     import pandas as pd
     from .ingest_onchain import ingest_onchain_all
     from .l1_onchain import (add_timestamps, aggregate_daily, decode_transfers,
                              normalize_dex_volume, normalize_mempool_blocks,
                              normalize_mempool_fees, normalize_oracle_snapshot,
-                             write_onchain_parquet)
+                             normalize_solana_snapshot, write_onchain_parquet)
     from .l2 import certify_derivatives, write_certified_derivatives
 
     print(f"== 阶段4: 链上 (近 {days} 天 ERC-20, 近 {hours}h mempool) ==")
@@ -551,13 +551,24 @@ def stage_onchain(days=1, hours=24):
 
     print("-- L1 --")
     tt = add_timestamps(decode_transfers())
+    per_chain = {}
     if not tt.empty:
-        write_onchain_parquet(tt, "token_transfer", "ethereum", "block_timestamp_utc")
-        print(f"  token_transfer: {len(tt)} 行 ({tt.token.nunique()} 币)")
-        agg = aggregate_daily(tt)
-        write_onchain_parquet(agg, "onchain_daily_aggregate", "ethereum", "date_utc")
-        print(f"  onchain_daily_aggregate: {len(agg)} 行")
-        print(agg.to_string(index=False))
+        for chain in sorted(tt["chain_id"].unique()):
+            sub = tt[tt["chain_id"] == chain]
+            write_onchain_parquet(sub, "token_transfer", chain, "block_timestamp_utc")
+            print(f"  token_transfer[{chain}]: {len(sub)} 行 "
+                  f"({sub.token.nunique()} 币, "
+                  f"{sub.block_timestamp_utc.min()}~{sub.block_timestamp_utc.max()})")
+            agg = aggregate_daily(sub)
+            write_onchain_parquet(agg, "onchain_daily_aggregate", chain, "date_utc")
+            print(f"  onchain_daily_aggregate[{chain}]: {len(agg)} 行")
+            print(agg.to_string(index=False))
+            per_chain[chain] = (sub, agg)
+    sol = normalize_solana_snapshot()
+    if not sol.empty:
+        write_onchain_parquet(sol, "solana_snapshot", "solana", "fetched_at")
+        print(f"  solana_snapshot: "
+              f"{sol[['slot', 'block_height', 'usdc_supply', 'tps', 'fetched_at']].to_dict('records')}")
     dv = normalize_dex_volume()
     if not dv.empty:
         write_onchain_parquet(dv, "dex_volume", "defillama", "date_utc")
@@ -590,18 +601,24 @@ def stage_onchain(days=1, hours=24):
         if a["coverage_end"] is None or s["coverage_end"] > a["coverage_end"]:
             a["coverage_end"] = s["coverage_end"]
 
-    for df, ds, venue, tc, core, keys in [
-        (tt, "token_transfer", "ethereum", "block_timestamp_utc",
-         ["value_decimal"], ["tx_hash", "log_index", "token"]),
-        (agg, "onchain_daily_aggregate", "ethereum", "date_utc",
-         ["volume_token"], ["token", "date_utc"]),
+    # (df, dataset, venue, time_col, core_numeric_cols, key_cols) — 按链拆分
+    cert_items = []
+    for chain, (sub, agg) in per_chain.items():
+        cert_items.append((sub, "token_transfer", chain, "block_timestamp_utc",
+                           ["value_decimal"], ["tx_hash", "log_index", "token"]))
+        cert_items.append((agg, "onchain_daily_aggregate", chain, "date_utc",
+                           ["volume_token"], ["token", "date_utc"]))
+    cert_items += [
+        (sol, "solana_snapshot", "solana", "fetched_at",
+         ["usdc_supply"], ["slot"]),
         (dv, "dex_volume", "defillama", "date_utc", ["volume_usd"],
          ["dex_name", "date_utc"]),
         (blk, "btc_blocks", "mempool", "block_timestamp_utc",
          ["tx_count"], ["block_height"]),
         (fee, "btc_fees", "mempool", "fetched_at", [], ["fetched_at"]),
-        (ora, "oracle_snapshot", "chainlink", "fetched_at", ["price"], ["pair"])]:
-        if df.empty:
+        (ora, "oracle_snapshot", "chainlink", "fetched_at", ["price"], ["pair"])]
+    for df, ds, venue, tc, core, keys in cert_items:
+        if df is None or df.empty:
             continue
         cdf = certify_derivatives(df, tc, core_numeric_cols=core, key_cols=keys)
         write_certified_derivatives(cdf, ds, venue, "all", tc)
@@ -611,8 +628,10 @@ def stage_onchain(days=1, hours=24):
                  "coverage_end": str(cdf[tc].max())})
     for ds, s in accum.items():
         build_dataset_manifest(ds, "*", "*", "*", "*", s, ["onchain_v1"],
-                               {"note": "阶段4 链上; ERC-20 日志近1天, "
-                                "时间戳为边界块线性插值(±10min), "
+                               {"note": "阶段4 链上; Ethereum+Arbitrum ERC-20 "
+                                "(USDT/USDC/DAI) 日志近1天, 自适应分窗抓取, "
+                                "时间戳=窗口边界块线性插值(±10min), "
+                                "Solana 快照=getTokenSupply(USDC)+槽位/高度, "
                                 "DEX量/费率/预言机为聚合快照"})
     print("阶段4 完成")
 
