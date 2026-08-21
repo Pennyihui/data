@@ -13,12 +13,12 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-21T16:28:45.901707+00:00",
+  "certified_at": "2026-08-21T19:28:21.879514+00:00",
   "aggregation_rules": {
     "note": "阶段3 稳定币; supply=CMC流通量, flows=Ercin日频, peg=Binance稳定币对, mint/burn=供应量派生"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-21T16:28:45.901707+00:00",
+  "finalized_at": "2026-08-21T19:28:21.879514+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

@@ -13,12 +13,12 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-21T16:28:45.620889+00:00",
+  "certified_at": "2026-08-21T19:28:21.806397+00:00",
   "aggregation_rules": {
     "note": "阶段4 链上; Ethereum+Arbitrum ERC-20 (USDT/USDC/DAI) 日志近1天, 自适应分窗抓取, 时间戳=窗口边界块线性插值(±10min), Solana 快照=getTokenSupply(USDC)+槽位/高度, DEX量/费率/预言机为聚合快照"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-21T16:28:45.620889+00:00",
+  "finalized_at": "2026-08-21T19:28:21.806397+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

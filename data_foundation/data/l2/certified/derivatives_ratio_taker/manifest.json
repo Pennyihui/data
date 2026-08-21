@@ -27,10 +27,10 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-21T16:28:37.118528+00:00",
+  "certified_at": "2026-08-21T19:28:19.990632+00:00",
   "aggregation_rules": null,
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-21T16:28:37.118528+00:00",
+  "finalized_at": "2026-08-21T19:28:19.990632+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

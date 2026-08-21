@@ -2,21 +2,7 @@
   "dataset": "market_candle_spot_1h",
   "schema_version": "1.0.0",
   "source_batches": [
-    "BTCUSDT_v1",
-    "ETHUSDT_v1",
-    "SOLUSDT_v1",
-    "BNBUSDT_v1",
-    "XRPUSDT_v1",
-    "ADAUSDT_v1",
-    "DOGEUSDT_v1",
-    "AVAXUSDT_v1",
-    "LINKUSDT_v1",
-    "LTCUSDT_v1",
-    "DOTUSDT_v1",
-    "UNIUSDT_v1",
-    "AAVEUSDT_v1",
-    "ARBUSDT_v1",
-    "POLUSDT_v1"
+    "coinbase_v1"
   ],
   "coverage_start": "2017-08-17 04:00:00+00:00",
   "coverage_end": "2026-08-21 13:00:00+00:00",
@@ -27,10 +13,12 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-21T16:28:44.587761+00:00",
-  "aggregation_rules": null,
+  "certified_at": "2026-08-21T19:28:21.598443+00:00",
+  "aggregation_rules": {
+    "note": "Coinbase REST candles 回填近 1 年, 可扩展; 无 confirm 字段(全为已收盘 bar)"
+  },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-21T16:28:44.587761+00:00",
+  "finalized_at": "2026-08-21T19:28:21.598443+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

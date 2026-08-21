@@ -937,6 +937,13 @@ def run_rebuild() -> dict:
     if failed:
         raise RuntimeError("L1/L2 重建部分阶段失败: " + ", ".join(failed)
                            + " | 详情见日志 " + str(_LOG))
+    # manifest 全局汇总必须是最后一步 (防止单 venue 统计覆盖)
+    try:
+        from data_foundation.finalize import finalize_all
+        n = len(finalize_all(verbose=False))
+        log(f"  [rebuild] finalize: {n} 个数据集 manifest 已全局汇总")
+    except Exception as e:  # noqa: BLE001
+        log(f"  [rebuild] finalize 失败: {str(e)[:120]}")
     return {"batches": len(stages), "notes": [f"{k}={v}" for k, v in res.items()]}
 
 

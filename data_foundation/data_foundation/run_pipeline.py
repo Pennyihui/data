@@ -662,6 +662,12 @@ def main():
             stage_l1(assets)
         if args.stage in ("l2", "all"):
             stage_l2(assets)
+    # manifest 全局汇总必须是管线最后一步 (防止单 venue 统计覆盖)
+    try:
+        from .finalize import finalize_all
+        finalize_all(verbose=False)
+    except Exception:  # noqa: BLE001
+        pass
     print("完成")
 
 

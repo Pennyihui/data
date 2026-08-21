@@ -14,12 +14,12 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-21T16:28:38.606612+00:00",
+  "certified_at": "2026-08-21T19:28:20.213013+00:00",
   "aggregation_rules": {
     "note": "DVOL 波动率指数; 官方 get_volatility_index_data 的 resolution 枚举仅 [1,60,3600,43200,'1D'] 秒 (无 15M), 当前取 3600s=1H; dvol=close/100 (百分数→小数); 历史深度实测多年可用, 默认回看 90 天"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-21T16:28:38.606612+00:00",
+  "finalized_at": "2026-08-21T19:28:20.213013+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }
