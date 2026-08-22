@@ -1,13 +1,15 @@
 {
-  "last_run": "2026-08-22T11:26:40.279756+00:00",
+  "last_run": "2026-08-22T19:01:39.354887+00:00",
   "date": "20260822",
   "sources": {
-    "metadata": {
+    "cross_deriv": {
       "status": "ok",
       "detail": "",
-      "elapsed_sec": 13.4,
-      "batches": 0,
-      "notes": []
+      "elapsed_sec": 188.5,
+      "batches": 3,
+      "notes": [
+        "bybit funding+OI 全历史; bitget 仅最近100条(API上限)"
+      ]
     }
   },
   "failed": [],

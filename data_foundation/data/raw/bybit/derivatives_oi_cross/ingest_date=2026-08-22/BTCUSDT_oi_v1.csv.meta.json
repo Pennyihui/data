@@ -1,0 +1,19 @@
+{
+  "batch_id": "BTCUSDT_oi_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_BTCUSDT_oi.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/open-interest",
+    "symbol": "BTCUSDT",
+    "category": "linear",
+    "intervalTime": "1h",
+    "limit": 200,
+    "pagination": "cursor walk",
+    "fetched_at": "2026-08-22T17:06:19.831547+00:00"
+  },
+  "ingested_at": "2026-08-22T17:06:19.835415+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "6de34f46430ae4c58ca42d2f6704bad0964ccb34408d9d013b55f2062c96c5a3",
+  "file_size_bytes": 2166792,
+  "immutable": true
+}

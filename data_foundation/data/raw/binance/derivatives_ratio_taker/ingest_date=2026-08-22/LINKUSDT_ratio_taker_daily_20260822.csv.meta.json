@@ -1,0 +1,17 @@
+{
+  "batch_id": "LINKUSDT_ratio_taker_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_LINKUSDT_ratio_taker.csv",
+  "source": {
+    "api": "fapi /futures/data/takerlongshortRatio",
+    "symbol": "LINKUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-22T18:31:28.673514+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:28.691643+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "680c5762c57c3e8f5396b5c3acbe1485df83a8ca13b27bafc2e898a9918774bb",
+  "file_size_bytes": 25933,
+  "immutable": true
+}

@@ -1,0 +1,15 @@
+{
+  "batch_id": "stablecoin_exchange_netflow",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_stablecoin_exchange_netflow.json",
+  "source": {
+    "api": "github ErcinDedeoglu/crypto-market-data",
+    "metric": "stablecoin_exchange_netflow",
+    "fetched_at": "2026-08-22T18:32:12.887883+00:00"
+  },
+  "ingested_at": "2026-08-22T18:32:12.919634+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "a0d8ea4d442b117aeb94233e529a42263efd57396da966e5b26c713409f167cf",
+  "file_size_bytes": 169012,
+  "immutable": true
+}

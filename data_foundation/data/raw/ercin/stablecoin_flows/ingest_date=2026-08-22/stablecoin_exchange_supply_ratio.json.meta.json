@@ -1,0 +1,15 @@
+{
+  "batch_id": "stablecoin_exchange_supply_ratio",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_stablecoin_exchange_supply_ratio.json",
+  "source": {
+    "api": "github ErcinDedeoglu/crypto-market-data",
+    "metric": "stablecoin_exchange_supply_ratio",
+    "fetched_at": "2026-08-22T18:32:14.717411+00:00"
+  },
+  "ingested_at": "2026-08-22T18:32:14.718949+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "0061432f01e5aeaf6a858f6aa5a6919f16a868a3ee6afb2a384b7331176b06c4",
+  "file_size_bytes": 157982,
+  "immutable": true
+}

@@ -1,0 +1,19 @@
+{
+  "batch_id": "BNBUSDT_oi_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_BNBUSDT_oi.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/open-interest",
+    "symbol": "BNBUSDT",
+    "category": "linear",
+    "intervalTime": "1h",
+    "limit": 200,
+    "pagination": "cursor walk",
+    "fetched_at": "2026-08-22T17:23:59.437789+00:00"
+  },
+  "ingested_at": "2026-08-22T17:23:59.439857+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "6aa13fbe512061134d87ea98798e60e6f23aa4f18b165d880f545c5f64bec1ce",
+  "file_size_bytes": 1882522,
+  "immutable": true
+}

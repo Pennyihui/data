@@ -1,0 +1,21 @@
+{
+  "batch_id": "ARBUSDT_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_ARBUSDT_1h.csv",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines",
+    "base_host": "https://api.binance.com",
+    "symbol": "ARBUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "days": 3,
+    "startTime_ms": 1787162400000,
+    "endTime_ms": 1787423472191,
+    "fetched_at": "2026-08-22T18:31:12.191327+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:12.192329+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "b1caee54fe09a2ba9105772729684716d4ece31348ac6feae4a4845e9a331aa6",
+  "file_size_bytes": 11693,
+  "immutable": true
+}

@@ -1,0 +1,18 @@
+{
+  "batch_id": "AAVEUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bitget_AAVEUSDT_funding.csv",
+  "source": {
+    "api": "https://api.bitget.com/api/v2/mix/market/history-fund-rate",
+    "symbol": "AAVEUSDT",
+    "productType": "USDT-FUTURES",
+    "pageSize": 100,
+    "note": "Bitget v2 公开 API 仅返回最近 ~100 条资金费 (~33 天); startTime/endTime/idLessThan 分页参数实测被忽略, v1 API 已下线; 全历史需付费数据源",
+    "fetched_at": "2026-08-22T17:02:16.973831+00:00"
+  },
+  "ingested_at": "2026-08-22T17:02:16.974835+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "ab1a9d9349a4ad788c90670d565ccb90742085a6ded965888829646f65e83e2e",
+  "file_size_bytes": 3392,
+  "immutable": true
+}

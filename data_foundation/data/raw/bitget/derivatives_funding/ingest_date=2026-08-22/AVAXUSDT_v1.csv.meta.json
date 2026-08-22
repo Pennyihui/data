@@ -1,0 +1,18 @@
+{
+  "batch_id": "AVAXUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bitget_AVAXUSDT_funding.csv",
+  "source": {
+    "api": "https://api.bitget.com/api/v2/mix/market/history-fund-rate",
+    "symbol": "AVAXUSDT",
+    "productType": "USDT-FUTURES",
+    "pageSize": 100,
+    "note": "Bitget v2 公开 API 仅返回最近 ~100 条资金费 (~33 天); startTime/endTime/idLessThan 分页参数实测被忽略, v1 API 已下线; 全历史需付费数据源",
+    "fetched_at": "2026-08-22T17:02:04.474672+00:00"
+  },
+  "ingested_at": "2026-08-22T17:02:04.476668+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "fd95896a6514446b35279c8d2cc0dd68fb1bfb8ef9f40dd926aaeef3ffd967e0",
+  "file_size_bytes": 3383,
+  "immutable": true
+}

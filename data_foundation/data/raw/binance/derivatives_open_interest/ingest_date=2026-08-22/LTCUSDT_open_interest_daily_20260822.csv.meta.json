@@ -1,0 +1,17 @@
+{
+  "batch_id": "LTCUSDT_open_interest_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_LTCUSDT_open_interest.csv",
+  "source": {
+    "api": "fapi /futures/data/openInterestHist",
+    "symbol": "LTCUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-22T18:31:28.917952+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:28.918957+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "bc6984b4bdc0c09dc9da0161d6270426d032035d040c578fa6e7727b27bd0cd7",
+  "file_size_bytes": 37064,
+  "immutable": true
+}

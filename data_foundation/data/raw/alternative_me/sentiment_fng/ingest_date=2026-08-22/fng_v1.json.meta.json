@@ -1,0 +1,18 @@
+{
+  "batch_id": "fng_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\fng_all.json",
+  "source": {
+    "api": "https://api.alternative.me/fng/",
+    "params": {
+      "limit": 0
+    },
+    "fetched_at": "2026-08-22T16:47:36.999937+00:00",
+    "rows": 3121
+  },
+  "ingested_at": "2026-08-22T16:47:37.028575+00:00",
+  "timestamp_unit": "us",
+  "timezone": "UTC",
+  "checksum_sha256": "8fcf02a9bc2d66f1a34cb2cc383f65a28e9e73ff26b88d3e18c2f5603d48cc93",
+  "file_size_bytes": 247686,
+  "immutable": true
+}

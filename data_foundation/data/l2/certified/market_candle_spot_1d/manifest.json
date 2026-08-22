@@ -18,22 +18,22 @@
     "ARBUSDT_v1",
     "POLUSDT_v1"
   ],
-  "coverage_start": "2017-08-17 00:00:00+00:00",
-  "coverage_end": "2026-08-21 00:00:00+00:00",
-  "row_count": 37245,
+  "coverage_start": "2015-07-20 00:00:00+00:00",
+  "coverage_end": "2026-08-22 00:00:00+00:00",
+  "row_count": 48783,
   "duplicate_count": 0,
   "gap_count": 0,
-  "suspect_count": 15,
+  "suspect_count": 19,
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-22T15:05:46.421838+00:00",
+  "certified_at": "2026-08-22T19:54:40.042228+00:00",
   "aggregation_rules": {
     "method": "resample from 1h",
     "version": "1.0"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-22T15:05:46.421838+00:00",
+  "finalized_at": "2026-08-22T19:54:40.042228+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

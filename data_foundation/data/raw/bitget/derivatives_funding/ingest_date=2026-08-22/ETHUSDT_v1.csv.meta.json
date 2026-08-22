@@ -1,0 +1,18 @@
+{
+  "batch_id": "ETHUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bitget_ETHUSDT_funding.csv",
+  "source": {
+    "api": "https://api.bitget.com/api/v2/mix/market/history-fund-rate",
+    "symbol": "ETHUSDT",
+    "productType": "USDT-FUTURES",
+    "pageSize": 100,
+    "note": "Bitget v2 公开 API 仅返回最近 ~100 条资金费 (~33 天); startTime/endTime/idLessThan 分页参数实测被忽略, v1 API 已下线; 全历史需付费数据源",
+    "fetched_at": "2026-08-22T17:01:51.179238+00:00"
+  },
+  "ingested_at": "2026-08-22T17:01:51.181840+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "a393c6a2d33939b20953eda7b16f03f98751504d5d1472c646ee9878b870d138",
+  "file_size_bytes": 3407,
+  "immutable": true
+}

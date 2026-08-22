@@ -1,0 +1,17 @@
+{
+  "batch_id": "BNBUSDT_ratio_taker_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_BNBUSDT_ratio_taker.csv",
+  "source": {
+    "api": "fapi /futures/data/takerlongshortRatio",
+    "symbol": "BNBUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-22T18:31:21.842732+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:21.843735+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "3b6daf611b15ebc3ef6bb24ef9c4ab1d5ef853099876815cacb7f78a86d462ca",
+  "file_size_bytes": 24300,
+  "immutable": true
+}

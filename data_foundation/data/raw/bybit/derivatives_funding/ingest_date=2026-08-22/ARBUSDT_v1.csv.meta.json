@@ -1,0 +1,18 @@
+{
+  "batch_id": "ARBUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_ARBUSDT_funding.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/funding/history",
+    "symbol": "ARBUSDT",
+    "category": "linear",
+    "limit": 200,
+    "pagination": "endTime cursor walk, full history",
+    "fetched_at": "2026-08-22T18:13:35.924358+00:00"
+  },
+  "ingested_at": "2026-08-22T18:13:35.928060+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "366d4c231f0492781feceeef1ad12256cd9fe1799d953eb2d5167104527ddf3d",
+  "file_size_bytes": 129789,
+  "immutable": true
+}

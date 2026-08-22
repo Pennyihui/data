@@ -1,0 +1,21 @@
+{
+  "batch_id": "BTCUSD_deep_v2_2023",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\cb_BTC_deep_2023.csv",
+  "source": {
+    "api": "coinbase /products/{id}/candles",
+    "product": "BTC-USD",
+    "granularity": 3600,
+    "deep_backfill": true,
+    "year": 2023,
+    "first_ts": 1672531200,
+    "last_ts": 1704063600,
+    "rows": 8757,
+    "fetched_at": "2026-08-22T16:45:29.435744+00:00"
+  },
+  "ingested_at": "2026-08-22T16:48:46.863462+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "3133b768184dbdda8790a1d29555fc0619a5d28c3765040e7a9d00c7796838c0",
+  "file_size_bytes": 526392,
+  "immutable": true
+}

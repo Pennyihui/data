@@ -1,0 +1,17 @@
+{
+  "batch_id": "BNBUSDT_ratio_glsr_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_BNBUSDT_ratio_glsr.csv",
+  "source": {
+    "api": "fapi /futures/data/globalLongShortAccountRatio",
+    "symbol": "BNBUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-22T18:31:21.154829+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:21.155835+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "34a4e07134f88f0ad0512b17addb606f5cb78c226d3ffcdfba74b13681a71e74",
+  "file_size_bytes": 21046,
+  "immutable": true
+}

@@ -1,0 +1,20 @@
+{
+  "batch_id": "stablecoin_supply_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_stablecoin_supply.csv",
+  "source": {
+    "api": "stablecoins.llama.fi /stablecoin/{id}",
+    "tokens": {
+      "USDT": 1,
+      "USDC": 2,
+      "DAI": 5
+    },
+    "note": "自建 schema: venue_id/date/token/circulating_supply (L0 快照)",
+    "fetched_at": "2026-08-22T18:32:10.388315+00:00"
+  },
+  "ingested_at": "2026-08-22T18:32:10.389620+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "372a920ffa788767ab5fe6c63c652fc70b88c3a38f1656687f40ce50331b1261",
+  "file_size_bytes": 165,
+  "immutable": true
+}

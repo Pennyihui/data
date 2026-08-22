@@ -1,0 +1,17 @@
+{
+  "batch_id": "LINKUSDT_ratio_glsr_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_LINKUSDT_ratio_glsr.csv",
+  "source": {
+    "api": "fapi /futures/data/globalLongShortAccountRatio",
+    "symbol": "LINKUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-22T18:31:27.835655+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:27.836694+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "bbfe915811b06388cc91bf973b32aeda6487b9bdc2aeda9a5712931919d00283",
+  "file_size_bytes": 21046,
+  "immutable": true
+}

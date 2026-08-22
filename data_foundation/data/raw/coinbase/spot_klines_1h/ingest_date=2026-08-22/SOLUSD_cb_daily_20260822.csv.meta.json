@@ -1,0 +1,17 @@
+{
+  "batch_id": "SOLUSD_cb_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_cb_SOL_1h.csv",
+  "source": {
+    "api": "coinbase /products/{id}/candles",
+    "product": "SOL-USD",
+    "granularity": 3600,
+    "days": 3,
+    "fetched_at": "2026-08-22T18:32:00.930991+00:00"
+  },
+  "ingested_at": "2026-08-22T18:32:00.933011+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "8b53e381ec70141eba8ca691577c9f8108073b9d32e7ab2dcb2380fac3c262a1",
+  "file_size_bytes": 3689,
+  "immutable": true
+}

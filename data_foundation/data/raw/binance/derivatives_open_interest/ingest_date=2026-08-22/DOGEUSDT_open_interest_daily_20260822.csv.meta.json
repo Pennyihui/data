@@ -1,0 +1,17 @@
+{
+  "batch_id": "DOGEUSDT_open_interest_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_DOGEUSDT_open_interest.csv",
+  "source": {
+    "api": "fapi /futures/data/openInterestHist",
+    "symbol": "DOGEUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-22T18:31:24.788596+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:24.791251+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "9a7f518f1c2acc5d96c8038a79a0e7c05b8d6c71f68f26ddfd00e102f90850fe",
+  "file_size_bytes": 41064,
+  "immutable": true
+}

@@ -1,0 +1,18 @@
+{
+  "batch_id": "ADAUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_ADAUSDT_funding.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/funding/history",
+    "symbol": "ADAUSDT",
+    "category": "linear",
+    "limit": 200,
+    "pagination": "endTime cursor walk, full history",
+    "fetched_at": "2026-08-22T17:29:02.437226+00:00"
+  },
+  "ingested_at": "2026-08-22T17:29:02.438238+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "52329e5f89b395e4ec870afd5395da3a0d95bd8922fdf49220d32aab393b2411",
+  "file_size_bytes": 207204,
+  "immutable": true
+}

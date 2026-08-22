@@ -1,0 +1,13 @@
+{
+  "batch_id": "fees_recommended_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_mempool_fees.json",
+  "source": {
+    "api": "mempool.space /v1/fees/recommended"
+  },
+  "ingested_at": "2026-08-22T18:53:08.897314+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "4232d8dc5d4338831b16160f470a3e3e506b6d172f886301b7cc4afde7953c6e",
+  "file_size_bytes": 133,
+  "immutable": true
+}

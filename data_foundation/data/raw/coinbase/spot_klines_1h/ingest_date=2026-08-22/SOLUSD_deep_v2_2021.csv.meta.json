@@ -1,0 +1,21 @@
+{
+  "batch_id": "SOLUSD_deep_v2_2021",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\cb_SOL_deep_2021.csv",
+  "source": {
+    "api": "coinbase /products/{id}/candles",
+    "product": "SOL-USD",
+    "granularity": 3600,
+    "deep_backfill": true,
+    "year": 2021,
+    "first_ts": 1623945600,
+    "last_ts": 1640991600,
+    "rows": 4736,
+    "fetched_at": "2026-08-22T16:45:29.435744+00:00"
+  },
+  "ingested_at": "2026-08-22T16:53:28.642889+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "6ebf03ea9b752ba066fa112c91c3f031b7d87560729ea1545f666ee448ff78bc",
+  "file_size_bytes": 241804,
+  "immutable": true
+}

@@ -1,0 +1,18 @@
+{
+  "batch_id": "SOLUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_SOLUSDT_funding.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/funding/history",
+    "symbol": "SOLUSDT",
+    "category": "linear",
+    "limit": 200,
+    "pagination": "endTime cursor walk, full history",
+    "fetched_at": "2026-08-22T17:13:17.717777+00:00"
+  },
+  "ingested_at": "2026-08-22T17:13:17.718822+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "6fd64010e7ecbcc4194d347d7ebeadf50c6e407b5b9af9740ce2cb71e076e4d2",
+  "file_size_bytes": 210975,
+  "immutable": true
+}

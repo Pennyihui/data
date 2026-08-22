@@ -1,0 +1,17 @@
+{
+  "batch_id": "SOLUSDT_ratio_tlsr_pos_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_SOLUSDT_ratio_tlsr_pos.csv",
+  "source": {
+    "api": "fapi /futures/data/topLongShortPositionRatio",
+    "symbol": "SOLUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-22T18:31:20.453783+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:20.457377+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "d8287901acb0c287fb5d84eefe0d84b82d487fc98df05f5a01d6b5f10e285681",
+  "file_size_bytes": 21046,
+  "immutable": true
+}

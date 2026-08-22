@@ -1,0 +1,21 @@
+{
+  "batch_id": "XRPUSDT_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_XRPUSDT_1h.csv",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines",
+    "base_host": "https://api.binance.com",
+    "symbol": "XRPUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "days": 3,
+    "startTime_ms": 1787162400000,
+    "endTime_ms": 1787423470135,
+    "fetched_at": "2026-08-22T18:31:10.135921+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:10.136925+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "de89943c0a2ca235696b7664b8f57c1f95bfb113b3211fcd56f47d283ee32bf5",
+  "file_size_bytes": 12131,
+  "immutable": true
+}

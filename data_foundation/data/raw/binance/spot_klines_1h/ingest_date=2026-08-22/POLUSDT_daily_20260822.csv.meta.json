@@ -1,0 +1,21 @@
+{
+  "batch_id": "POLUSDT_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_POLUSDT_1h.csv",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines",
+    "base_host": "https://api.binance.com",
+    "symbol": "POLUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "days": 3,
+    "startTime_ms": 1787162400000,
+    "endTime_ms": 1787423472416,
+    "fetched_at": "2026-08-22T18:31:12.416462+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:12.419516+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "180e7b5045fec4171243fe86837aea5d7076e3e43ebcd38ba3beebfc92d48804",
+  "file_size_bytes": 11720,
+  "immutable": true
+}

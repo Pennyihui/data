@@ -17,16 +17,36 @@ from .schema import (DERIVATIVES_FUNDING_COLUMNS, DERIVATIVES_INDEX_COLUMNS,
 
 def write_derivatives_parquet(df: pd.DataFrame, dataset: str, venue_id: str,
                               instrument: str, time_col: str) -> str:
-    """衍生品数据集按 date 分区写 Parquet。"""
+    """衍生品数据集写 Parquet (l1/{dataset}/{venue}/{instrument}/data.parquet)。
+
+    合并语义 (保护深回填): 目标文件已存在时, 与现有数据 concat 后按时间列
+    去重 (keep="last", 新数据优先), 防止每日增量重建把 Vision metrics 等
+    深度历史冲回短窗口。
+    """
     root = os.path.join(L1_DIR, dataset, venue_id, instrument)
     os.makedirs(root, exist_ok=True)
     df = df.copy()
     for c in df.columns:
         if "time" in c or c == "data_available_at":
             df[c] = pd.to_datetime(df[c], utc=True, errors="coerce").astype("datetime64[us, UTC]")
+    target = os.path.join(root, "data.parquet")
+    if os.path.exists(target):
+        try:
+            old = pq.read_table(target).to_pandas()
+            for c in old.columns:
+                if "time" in c or c == "data_available_at":
+                    old[c] = pd.to_datetime(old[c], utc=True, errors="coerce") \
+                        .astype("datetime64[us, UTC]")
+            key_cols = [time_col] + (["metric"] if "metric" in df.columns else [])
+            df = pd.concat([old[df.columns.intersection(old.columns)], df],
+                           ignore_index=True)
+            df = df.drop_duplicates(subset=key_cols, keep="last")
+            df = df.sort_values(time_col).reset_index(drop=True)
+        except Exception:  # noqa: BLE001
+            pass  # 读失败则退化为覆盖写
     df["date"] = pd.to_datetime(df[time_col], utc=True).dt.strftime("%Y-%m-%d")
     pq.write_table(pa.Table.from_pandas(df, preserve_index=False),
-                   os.path.join(root, "data.parquet"), compression="snappy")
+                   target, compression="snappy")
     return root
 
 

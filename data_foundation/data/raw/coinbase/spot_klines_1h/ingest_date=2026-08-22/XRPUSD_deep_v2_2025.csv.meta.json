@@ -1,0 +1,21 @@
+{
+  "batch_id": "XRPUSD_deep_v2_2025",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\cb_XRP_deep_2025.csv",
+  "source": {
+    "api": "coinbase /products/{id}/candles",
+    "product": "XRP-USD",
+    "granularity": 3600,
+    "deep_backfill": true,
+    "year": 2025,
+    "first_ts": 1735689600,
+    "last_ts": 1767222000,
+    "rows": 8755,
+    "fetched_at": "2026-08-22T16:45:29.435744+00:00"
+  },
+  "ingested_at": "2026-08-22T16:56:15.224063+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "3edb4ae7a49bec8009878629958b37645b1d1212084ce52d5463300f615aa842",
+  "file_size_bytes": 475791,
+  "immutable": true
+}

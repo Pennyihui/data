@@ -14,7 +14,7 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-22T15:05:48.454101+00:00",
+  "certified_at": "2026-08-22T19:54:43.068144+00:00",
   "aggregation_rules": {
     "method": "Black-Scholes: r=0.05 常数(可覆盖), T=(expiry 08:00UTC - snapshot)/365.25 年, sigma=mark_iv(小数); delta=N(d1)(call)/N(d1)-1(put), gamma=phi(d1)/(S*sigma*sqrt(T)), vega=S*phi(d1)*sqrt(T)(每 1.0 绝对波动率单位, 每 1 vol point≈vega/100); T<=0 或无效 IV 剔除",
     "inputs": [
@@ -23,6 +23,6 @@
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-22T15:05:48.454101+00:00",
+  "finalized_at": "2026-08-22T19:54:43.068144+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

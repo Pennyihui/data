@@ -1,0 +1,21 @@
+{
+  "batch_id": "AVAXUSDT_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_AVAXUSDT_1h.csv",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines",
+    "base_host": "https://api.binance.com",
+    "symbol": "AVAXUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "days": 3,
+    "startTime_ms": 1787162400000,
+    "endTime_ms": 1787423470834,
+    "fetched_at": "2026-08-22T18:31:10.834357+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:10.834357+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "fc32b20a00527a2f9590258da9a4585226b5eba5186d2fb30c63fc208f659a19",
+  "file_size_bytes": 11622,
+  "immutable": true
+}

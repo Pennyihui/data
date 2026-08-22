@@ -1,0 +1,17 @@
+{
+  "batch_id": "SOLUSDT_open_interest_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_SOLUSDT_open_interest.csv",
+  "source": {
+    "api": "fapi /futures/data/openInterestHist",
+    "symbol": "SOLUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-22T18:31:19.742060+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:19.743062+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "4618b9d4d8294f673fffed023c01832ce7a6e66af9f04109840183f583edec23",
+  "file_size_bytes": 38064,
+  "immutable": true
+}

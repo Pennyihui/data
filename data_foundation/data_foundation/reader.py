@@ -104,3 +104,26 @@ def load_manifest(dataset: str) -> dict:
     p = os.path.join(CERTIFIED_DIR, dataset, "manifest.json")
     with open(p, encoding="utf-8") as f:
         return json.load(f)
+
+
+def load_asset_master(asset: str | None = None,
+                      venue_id: str | None = None) -> pd.DataFrame:
+    """读取 certified asset_master/master 最新全量快照。
+
+    asset / venue_id 可选过滤 (精确匹配); 返回 ASSET_MASTER_COLUMNS 列
+    (外加认证附加列 is_suspect/quality_reason/date)。
+    """
+    from .schema import ASSET_MASTER_COLUMNS
+    root = os.path.join(CERTIFIED_DIR, "asset_master", "master", "all")
+    if not os.path.isdir(root):
+        raise FileNotFoundError(root)
+    df = pq.read_table(root).to_pandas()
+    for c in df.columns:
+        if "time" in c or c == "data_available_at" or c.endswith("_utc"):
+            df[c] = pd.to_datetime(df[c], utc=True)
+    if asset is not None:
+        df = df[df["asset"] == asset]
+    if venue_id is not None:
+        df = df[df["venue_id"] == venue_id]
+    cols = [c for c, _ in ASSET_MASTER_COLUMNS]
+    return df[[c for c in cols if c in df.columns]].reset_index(drop=True)

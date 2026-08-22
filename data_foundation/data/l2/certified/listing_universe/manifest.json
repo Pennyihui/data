@@ -1,0 +1,24 @@
+{
+  "dataset": "listing_universe",
+  "schema_version": "1.0.0",
+  "source_batches": [
+    "universe_v1"
+  ],
+  "coverage_start": "2026-08-22 18:47:10.397989+00:00",
+  "coverage_end": "2026-08-22 18:47:10.397989+00:00",
+  "row_count": 3695,
+  "duplicate_count": 0,
+  "gap_count": 0,
+  "suspect_count": 0,
+  "timestamp_unit": "us",
+  "timezone": "UTC",
+  "certification_status": "certified",
+  "certified_at": "2026-08-22T19:54:37.635931+00:00",
+  "aggregation_rules": {
+    "note": "Binance Vision 现货月度 K 线归档 {SYMBOL}/{YYYY-MM} 前缀枚举: delimiter=/ 枚举 symbol 层 + 每 symbol 1h 档案文件名提取月份 (无 1h 回退全部 interval 并集, 只读元数据不下数据, 断点续跑); 与 data-api.binance.vision /api/v3/exchangeInfo 现役 TRADING 集合对比定 active|delisted"
+  },
+  "quality_rule_version": "1.0.0",
+  "notes": [],
+  "finalized_at": "2026-08-22T19:54:37.635931+00:00",
+  "note_agg": "stats recomputed across all venues by finalize.py"
+}

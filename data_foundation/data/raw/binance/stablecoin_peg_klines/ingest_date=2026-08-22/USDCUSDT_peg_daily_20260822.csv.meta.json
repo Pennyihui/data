@@ -1,0 +1,19 @@
+{
+  "batch_id": "USDCUSDT_peg_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_USDCUSDT_peg.csv",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines",
+    "base_host": "https://api.binance.com",
+    "symbol": "USDCUSDT",
+    "interval": "1h",
+    "days": 3,
+    "note": "ok",
+    "fetched_at": "2026-08-22T18:32:15.028554+00:00"
+  },
+  "ingested_at": "2026-08-22T18:32:15.032377+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "293439a66c2a90a82888b3b4cbbd134dce7bd01c325c3753ad24a2a8f6a1bab2",
+  "file_size_bytes": 12331,
+  "immutable": true
+}

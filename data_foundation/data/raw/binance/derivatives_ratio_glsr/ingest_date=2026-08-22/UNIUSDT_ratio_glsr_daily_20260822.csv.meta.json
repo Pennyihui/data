@@ -1,0 +1,17 @@
+{
+  "batch_id": "UNIUSDT_ratio_glsr_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_UNIUSDT_ratio_glsr.csv",
+  "source": {
+    "api": "fapi /futures/data/globalLongShortAccountRatio",
+    "symbol": "UNIUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-22T18:31:31.903210+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:31.904616+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "e5e1016200802ed87fd327c2b7d3b1a7f3a3318d15dc318507788949939547c5",
+  "file_size_bytes": 21046,
+  "immutable": true
+}

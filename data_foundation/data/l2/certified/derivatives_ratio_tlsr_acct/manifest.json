@@ -2,35 +2,150 @@
   "dataset": "derivatives_ratio_tlsr_acct",
   "schema_version": "1.0.0",
   "source_batches": [
-    "BTCUSDT_v1",
-    "ETHUSDT_v1",
-    "SOLUSDT_v1",
-    "BNBUSDT_v1",
-    "XRPUSDT_v1",
-    "ADAUSDT_v1",
-    "DOGEUSDT_v1",
-    "AVAXUSDT_v1",
-    "LINKUSDT_v1",
-    "LTCUSDT_v1",
-    "DOTUSDT_v1",
-    "UNIUSDT_v1",
-    "AAVEUSDT_v1",
-    "ARBUSDT_v1",
-    "POLUSDT_v1"
+    "AAVEUSDT_metrics_202112..202608 (57 months)",
+    "ADAUSDT_metrics_202112..202608 (57 months)",
+    "ARBUSDT_metrics_202303..202608 (42 months)",
+    "AVAXUSDT_metrics_202112..202608 (57 months)",
+    "BNBUSDT_metrics_202112..202608 (57 months)",
+    "BTCUSDT_metrics_202009..202608 (72 months)",
+    "DOGEUSDT_metrics_202112..202608 (57 months)",
+    "DOTUSDT_metrics_202112..202608 (57 months)",
+    "ETHUSDT_metrics_202112..202608 (57 months)",
+    "LINKUSDT_metrics_202112..202608 (57 months)",
+    "LTCUSDT_metrics_202112..202608 (57 months)",
+    "POLUSDT_metrics_202409..202608 (24 months)",
+    "SOLUSDT_metrics_202112..202608 (57 months)",
+    "UNIUSDT_metrics_202112..202608 (57 months)",
+    "XRPUSDT_metrics_202112..202608 (57 months)"
   ],
-  "coverage_start": "2026-07-28 20:00:00+00:00",
-  "coverage_end": "2026-08-21 15:00:00+00:00",
-  "row_count": 8433,
+  "coverage_start": "2020-09-01 00:00:00+00:00",
+  "coverage_end": "2026-08-22 18:00:00+00:00",
+  "row_count": 496263,
   "duplicate_count": 0,
   "gap_count": 0,
   "suspect_count": 0,
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-22T15:05:44.614229+00:00",
-  "aggregation_rules": null,
+  "certified_at": "2026-08-22T19:54:36.658625+00:00",
+  "aggregation_rules": {
+    "source": "Binance Vision 官方 futures metrics 归档 (data.binance.vision/data/futures/um/daily/metrics)",
+    "resample": "源=Vision官方metrics 5分钟粒度, 重采样1h取末值 (每小时组取最后一行, timestamp 取整点)",
+    "dedup": "与现有 21 天 API 行合并: 现有行优先 (先到先得), 新历史行按主键去重",
+    "merge_overlap_dropped": {
+      "BTCUSDT": {
+        "derivatives_open_interest": 52322,
+        "derivatives_ratio_glsr": 51838,
+        "derivatives_ratio_tlsr_acct": 44633,
+        "derivatives_ratio_tlsr_pos": 44637,
+        "derivatives_ratio_taker": 49215
+      },
+      "ETHUSDT": {
+        "derivatives_open_interest": 580,
+        "derivatives_ratio_glsr": 580,
+        "derivatives_ratio_tlsr_acct": 580,
+        "derivatives_ratio_tlsr_pos": 580,
+        "derivatives_ratio_taker": 581
+      },
+      "SOLUSDT": {
+        "derivatives_open_interest": 580,
+        "derivatives_ratio_glsr": 580,
+        "derivatives_ratio_tlsr_acct": 580,
+        "derivatives_ratio_tlsr_pos": 580,
+        "derivatives_ratio_taker": 581
+      },
+      "BNBUSDT": {
+        "derivatives_open_interest": 580,
+        "derivatives_ratio_glsr": 580,
+        "derivatives_ratio_tlsr_acct": 580,
+        "derivatives_ratio_tlsr_pos": 580,
+        "derivatives_ratio_taker": 581
+      },
+      "XRPUSDT": {
+        "derivatives_open_interest": 580,
+        "derivatives_ratio_glsr": 580,
+        "derivatives_ratio_tlsr_acct": 580,
+        "derivatives_ratio_tlsr_pos": 580,
+        "derivatives_ratio_taker": 581
+      },
+      "ADAUSDT": {
+        "derivatives_open_interest": 580,
+        "derivatives_ratio_glsr": 580,
+        "derivatives_ratio_tlsr_acct": 580,
+        "derivatives_ratio_tlsr_pos": 580,
+        "derivatives_ratio_taker": 581
+      },
+      "DOGEUSDT": {
+        "derivatives_open_interest": 580,
+        "derivatives_ratio_glsr": 580,
+        "derivatives_ratio_tlsr_acct": 580,
+        "derivatives_ratio_tlsr_pos": 580,
+        "derivatives_ratio_taker": 581
+      },
+      "AVAXUSDT": {
+        "derivatives_open_interest": 580,
+        "derivatives_ratio_glsr": 580,
+        "derivatives_ratio_tlsr_acct": 580,
+        "derivatives_ratio_tlsr_pos": 580,
+        "derivatives_ratio_taker": 581
+      },
+      "LINKUSDT": {
+        "derivatives_open_interest": 580,
+        "derivatives_ratio_glsr": 580,
+        "derivatives_ratio_tlsr_acct": 580,
+        "derivatives_ratio_tlsr_pos": 580,
+        "derivatives_ratio_taker": 581
+      },
+      "LTCUSDT": {
+        "derivatives_open_interest": 580,
+        "derivatives_ratio_glsr": 580,
+        "derivatives_ratio_tlsr_acct": 580,
+        "derivatives_ratio_tlsr_pos": 580,
+        "derivatives_ratio_taker": 581
+      },
+      "DOTUSDT": {
+        "derivatives_open_interest": 532,
+        "derivatives_ratio_glsr": 532,
+        "derivatives_ratio_tlsr_acct": 531,
+        "derivatives_ratio_tlsr_pos": 531,
+        "derivatives_ratio_taker": 532
+      },
+      "UNIUSDT": {
+        "derivatives_open_interest": 580,
+        "derivatives_ratio_glsr": 580,
+        "derivatives_ratio_tlsr_acct": 580,
+        "derivatives_ratio_tlsr_pos": 580,
+        "derivatives_ratio_taker": 581
+      },
+      "AAVEUSDT": {
+        "derivatives_open_interest": 580,
+        "derivatives_ratio_glsr": 580,
+        "derivatives_ratio_tlsr_acct": 580,
+        "derivatives_ratio_tlsr_pos": 580,
+        "derivatives_ratio_taker": 581
+      },
+      "ARBUSDT": {
+        "derivatives_open_interest": 531,
+        "derivatives_ratio_glsr": 531,
+        "derivatives_ratio_tlsr_acct": 531,
+        "derivatives_ratio_tlsr_pos": 531,
+        "derivatives_ratio_taker": 532
+      },
+      "POLUSDT": {
+        "derivatives_open_interest": 531,
+        "derivatives_ratio_glsr": 531,
+        "derivatives_ratio_tlsr_acct": 531,
+        "derivatives_ratio_tlsr_pos": 531,
+        "derivatives_ratio_taker": 531
+      }
+    },
+    "naming": "open_interest_usd 按 schema 落地为 open_interest_notional",
+    "ratio_detail": "glsr=count_long_short_ratio, tlsr_acct=count_toptrader_long_short_ratio, tlsr_pos=sum_toptrader_long_short_ratio, taker=sum_taker_long_short_vol_ratio; long_account/short_account Vision 无原生字段=NaN; ratio 无值的小时行剔除",
+    "depth": "深度回填 2020-09-01 00:00:00+00:00 ~ 2026-08-22 18:00:00+00:00 (2020-09 起, 各 symbol 自上市月)",
+    "version": "1.0"
+  },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-22T15:05:44.615564+00:00",
+  "finalized_at": "2026-08-22T19:54:36.658625+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

@@ -1,0 +1,15 @@
+{
+  "batch_id": "stablecoin_exchange_reserve",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_stablecoin_exchange_reserve.json",
+  "source": {
+    "api": "github ErcinDedeoglu/crypto-market-data",
+    "metric": "stablecoin_exchange_reserve",
+    "fetched_at": "2026-08-22T18:32:13.871760+00:00"
+  },
+  "ingested_at": "2026-08-22T18:32:13.873726+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "3cb9e071e7b927139f76f2a4b3cb6c23f7e8e70b808c98e646f8263d3e231030",
+  "file_size_bytes": 168275,
+  "immutable": true
+}

@@ -1,0 +1,17 @@
+{
+  "batch_id": "DOTUSDT_open_interest_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_DOTUSDT_open_interest.csv",
+  "source": {
+    "api": "fapi /futures/data/openInterestHist",
+    "symbol": "DOTUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-22T18:31:30.234059+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:30.276157+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "fa5bc002272d88c398f7393fd3de446ec695838f7d21a91586bfda6f18bcd7c9",
+  "file_size_bytes": 38564,
+  "immutable": true
+}

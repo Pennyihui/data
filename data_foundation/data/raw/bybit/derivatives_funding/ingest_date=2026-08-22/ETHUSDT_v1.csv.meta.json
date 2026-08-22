@@ -1,0 +1,18 @@
+{
+  "batch_id": "ETHUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_ETHUSDT_funding.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/funding/history",
+    "symbol": "ETHUSDT",
+    "category": "linear",
+    "limit": 200,
+    "pagination": "endTime cursor walk, full history",
+    "fetched_at": "2026-08-22T17:06:58.981035+00:00"
+  },
+  "ingested_at": "2026-08-22T17:06:58.984793+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "2fbb421ade296be2a6460ff06fe12e19ac5e6609f6ef15c7f2b2a3684b56a5eb",
+  "file_size_bytes": 224123,
+  "immutable": true
+}

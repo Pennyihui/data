@@ -1,0 +1,18 @@
+{
+  "batch_id": "BNBUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_BNBUSDT_funding.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/funding/history",
+    "symbol": "BNBUSDT",
+    "category": "linear",
+    "limit": 200,
+    "pagination": "endTime cursor walk, full history",
+    "fetched_at": "2026-08-22T17:19:14.948094+00:00"
+  },
+  "ingested_at": "2026-08-22T17:19:14.975809+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "1cbe6a534e105d8e429919d9ec59437ad1de057ffa934eded1c62afe5346e9a9",
+  "file_size_bytes": 199809,
+  "immutable": true
+}

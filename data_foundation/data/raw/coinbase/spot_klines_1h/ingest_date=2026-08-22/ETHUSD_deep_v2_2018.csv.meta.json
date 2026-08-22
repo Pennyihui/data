@@ -1,0 +1,21 @@
+{
+  "batch_id": "ETHUSD_deep_v2_2018",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\cb_ETH_deep_2018.csv",
+  "source": {
+    "api": "coinbase /products/{id}/candles",
+    "product": "ETH-USD",
+    "granularity": 3600,
+    "deep_backfill": true,
+    "year": 2018,
+    "first_ts": 1514764800,
+    "last_ts": 1546297200,
+    "rows": 8754,
+    "fetched_at": "2026-08-22T16:45:29.435744+00:00"
+  },
+  "ingested_at": "2026-08-22T16:51:46.874042+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "6a22e09778f5ecf6122cd41d58fd892360bd3568f70dd86bf0d96741e8653d62",
+  "file_size_bytes": 456695,
+  "immutable": true
+}

@@ -1,0 +1,19 @@
+{
+  "batch_id": "ADAUSDT_oi_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_ADAUSDT_oi.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/open-interest",
+    "symbol": "ADAUSDT",
+    "category": "linear",
+    "intervalTime": "1h",
+    "limit": 200,
+    "pagination": "cursor walk",
+    "fetched_at": "2026-08-22T17:33:33.126385+00:00"
+  },
+  "ingested_at": "2026-08-22T17:33:33.129831+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "39838144eb60e7100f509d68932f2bf2eb71408a32ffc851e8debb3e941f9fff",
+  "file_size_bytes": 2119078,
+  "immutable": true
+}

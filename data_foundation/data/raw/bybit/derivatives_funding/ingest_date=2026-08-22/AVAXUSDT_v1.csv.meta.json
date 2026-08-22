@@ -1,0 +1,18 @@
+{
+  "batch_id": "AVAXUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_AVAXUSDT_funding.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/funding/history",
+    "symbol": "AVAXUSDT",
+    "category": "linear",
+    "limit": 200,
+    "pagination": "endTime cursor walk, full history",
+    "fetched_at": "2026-08-22T17:38:49.588351+00:00"
+  },
+  "ingested_at": "2026-08-22T17:38:49.589867+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "ad46323395d6b1220e29125a1c81773743350920cdad500e9d99c26c234fd541",
+  "file_size_bytes": 189496,
+  "immutable": true
+}

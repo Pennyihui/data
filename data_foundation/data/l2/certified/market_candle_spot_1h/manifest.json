@@ -4,21 +4,21 @@
   "source_batches": [
     "coinbase_v1"
   ],
-  "coverage_start": "2017-08-17 04:00:00+00:00",
-  "coverage_end": "2026-08-21 13:00:00+00:00",
-  "row_count": 1205800,
+  "coverage_start": "2015-07-20 21:00:00+00:00",
+  "coverage_end": "2026-08-22 18:00:00+00:00",
+  "row_count": 1447478,
   "duplicate_count": 0,
-  "gap_count": 165,
+  "gap_count": 195,
   "suspect_count": 0,
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-22T15:05:47.743987+00:00",
+  "certified_at": "2026-08-22T19:54:41.928014+00:00",
   "aggregation_rules": {
     "note": "Coinbase REST candles 回填近 1 年, 可扩展; 无 confirm 字段(全为已收盘 bar)"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-22T15:05:47.743987+00:00",
+  "finalized_at": "2026-08-22T19:54:41.928014+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

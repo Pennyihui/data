@@ -1,0 +1,18 @@
+{
+  "batch_id": "BNBUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bitget_BNBUSDT_funding.csv",
+  "source": {
+    "api": "https://api.bitget.com/api/v2/mix/market/history-fund-rate",
+    "symbol": "BNBUSDT",
+    "productType": "USDT-FUTURES",
+    "pageSize": 100,
+    "note": "Bitget v2 公开 API 仅返回最近 ~100 条资金费 (~33 天); startTime/endTime/idLessThan 分页参数实测被忽略, v1 API 已下线; 全历史需付费数据源",
+    "fetched_at": "2026-08-22T17:01:55.074350+00:00"
+  },
+  "ingested_at": "2026-08-22T17:01:55.075473+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "9be8708f9591616d58f17135fb1a67ad4e62896989650d1babb264550d629641",
+  "file_size_bytes": 3371,
+  "immutable": true
+}

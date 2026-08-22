@@ -1,0 +1,18 @@
+{
+  "batch_id": "DOTUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_DOTUSDT_funding.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/funding/history",
+    "symbol": "DOTUSDT",
+    "category": "linear",
+    "limit": 200,
+    "pagination": "endTime cursor walk, full history",
+    "fetched_at": "2026-08-22T17:55:11.186329+00:00"
+  },
+  "ingested_at": "2026-08-22T17:55:11.188379+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "a13504dc937aa8044115263a08b1ce93cc6caea3d6463b7cb0f10b33a022a3ef",
+  "file_size_bytes": 209070,
+  "immutable": true
+}

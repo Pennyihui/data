@@ -59,3 +59,190 @@
 [11:26:40] 调度完成 | 失败源: 无
 [11:26:40] manifest: D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_manifest.json
 [11:26:40] ======================================================================
+[18:30:03] ======================================================================
+[18:30:03] 每日增量调度开始 | 日期戳=20260822 | ingest_date=2026-08-22
+[18:30:03] 源: ['binance_klines', 'binance_funding', 'binance_stats', 'okx', 'coinbase', 'stablecoins', 'onchain', 'metadata', 'rebuild']
+[18:30:03] 代理: http://127.0.0.1:7897 | 日志: D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_run_20260822.log
+[18:31:03] 网络链路探测: T0_vision=不可用, T1_p7897=不可用, T2_p7900=542ms, T2_p7906=不可用, T2_p7907=不可用, T2_p7904=不可用, T2_p7902=4754ms, T3_socks5h=不可用, T3_doh_pin=不可用
+[18:31:03] ======================================================================
+[18:31:08]   binance 现货端点选定: https://api.binance.com
+[18:31:09]   BTCUSDT: 73 根 -> BTCUSDT_daily_20260822
+[18:31:09]   ETHUSDT: 73 根 -> ETHUSDT_daily_20260822
+[18:31:09]   SOLUSDT: 73 根 -> SOLUSDT_daily_20260822
+[18:31:09]   BNBUSDT: 73 根 -> BNBUSDT_daily_20260822
+[18:31:10]   XRPUSDT: 73 根 -> XRPUSDT_daily_20260822
+[18:31:10]   ADAUSDT: 73 根 -> ADAUSDT_daily_20260822
+[18:31:10]   DOGEUSDT: 73 根 -> DOGEUSDT_daily_20260822
+[18:31:10]   AVAXUSDT: 73 根 -> AVAXUSDT_daily_20260822
+[18:31:11]   LINKUSDT: 73 根 -> LINKUSDT_daily_20260822
+[18:31:11]   LTCUSDT: 73 根 -> LTCUSDT_daily_20260822
+[18:31:11]   DOTUSDT: 73 根 -> DOTUSDT_daily_20260822
+[18:31:11]   UNIUSDT: 73 根 -> UNIUSDT_daily_20260822
+[18:31:11]   AAVEUSDT: 73 根 -> AAVEUSDT_daily_20260822
+[18:31:12]   ARBUSDT: 73 根 -> ARBUSDT_daily_20260822
+[18:31:12]   POLUSDT: 73 根 -> POLUSDT_daily_20260822
+[18:31:12] [binance_klines] OK (8s)
+[18:31:13] [binance_funding] OK (1s)
+[18:31:36]   binance_stats: 共 75 个批次
+[18:31:36] [binance_stats] OK (23s)
+[18:31:43]   okx BTC: spot/swap/funding/mark/index/OI 每日批次完成
+[18:31:47]   okx ETH: spot/swap/funding/mark/index/OI 每日批次完成
+[18:31:51]   okx SOL: spot/swap/funding/mark/index/OI 每日批次完成
+[18:31:55]   okx XRP: spot/swap/funding/mark/index/OI 每日批次完成
+[18:31:55] [okx] OK (19s)
+[18:31:56]   coinbase BTC-USD: 72 根 -> BTCUSD_cb_daily_20260822
+[18:31:58]   coinbase ETH-USD: 72 根 -> ETHUSD_cb_daily_20260822
+[18:32:00]   coinbase SOL-USD: 72 根 -> SOLUSD_cb_daily_20260822
+[18:32:01]   coinbase XRP-USD: 72 根 -> XRPUSD_cb_daily_20260822
+[18:32:01] [coinbase] OK (6s)
+[18:32:10]   defillama 供应量快照: [['defillama', '2026-08-22', 'USDT', '183174913324.79'], ['defillama', '2026-08-22', 'USDC', '73676873455.31'], ['defillama', '2026-08-22', 'DAI', '4783139702.45']]
+[18:32:12]   ercin stablecoin_exchange_inflow_total: 已重下载
+[18:32:12]   ercin stablecoin_exchange_netflow: 已重下载
+[18:32:13]   ercin stablecoin_exchange_outflow_total: 已重下载
+[18:32:13]   ercin stablecoin_exchange_reserve: 已重下载
+[18:32:14]   ercin stablecoin_exchange_supply_ratio: 已重下载
+[18:32:15]   peg USDCUSDT: 73 根 -> USDCUSDT_peg_daily_20260822 (ok)
+[18:32:15]   [warn] peg DAIUSDT: 近 3 天无数据, 写入空批次 (empty: 该交易对近 3 天无成交 (DAIUSDT 自 2020-08 起 Binance 现货停牌))
+[18:32:15]   peg DAIUSDT: 0 根 -> DAIUSDT_peg_daily_20260822 (empty: 该交易对近 3 天无成交 (DAIUSDT 自 2020-08 起 Binance 现货停牌))
+[18:32:15] [stablecoins] OK (13s)
+[18:32:18]   链上窗口: 2026-08-21 00:00 UTC -> 2026-08-22 00:00 UTC (block 25799779 ~ 25806959, latest=25812499)
+[18:47:54]   USDT: 693775 条日志 -> USDT_transfer_logs_daily_20260822
+[18:50:54] netpath [T2_p7900] 429, sleep 5
+[18:51:38] ======================================================================
+[18:51:38] 每日增量调度开始 | 日期戳=20260822 | ingest_date=2026-08-22
+[18:51:38] 源: ['sentiment_macro']
+[18:51:38] 代理: http://127.0.0.1:7897 | 日志: D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_run_20260822.log
+[18:52:12]   USDC: 641108 条日志 -> USDC_transfer_logs_daily_20260822
+[18:52:33] 网络链路探测: T0_vision=不可用, T1_p7897=不可用, T2_p7900=492ms, T2_p7906=不可用, T2_p7907=不可用, T2_p7904=不可用, T2_p7902=6698ms, T3_socks5h=251ms, T3_doh_pin=不可用
+[18:52:33] ======================================================================
+[18:52:40] [sentiment_macro] OK (7s)
+[18:52:40] ======================================================================
+[18:52:40] 调度完成 | 失败源: 无
+[18:52:40] manifest: D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_manifest.json
+[18:52:40] ======================================================================
+[18:52:41] ======================================================================
+[18:52:41] 每日增量调度开始 | 日期戳=20260822 | ingest_date=2026-08-22
+[18:52:41] 源: ['tron']
+[18:52:41] 代理: http://127.0.0.1:7897 | 日志: D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_run_20260822.log
+[18:53:08]   DAI: 24846 条日志 -> DAI_transfer_logs_daily_20260822
+[18:53:14]   mempool blocks: 165 块
+[18:53:26]   chainlink: {'ETH-USD': {'roundId': 129127208515966894134, 'answer': 242890949369, 'startedAt': 1787422761, 'updatedAt': 1787422775, 'answeredInRound': 129127208515966894134}, 'fetched_at': '2026-08-22T18:53:26.369095+00:00'}
+[18:53:26] [onchain] OK (1271s)
+[18:53:27]   metadata binance_spot: 今日批次已存在, 跳过抓取 (幂等)
+[18:53:27]   metadata binance_perp: 今日批次已存在, 跳过抓取 (幂等)
+[18:53:27]   metadata okx: 今日批次已存在, 跳过抓取 (幂等)
+[18:53:27]   metadata coinbase: 今日批次已存在, 跳过抓取 (幂等)
+[18:53:28]   metadata 完成: 新写批次 0, 各 venue PIT 已重认证
+[18:53:28] [metadata] OK (2s)
+== L1: 标准化 ==
+  BTCUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  ETHUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+[18:53:40] 网络链路探测: T0_vision=不可用, T1_p7897=226ms, T2_p7900=497ms, T2_p7906=不可用, T2_p7907=不可用, T2_p7904=不可用, T2_p7902=8264ms, T3_socks5h=不可用, T3_doh_pin=不可用
+[18:53:40] ======================================================================
+  SOLUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  BNBUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  XRPUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  ADAUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  DOGEUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  AVAXUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  LINKUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  LTCUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  DOTUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  UNIUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  AAVEUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  ARBUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  POLUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  [skip] instrument 已是 PIT 快照历史, 由 run_daily metadata 源维护
+[18:54:23]   rebuild binance_l1: ok (55s)
+[18:54:23]   rebuild binance_l1: ok (55s)
+== L2: 认证 ==
+  BTCUSDT: 1h/1d/1w + 衍生品 certified
+  ETHUSDT: 1h/1d/1w + 衍生品 certified
+  SOLUSDT: 1h/1d/1w + 衍生品 certified
+  BNBUSDT: 1h/1d/1w + 衍生品 certified
+  XRPUSDT: 1h/1d/1w + 衍生品 certified
+  ADAUSDT: 1h/1d/1w + 衍生品 certified
+  DOGEUSDT: 1h/1d/1w + 衍生品 certified
+  AVAXUSDT: 1h/1d/1w + 衍生品 certified
+  LINKUSDT: 1h/1d/1w + 衍生品 certified
+  LTCUSDT: 1h/1d/1w + 衍生品 certified
+  DOTUSDT: 1h/1d/1w + 衍生品 certified
+  UNIUSDT: 1h/1d/1w + 衍生品 certified
+  AAVEUSDT: 1h/1d/1w + 衍生品 certified
+  ARBUSDT: 1h/1d/1w + 衍生品 certified
+  POLUSDT: 1h/1d/1w + 衍生品 certified
+  manifests 汇总完成
+[18:55:00]   rebuild binance_l2: ok (37s)
+[18:55:00]   rebuild binance_l2: ok (37s)
+== OKX (BTC, ETH, SOL, XRP, days=上市日至今) ==
+-- L0 --
+  okx BTC: spot/swap/funding/mark/index/OI 已摄取
+  okx ETH: spot/swap/funding/mark/index/OI 已摄取
+  okx SOL: spot/swap/funding/mark/index/OI 已摄取
+  okx XRP: spot/swap/funding/mark/index/OI 已摄取
+-- L1 --
+  okx BTC: spot/swap/funding/mark/index/OI 标准化
+  okx ETH: spot/swap/funding/mark/index/OI 标准化
+  okx SOL: spot/swap/funding/mark/index/OI 标准化
+  okx XRP: spot/swap/funding/mark/index/OI 标准化
+  okx instruments: 832 行
+-- L2 --
+  okx BTC: certified
+  okx ETH: certified
+  okx SOL: certified
+  okx XRP: certified
+-- basis --
+  basis BTC: 58593 行
+  basis ETH: 58383 行
+  basis SOL: 48921 行
+  basis XRP: 58239 行
+OKX 管线完成
+[18:55:40]   rebuild okx: ok (40s)
+[18:55:40]   rebuild okx: ok (40s)
+== Coinbase (BTC, ETH, SOL, XRP, 近 365 天) ==
+-- L1 --
+  coinbase BTC-USD: 97167 行
+  coinbase ETH-USD: 89758 行
+  coinbase SOL-USD: 45396 行
+  coinbase XRP-USD: 43882 行
+  coinbase instruments: 483 行
+-- L2 --
+  coinbase BTC-USD: certified
+  coinbase ETH-USD: certified
+  coinbase SOL-USD: certified
+  coinbase XRP-USD: certified
+Coinbase 管线完成
+[18:55:49]   rebuild coinbase: ok (10s)
+[18:55:49]   rebuild coinbase: ok (10s)
+== 阶段3: 稳定币 ==
+-- L0 --
+  稳定币 L0: 0 批次
+-- L1 --
+  supply: 9525 行 (3 币, 2015-02-25~2026-08-19)
+  flows: 6806 行 (5 指标)
+  peg: 63799 行 (2 币)
+-- L2 --
+阶段3 完成
+[18:56:21]   rebuild stablecoins: ok (32s)
+[18:56:21]   rebuild stablecoins: ok (32s)
+[18:56:21]   [rebuild:onchain] L0 已跳过 (每日 L0 由 run_onchain 完成; Arbitrum/Solana RPC 经代理卡死), 仅重建 L1/L2
+[18:56:21]   [rebuild:onchain] L0 已跳过 (每日 L0 由 run_onchain 完成; Arbitrum/Solana RPC 经代理卡死), 仅重建 L1/L2
+== 阶段4: 链上 (近 1 天 ERC-20, 近 24h mempool) ==
+-- L0 --
+-- L1 --
+[18:57:05] [tron] OK (205s)
+[18:57:05] ======================================================================
+[18:57:05] 调度完成 | 失败源: 无
+[18:57:05] manifest: D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_manifest.json
+[18:57:05] ======================================================================
+[18:57:24] ======================================================================
+[18:57:24] 每日增量调度开始 | 日期戳=20260822 | ingest_date=2026-08-22
+[18:57:24] 源: ['cross_deriv']
+[18:57:24] 代理: http://127.0.0.1:7897 | 日志: D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_run_20260822.log
+[18:58:30] 网络链路探测: T0_vision=不可用, T1_p7897=不可用, T2_p7900=514ms, T2_p7906=不可用, T2_p7907=不可用, T2_p7904=不可用, T2_p7902=8313ms, T3_socks5h=不可用, T3_doh_pin=不可用
+[18:58:30] ======================================================================
+[19:01:39] [cross_deriv] OK (188s)
+[19:01:39] ======================================================================
+[19:01:39] 调度完成 | 失败源: 无
+[19:01:39] manifest: D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_manifest.json
+[19:01:39] ======================================================================

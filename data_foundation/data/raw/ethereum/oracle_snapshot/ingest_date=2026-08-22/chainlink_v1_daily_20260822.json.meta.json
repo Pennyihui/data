@@ -1,0 +1,18 @@
+{
+  "batch_id": "chainlink_v1_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_chainlink.json",
+  "source": {
+    "api": "eth_call latestRoundData",
+    "pairs": [
+      "BTC-USD",
+      "ETH-USD"
+    ],
+    "fetched_at": "2026-08-22T18:53:26.369600+00:00"
+  },
+  "ingested_at": "2026-08-22T18:53:26.375035+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "74bada5b13c70001575e8bd1094e2240e3d6e9a556851718223934c233127114",
+  "file_size_bytes": 213,
+  "immutable": true
+}

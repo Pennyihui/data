@@ -1,0 +1,18 @@
+{
+  "batch_id": "UNIUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_UNIUSDT_funding.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/funding/history",
+    "symbol": "UNIUSDT",
+    "category": "linear",
+    "limit": 200,
+    "pagination": "endTime cursor walk, full history",
+    "fetched_at": "2026-08-22T17:59:28.865653+00:00"
+  },
+  "ingested_at": "2026-08-22T17:59:28.866655+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "f3ba7bfa1a7bf1c964f71cfa34057db540e254b01d3d8fea576d01d2ce363ed0",
+  "file_size_bytes": 204740,
+  "immutable": true
+}

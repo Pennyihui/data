@@ -14,3 +14,6 @@ data/l2/certified/token_transfer/
 data/raw/binance/perpetual_klines_1h/
 data/raw/binance/derivatives_index_price/
 data/raw/binance/derivatives_mark_price/
+
+# Vision metrics 官方归档原始 zip (~264MB, 可重下; L1/L2 入库)
+data/raw/binance/futures_metrics/

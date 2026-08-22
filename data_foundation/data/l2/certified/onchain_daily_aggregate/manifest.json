@@ -2,23 +2,24 @@
   "dataset": "onchain_daily_aggregate",
   "schema_version": "1.0.0",
   "source_batches": [
-    "onchain_backfill_v2"
+    "onchain_backfill_v2",
+    "tron_usdt_20260822"
   ],
   "coverage_start": "2026-08-01 00:00:00+00:00",
-  "coverage_end": "2026-08-21 00:00:00+00:00",
-  "row_count": 124,
+  "coverage_end": "2026-08-22 00:00:00+00:00",
+  "row_count": 125,
   "duplicate_count": 0,
   "gap_count": 0,
   "suspect_count": 0,
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-22T15:05:48.364253+00:00",
+  "certified_at": "2026-08-22T19:54:42.978780+00:00",
   "aggregation_rules": {
-    "note": "ERC-20 转账日频聚合 (Ethereum+Arbitrum × USDT/USDC/DAI); large>=1e6 token 面值; 去重后按日精确重算"
+    "note": "ERC-20 (ethereum/arbitrum) + Tron TRC-20 (USDT) 日频聚合; large>=1e6 代币面值; tron 来自 Tronscan token_trc20/transfers 深度上限内翻页 (约最近几分钟~当日); mint/burn 无标记置 0; 清洗: 按 transaction_id 去重 + 排除金额>1e10 USDT 的脏数据"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-22T15:05:48.364253+00:00",
+  "finalized_at": "2026-08-22T19:54:42.978780+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

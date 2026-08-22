@@ -1,0 +1,16 @@
+{
+  "batch_id": "BTCUSDT_okx_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_okx_BTC_funding.csv",
+  "source": {
+    "api": "okx /public/funding-rate-history",
+    "instId": "BTC-USDT-SWAP",
+    "days": 90,
+    "fetched_at": "2026-08-22T18:31:40.665087+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:40.685579+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "4b1aeb59a0f3d32e3aab6487aa08f9a85703c457e90f67747cd2d8756365888d",
+  "file_size_bytes": 23174,
+  "immutable": true
+}

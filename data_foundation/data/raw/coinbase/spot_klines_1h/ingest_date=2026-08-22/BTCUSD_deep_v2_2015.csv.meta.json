@@ -1,0 +1,21 @@
+{
+  "batch_id": "BTCUSD_deep_v2_2015",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\cb_BTC_deep_2015.csv",
+  "source": {
+    "api": "coinbase /products/{id}/candles",
+    "product": "BTC-USD",
+    "granularity": 3600,
+    "deep_backfill": true,
+    "year": 2015,
+    "first_ts": 1437426000,
+    "last_ts": 1451602800,
+    "rows": 3939,
+    "fetched_at": "2026-08-22T16:45:29.435744+00:00"
+  },
+  "ingested_at": "2026-08-22T16:48:46.189130+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "8a034c41ce4a95b02716dae0cc68aa10591646c3dc09421e7c8478dae78a6367",
+  "file_size_bytes": 202238,
+  "immutable": true
+}

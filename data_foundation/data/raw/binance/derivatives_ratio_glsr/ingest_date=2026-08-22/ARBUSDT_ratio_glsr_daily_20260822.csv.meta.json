@@ -1,0 +1,17 @@
+{
+  "batch_id": "ARBUSDT_ratio_glsr_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_ARBUSDT_ratio_glsr.csv",
+  "source": {
+    "api": "fapi /futures/data/globalLongShortAccountRatio",
+    "symbol": "ARBUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-22T18:31:34.536773+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:34.538384+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "d4cd07a2a3aabf1b682093fc5834c84663ed435d9929328b159382efd1380eab",
+  "file_size_bytes": 21046,
+  "immutable": true
+}

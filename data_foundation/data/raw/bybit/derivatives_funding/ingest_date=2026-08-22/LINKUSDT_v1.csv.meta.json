@@ -1,0 +1,18 @@
+{
+  "batch_id": "LINKUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_LINKUSDT_funding.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/funding/history",
+    "symbol": "LINKUSDT",
+    "category": "linear",
+    "limit": 200,
+    "pagination": "endTime cursor walk, full history",
+    "fetched_at": "2026-08-22T17:43:34.610904+00:00"
+  },
+  "ingested_at": "2026-08-22T17:43:34.611908+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "7d1922a47dc86c3e3f90420bc9bae7bcd2c0b951e441a009079f07ce4d20af39",
+  "file_size_bytes": 221939,
+  "immutable": true
+}

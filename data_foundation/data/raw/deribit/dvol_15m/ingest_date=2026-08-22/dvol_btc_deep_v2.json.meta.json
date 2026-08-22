@@ -1,0 +1,20 @@
+{
+  "batch_id": "dvol_btc_deep_v2",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\deribit_dvol_btc_deep.json",
+  "source": {
+    "api": "deribit /public/get_volatility_index_data",
+    "currency": "BTC",
+    "resolution_seconds": 3600,
+    "resolution_label": "1H",
+    "days": 2500,
+    "deep_backfill": true,
+    "fetched_at": "2026-08-22T16:43:20.212263+00:00",
+    "note": "深回填: days=2500 试探至 DVOL 最早可用 (~2021-03); 官方 resolution 枚举无 15M, 取 1H; OHLC 数组"
+  },
+  "ingested_at": "2026-08-22T16:44:26.796854+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "e6fe3c6f98f4f10cef29774f71f215015ad2170d61fb40b40b78004e0434352a",
+  "file_size_bytes": 2122212,
+  "immutable": true
+}

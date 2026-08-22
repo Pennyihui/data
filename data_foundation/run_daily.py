@@ -63,6 +63,7 @@ UA = {"User-Agent": "Mozilla/5.0 (data-foundation)"}
 
 from data_foundation.config import DATA_ROOT, MVP_ASSETS, RAW_DIR  # noqa: E402
 from data_foundation import netpath  # noqa: E402  统一四级网络链路
+from data_foundation import alert_webhook  # noqa: E402  失败告警 (webhook, 未配置则 log-only)
 from data_foundation.l0 import list_raw_batches, sha256_file  # noqa: E402
 
 # ============================================================
@@ -989,11 +990,49 @@ def _stage_onchain_no_l0(stage_onchain) -> None:
 
 
 # ============================================================
+# 源 9: sentiment_macro — FNG 情绪 + 宏观日频 (增量)
+# ============================================================
+def run_sentiment_macro() -> dict:
+    import ingest_fng_macro as m
+    n = 0
+    if m.ingest_fng_daily():
+        n += 1
+    m.build_fng()
+    if m.ingest_macro_daily():
+        n += 1
+    m.build_macro()
+    return {"batches": n, "notes": []}
+
+
+# ============================================================
+# 源 10: tron — Tron USDT 日聚合增量 (Tronscan 1万条上限内)
+# ============================================================
+def run_tron() -> dict:
+    import ingest_tron
+    ingest_tron.phase_fetch()
+    r = ingest_tron.phase_build(verbose=False) or {}
+    return {"batches": int(r.get("rows", 1)), "notes": []}
+
+
+# ============================================================
+# 源 11: cross_deriv — Bybit/Bitget 资金费+OI 增量 (子代理 A 脚本, 幂等)
+# ============================================================
+def run_cross_deriv() -> dict:
+    py = sys.executable or r"E:\Anaconda3\python.exe"
+    for script in ("fetch_bybit.py", "fetch_bitget.py", "build_l1_l2.py"):
+        p = os.path.join(_HERE, script)
+        r = subprocess.run([py, "-X", "utf8", p], timeout=7200)
+        if r.returncode != 0:
+            raise RuntimeError(f"{script} exit {r.returncode}")
+    return {"batches": 3, "notes": ["bybit funding+OI 全历史; bitget 仅最近100条(API上限)"]}
+
+
+# ============================================================
 # 源注册表
 # ============================================================
 ALL_SOURCES = ["binance_klines", "binance_funding", "binance_stats",
                "okx", "coinbase", "stablecoins", "onchain", "metadata",
-               "rebuild"]
+               "sentiment_macro", "tron", "cross_deriv", "rebuild"]
 SOURCES = {
     "binance_klines": run_binance_klines,
     "binance_funding": run_binance_funding,
@@ -1003,6 +1042,9 @@ SOURCES = {
     "stablecoins": run_stablecoins,
     "onchain": run_onchain,
     "metadata": run_metadata,
+    "sentiment_macro": run_sentiment_macro,
+    "tron": run_tron,
+    "cross_deriv": run_cross_deriv,
     "rebuild": run_rebuild,
 }
 
@@ -1145,6 +1187,13 @@ def main() -> int:
 
     failed = [k for k, v in results.items() if v["status"] == "failed"]
     man = _write_manifest(results)
+    # 失败告警: 有失败源时经 webhook 通知 (未配置 ALERT_WEBHOOK_URL 则 log-only)
+    if failed:
+        try:
+            alert_webhook.notify(results)
+            log(f"失败告警已发送: {failed}")
+        except Exception as e:  # noqa: BLE001
+            log(f"[warn] 失败告警发送异常: {str(e)[:150]}")
     log("=" * 70)
     log(f"调度完成 | 失败源: {failed if failed else '无'}")
     log(f"manifest: {man}")

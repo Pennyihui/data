@@ -1,0 +1,18 @@
+{
+  "batch_id": "LTCUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_LTCUSDT_funding.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/funding/history",
+    "symbol": "LTCUSDT",
+    "category": "linear",
+    "limit": 200,
+    "pagination": "endTime cursor walk, full history",
+    "fetched_at": "2026-08-22T17:49:03.502221+00:00"
+  },
+  "ingested_at": "2026-08-22T17:49:03.504232+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "86c8c763286ece5e5e825df9045cf80c25aae7bde520afe3d494223d9fa6c5b9",
+  "file_size_bytes": 223079,
+  "immutable": true
+}

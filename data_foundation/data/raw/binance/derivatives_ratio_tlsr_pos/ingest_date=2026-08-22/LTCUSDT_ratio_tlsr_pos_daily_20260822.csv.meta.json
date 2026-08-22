@@ -1,0 +1,17 @@
+{
+  "batch_id": "LTCUSDT_ratio_tlsr_pos_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_LTCUSDT_ratio_tlsr_pos.csv",
+  "source": {
+    "api": "fapi /futures/data/topLongShortPositionRatio",
+    "symbol": "LTCUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-22T18:31:29.784865+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:29.786756+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "ca54f249ee0823eea18b6198644d66093282d80c34bc828e5f3db46563387787",
+  "file_size_bytes": 21046,
+  "immutable": true
+}

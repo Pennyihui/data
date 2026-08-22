@@ -1,0 +1,19 @@
+{
+  "batch_id": "LINKUSDT_oi_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_LINKUSDT_oi.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/open-interest",
+    "symbol": "LINKUSDT",
+    "category": "linear",
+    "intervalTime": "1h",
+    "limit": 200,
+    "pagination": "cursor walk",
+    "fetched_at": "2026-08-22T17:48:18.834572+00:00"
+  },
+  "ingested_at": "2026-08-22T17:48:18.837539+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "07a95ad560de67e87cfc82f1582477846f287236d9aec7c7f88685fcc6aee77f",
+  "file_size_bytes": 2188528,
+  "immutable": true
+}

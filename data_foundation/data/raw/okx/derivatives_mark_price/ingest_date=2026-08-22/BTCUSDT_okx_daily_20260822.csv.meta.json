@@ -1,0 +1,17 @@
+{
+  "batch_id": "BTCUSDT_okx_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_okx_BTC_mark.csv",
+  "source": {
+    "api": "okx /market/history-mark-price-candles",
+    "instId": "BTC-USDT-SWAP",
+    "bar": "1H",
+    "days": 3,
+    "fetched_at": "2026-08-22T18:31:41.739525+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:41.772947+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "9421fa3775e334701dfc963865500f4c32db79eb7be0d220112a9a0f2d660c01",
+  "file_size_bytes": 19288,
+  "immutable": true
+}

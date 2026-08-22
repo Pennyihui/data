@@ -1,0 +1,16 @@
+{
+  "batch_id": "XRPUSDT_okx_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_okx_XRP_funding.csv",
+  "source": {
+    "api": "okx /public/funding-rate-history",
+    "instId": "XRP-USDT-SWAP",
+    "days": 90,
+    "fetched_at": "2026-08-22T18:31:54.279453+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:54.280450+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "81026d4337391007d9bc8a7d1a803276b95ae98d0c86fef13bbbd7ae970c378f",
+  "file_size_bytes": 22884,
+  "immutable": true
+}

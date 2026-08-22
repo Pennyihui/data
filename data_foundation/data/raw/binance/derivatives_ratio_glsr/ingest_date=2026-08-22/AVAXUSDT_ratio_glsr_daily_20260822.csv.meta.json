@@ -1,0 +1,17 @@
+{
+  "batch_id": "AVAXUSDT_ratio_glsr_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_AVAXUSDT_ratio_glsr.csv",
+  "source": {
+    "api": "fapi /futures/data/globalLongShortAccountRatio",
+    "symbol": "AVAXUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-22T18:31:26.607916+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:26.644543+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "6dcbc0eb3db75103f71f12a877e536a27183a31967f957e8d8354450d9b9b247",
+  "file_size_bytes": 21046,
+  "immutable": true
+}

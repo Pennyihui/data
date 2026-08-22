@@ -1,0 +1,17 @@
+{
+  "batch_id": "ARBUSDT_ratio_taker_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_ARBUSDT_ratio_taker.csv",
+  "source": {
+    "api": "fapi /futures/data/takerlongshortRatio",
+    "symbol": "ARBUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-22T18:31:35.307773+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:35.346215+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "b9e5085352dc248f0f2749a52ebbe397482da2b84ff0526cede7211e4cfb8d7d",
+  "file_size_bytes": 27167,
+  "immutable": true
+}

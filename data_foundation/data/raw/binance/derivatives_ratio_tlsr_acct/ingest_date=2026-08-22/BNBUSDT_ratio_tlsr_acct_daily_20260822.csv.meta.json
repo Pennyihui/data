@@ -1,0 +1,17 @@
+{
+  "batch_id": "BNBUSDT_ratio_tlsr_acct_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_BNBUSDT_ratio_tlsr_acct.csv",
+  "source": {
+    "api": "fapi /futures/data/topLongShortAccountRatio",
+    "symbol": "BNBUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-22T18:31:21.385496+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:21.386525+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "4979f36d1c18827db5f707ac18b8af76b6b2ea2b1dee6a620f78a830c3a28f06",
+  "file_size_bytes": 21046,
+  "immutable": true
+}

@@ -1,0 +1,21 @@
+{
+  "batch_id": "SOLUSDT_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_SOLUSDT_1h.csv",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines",
+    "base_host": "https://api.binance.com",
+    "symbol": "SOLUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "days": 3,
+    "startTime_ms": 1787162400000,
+    "endTime_ms": 1787423469671,
+    "fetched_at": "2026-08-22T18:31:09.671616+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:09.672737+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "05ae94f1325ebd0b4ccaf0f5260c0bf4249d4ab29a345a024f07c47908b180ab",
+  "file_size_bytes": 12112,
+  "immutable": true
+}

@@ -1,0 +1,18 @@
+{
+  "batch_id": "DOGEUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_DOGEUSDT_funding.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/funding/history",
+    "symbol": "DOGEUSDT",
+    "category": "linear",
+    "limit": 200,
+    "pagination": "endTime cursor walk, full history",
+    "fetched_at": "2026-08-22T17:34:04.782626+00:00"
+  },
+  "ingested_at": "2026-08-22T17:34:04.784653+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "efb5aab2778d82ebeeeb8e68093fb9bfad75dc037869971769b401bb60c6c082",
+  "file_size_bytes": 198029,
+  "immutable": true
+}

@@ -1,0 +1,19 @@
+{
+  "batch_id": "XRPUSDT_oi_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_XRPUSDT_oi.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/open-interest",
+    "symbol": "XRPUSDT",
+    "category": "linear",
+    "intervalTime": "1h",
+    "limit": 200,
+    "pagination": "cursor walk",
+    "fetched_at": "2026-08-22T17:28:35.206986+00:00"
+  },
+  "ingested_at": "2026-08-22T17:28:35.209086+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "1629bb6df25c708c68df50406fce9bf2674e653288e1f8013a64968c960d55cf",
+  "file_size_bytes": 2070358,
+  "immutable": true
+}

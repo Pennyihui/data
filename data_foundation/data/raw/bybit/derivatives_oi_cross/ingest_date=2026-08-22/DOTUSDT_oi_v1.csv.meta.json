@@ -1,0 +1,19 @@
+{
+  "batch_id": "DOTUSDT_oi_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_DOTUSDT_oi.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/open-interest",
+    "symbol": "DOTUSDT",
+    "category": "linear",
+    "intervalTime": "1h",
+    "limit": 200,
+    "pagination": "cursor walk",
+    "fetched_at": "2026-08-22T17:59:00.793766+00:00"
+  },
+  "ingested_at": "2026-08-22T17:59:00.797584+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "b9786cbe177989d3429dfd8a0fd6dec3b786c3c2b36f259a9aaeb8f8a12917bf",
+  "file_size_bytes": 2059529,
+  "immutable": true
+}

@@ -1,0 +1,17 @@
+{
+  "batch_id": "BTCUSDT_open_interest_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_BTCUSDT_open_interest.csv",
+  "source": {
+    "api": "fapi /futures/data/openInterestHist",
+    "symbol": "BTCUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-22T18:31:14.282361+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:14.284374+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "a5a833c3e30fdb892e4ca1b888fa7fcda747483c0b372dde02f6bb77dfd212cb",
+  "file_size_bytes": 37564,
+  "immutable": true
+}

@@ -1,0 +1,17 @@
+{
+  "batch_id": "XRPUSDT_ratio_glsr_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_XRPUSDT_ratio_glsr.csv",
+  "source": {
+    "api": "fapi /futures/data/globalLongShortAccountRatio",
+    "symbol": "XRPUSDT",
+    "period": "1h",
+    "limit": 500,
+    "fetched_at": "2026-08-22T18:31:22.321990+00:00"
+  },
+  "ingested_at": "2026-08-22T18:31:22.322987+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "4ed7c66153a999030ab747b721d0ea6bc6583fd3aeb94bfb9012d1147de47cdd",
+  "file_size_bytes": 21046,
+  "immutable": true
+}

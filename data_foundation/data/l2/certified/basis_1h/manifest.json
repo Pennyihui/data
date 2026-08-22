@@ -8,20 +8,20 @@
     "XRPUSDT_okx_v1"
   ],
   "coverage_start": "2019-12-16 06:00:00+00:00",
-  "coverage_end": "2026-08-21 12:00:00+00:00",
-  "row_count": 224024,
+  "coverage_end": "2026-08-22 17:00:00+00:00",
+  "row_count": 224136,
   "duplicate_count": 0,
   "gap_count": 0,
   "suspect_count": 0,
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-22T15:05:40.755424+00:00",
+  "certified_at": "2026-08-22T19:54:29.410104+00:00",
   "aggregation_rules": {
     "note": "OKX 1H; basis=swap/spot-1; OI 仅当前快照(OKX 无历史 OI 接口)"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-22T15:05:40.755424+00:00",
+  "finalized_at": "2026-08-22T19:54:29.411102+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

@@ -1,0 +1,14 @@
+{
+  "batch_id": "universe_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\listing_universe_universe_v1.json",
+  "source": {
+    "api": "binance vision s3 list (monthly/klines symbol+month 前缀) + data-api.binance.vision /api/v3/exchangeInfo",
+    "fetched_at": "2026-08-22T18:47:10.397989+00:00"
+  },
+  "ingested_at": "2026-08-22T18:47:10.520171+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "b598af894d29202d39182da5561af48c8f4c9ce47e8d94cf6ddbe66cb64d4213",
+  "file_size_bytes": 1059706,
+  "immutable": true
+}

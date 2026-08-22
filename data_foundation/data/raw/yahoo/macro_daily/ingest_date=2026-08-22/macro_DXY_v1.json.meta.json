@@ -1,0 +1,22 @@
+{
+  "batch_id": "macro_DXY_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\macro_DXY_v1.json",
+  "source": {
+    "api": "https://query1.finance.yahoo.com/v8/finance/chart/DX-Y.NYB",
+    "params": {
+      "range": "5y",
+      "interval": "1d",
+      "events": "history"
+    },
+    "fetched_at": "2026-08-22T16:47:45.447011+00:00",
+    "rows": 1520,
+    "series": "DXY",
+    "symbol": "DX-Y.NYB"
+  },
+  "ingested_at": "2026-08-22T16:47:45.451615+00:00",
+  "timestamp_unit": "us",
+  "timezone": "UTC",
+  "checksum_sha256": "37ccd85508fd39853a489f37010b2e4118367b0602a78c49a645abe0ef66ea42",
+  "file_size_bytes": 152113,
+  "immutable": true
+}

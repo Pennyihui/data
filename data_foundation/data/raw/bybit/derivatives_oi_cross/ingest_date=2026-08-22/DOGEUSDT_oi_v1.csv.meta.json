@@ -1,0 +1,19 @@
+{
+  "batch_id": "DOGEUSDT_oi_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_DOGEUSDT_oi.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/open-interest",
+    "symbol": "DOGEUSDT",
+    "category": "linear",
+    "intervalTime": "1h",
+    "limit": 200,
+    "pagination": "cursor walk",
+    "fetched_at": "2026-08-22T17:38:22.002238+00:00"
+  },
+  "ingested_at": "2026-08-22T17:38:22.004804+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "494efc4307863517f3a43a52bb0ab1e5c3d2b2fdd8efd1e50f34da6f98bcca66",
+  "file_size_bytes": 2080877,
+  "immutable": true
+}

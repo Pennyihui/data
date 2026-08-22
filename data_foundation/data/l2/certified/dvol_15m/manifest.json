@@ -3,23 +3,25 @@
   "schema_version": "1.0.0",
   "source_batches": [
     "dvol_btc_v1",
-    "dvol_eth_v1"
+    "dvol_eth_v1",
+    "dvol_btc_deep_v2",
+    "dvol_eth_deep_v2"
   ],
-  "coverage_start": "2026-05-23 13:00:00+00:00",
-  "coverage_end": "2026-08-21 12:00:00+00:00",
-  "row_count": 4320,
+  "coverage_start": "2021-03-24 00:00:00+00:00",
+  "coverage_end": "2026-08-22 16:00:00+00:00",
+  "row_count": 94930,
   "duplicate_count": 0,
   "gap_count": 0,
   "suspect_count": 0,
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-22T15:05:45.252912+00:00",
+  "certified_at": "2026-08-22T19:54:37.457829+00:00",
   "aggregation_rules": {
-    "note": "DVOL 波动率指数; 官方 get_volatility_index_data 的 resolution 枚举仅 [1,60,3600,43200,'1D'] 秒 (无 15M), 当前取 3600s=1H; dvol=close/100 (百分数→小数); 历史深度实测多年可用, 默认回看 90 天"
+    "note": "DVOL 波动率指数 (BTC/ETH); 官方 get_volatility_index_data resolution 枚举仅 [1,60,3600,43200,'1D'] 秒 (无 15M), 当前取 3600s=1H; dvol=close/100 (百分数→小数); 深回填: days=2500 试探至 DVOL 最早可用 (~2021-03), deep_v2 批次 + v1 批次合并去重 (currency, timestamp_utc)"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-22T15:05:45.252912+00:00",
+  "finalized_at": "2026-08-22T19:54:37.457829+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

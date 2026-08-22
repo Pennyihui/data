@@ -2,38 +2,26 @@
   "dataset": "derivatives_index_price",
   "schema_version": "1.0.0",
   "source_batches": [
-    "index_BTCUSDT_v2",
-    "index_ETHUSDT_v2",
-    "index_SOLUSDT_v2",
-    "index_BNBUSDT_v2",
-    "index_XRPUSDT_v2",
-    "index_ADAUSDT_v2",
-    "index_DOGEUSDT_v2",
-    "index_AVAXUSDT_v2",
-    "index_LINKUSDT_v2",
-    "index_LTCUSDT_v2",
-    "index_DOTUSDT_v2",
-    "index_UNIUSDT_v2",
-    "index_AAVEUSDT_v2",
-    "index_ARBUSDT_v2",
-    "index_POLUSDT_v2"
+    "BTCUSDT_okx_v1",
+    "ETHUSDT_okx_v1",
+    "SOLUSDT_okx_v1",
+    "XRPUSDT_okx_v1"
   ],
   "coverage_start": "2019-12-23 11:00:00+00:00",
-  "coverage_end": "2026-08-21 20:00:00+00:00",
-  "row_count": 1024132,
+  "coverage_end": "2026-08-22 18:00:00+00:00",
+  "row_count": 1024248,
   "duplicate_count": 0,
   "gap_count": 0,
   "suspect_count": 0,
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-22T15:05:41.400795+00:00",
+  "certified_at": "2026-08-22T19:54:32.450538+00:00",
   "aggregation_rules": {
-    "interval": "1h",
-    "note": "Binance fapi /fapi/v1/indexPriceKlines (pair)"
+    "note": "OKX 1H; basis=swap/spot-1; OI 仅当前快照(OKX 无历史 OI 接口)"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-22T15:05:41.400795+00:00",
+  "finalized_at": "2026-08-22T19:54:32.450538+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

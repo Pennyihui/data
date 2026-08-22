@@ -1,0 +1,171 @@
+{
+  "completed_symbols": [
+    "AAVEUSDT",
+    "ADAUSDT",
+    "ARBUSDT",
+    "AVAXUSDT",
+    "BNBUSDT",
+    "BTCUSDT",
+    "DOGEUSDT",
+    "DOTUSDT",
+    "ETHUSDT",
+    "LINKUSDT",
+    "LTCUSDT",
+    "POLUSDT",
+    "SOLUSDT",
+    "UNIUSDT",
+    "XRPUSDT"
+  ],
+  "accum": {
+    "derivatives_open_interest": {
+      "row_count": 596194,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2020-09-01 00:00:00+00:00",
+      "coverage_end": "2026-08-22 18:00:00+00:00"
+    },
+    "derivatives_ratio_glsr": {
+      "row_count": 589907,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2020-09-01 00:00:00+00:00",
+      "coverage_end": "2026-08-22 18:00:00+00:00"
+    },
+    "derivatives_ratio_tlsr_acct": {
+      "row_count": 496263,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2020-09-01 00:00:00+00:00",
+      "coverage_end": "2026-08-22 18:00:00+00:00"
+    },
+    "derivatives_ratio_tlsr_pos": {
+      "row_count": 496318,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2020-09-01 00:00:00+00:00",
+      "coverage_end": "2026-08-22 18:00:00+00:00"
+    },
+    "derivatives_ratio_taker": {
+      "row_count": 555840,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2020-09-01 00:00:00+00:00",
+      "coverage_end": "2026-08-22 17:00:00+00:00"
+    }
+  },
+  "downloaded_files": 24776,
+  "missing_days": [],
+  "last_update": "2026-08-22T19:50:09.849334+00:00",
+  "overlap": {
+    "BTCUSDT": {
+      "derivatives_open_interest": 52322,
+      "derivatives_ratio_glsr": 51838,
+      "derivatives_ratio_tlsr_acct": 44633,
+      "derivatives_ratio_tlsr_pos": 44637,
+      "derivatives_ratio_taker": 49215
+    },
+    "ETHUSDT": {
+      "derivatives_open_interest": 580,
+      "derivatives_ratio_glsr": 580,
+      "derivatives_ratio_tlsr_acct": 580,
+      "derivatives_ratio_tlsr_pos": 580,
+      "derivatives_ratio_taker": 581
+    },
+    "SOLUSDT": {
+      "derivatives_open_interest": 580,
+      "derivatives_ratio_glsr": 580,
+      "derivatives_ratio_tlsr_acct": 580,
+      "derivatives_ratio_tlsr_pos": 580,
+      "derivatives_ratio_taker": 581
+    },
+    "BNBUSDT": {
+      "derivatives_open_interest": 580,
+      "derivatives_ratio_glsr": 580,
+      "derivatives_ratio_tlsr_acct": 580,
+      "derivatives_ratio_tlsr_pos": 580,
+      "derivatives_ratio_taker": 581
+    },
+    "XRPUSDT": {
+      "derivatives_open_interest": 580,
+      "derivatives_ratio_glsr": 580,
+      "derivatives_ratio_tlsr_acct": 580,
+      "derivatives_ratio_tlsr_pos": 580,
+      "derivatives_ratio_taker": 581
+    },
+    "ADAUSDT": {
+      "derivatives_open_interest": 580,
+      "derivatives_ratio_glsr": 580,
+      "derivatives_ratio_tlsr_acct": 580,
+      "derivatives_ratio_tlsr_pos": 580,
+      "derivatives_ratio_taker": 581
+    },
+    "DOGEUSDT": {
+      "derivatives_open_interest": 580,
+      "derivatives_ratio_glsr": 580,
+      "derivatives_ratio_tlsr_acct": 580,
+      "derivatives_ratio_tlsr_pos": 580,
+      "derivatives_ratio_taker": 581
+    },
+    "AVAXUSDT": {
+      "derivatives_open_interest": 580,
+      "derivatives_ratio_glsr": 580,
+      "derivatives_ratio_tlsr_acct": 580,
+      "derivatives_ratio_tlsr_pos": 580,
+      "derivatives_ratio_taker": 581
+    },
+    "LINKUSDT": {
+      "derivatives_open_interest": 580,
+      "derivatives_ratio_glsr": 580,
+      "derivatives_ratio_tlsr_acct": 580,
+      "derivatives_ratio_tlsr_pos": 580,
+      "derivatives_ratio_taker": 581
+    },
+    "LTCUSDT": {
+      "derivatives_open_interest": 580,
+      "derivatives_ratio_glsr": 580,
+      "derivatives_ratio_tlsr_acct": 580,
+      "derivatives_ratio_tlsr_pos": 580,
+      "derivatives_ratio_taker": 581
+    },
+    "DOTUSDT": {
+      "derivatives_open_interest": 532,
+      "derivatives_ratio_glsr": 532,
+      "derivatives_ratio_tlsr_acct": 531,
+      "derivatives_ratio_tlsr_pos": 531,
+      "derivatives_ratio_taker": 532
+    },
+    "UNIUSDT": {
+      "derivatives_open_interest": 580,
+      "derivatives_ratio_glsr": 580,
+      "derivatives_ratio_tlsr_acct": 580,
+      "derivatives_ratio_tlsr_pos": 580,
+      "derivatives_ratio_taker": 581
+    },
+    "AAVEUSDT": {
+      "derivatives_open_interest": 580,
+      "derivatives_ratio_glsr": 580,
+      "derivatives_ratio_tlsr_acct": 580,
+      "derivatives_ratio_tlsr_pos": 580,
+      "derivatives_ratio_taker": 581
+    },
+    "ARBUSDT": {
+      "derivatives_open_interest": 531,
+      "derivatives_ratio_glsr": 531,
+      "derivatives_ratio_tlsr_acct": 531,
+      "derivatives_ratio_tlsr_pos": 531,
+      "derivatives_ratio_taker": 532
+    },
+    "POLUSDT": {
+      "derivatives_open_interest": 531,
+      "derivatives_ratio_glsr": 531,
+      "derivatives_ratio_tlsr_acct": 531,
+      "derivatives_ratio_tlsr_pos": 531,
+      "derivatives_ratio_taker": 531
+    }
+  }
+}

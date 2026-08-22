@@ -1,0 +1,19 @@
+{
+  "batch_id": "UNIUSDT_oi_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_UNIUSDT_oi.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/open-interest",
+    "symbol": "UNIUSDT",
+    "category": "linear",
+    "intervalTime": "1h",
+    "limit": 200,
+    "pagination": "cursor walk",
+    "fetched_at": "2026-08-22T18:04:22.532295+00:00"
+  },
+  "ingested_at": "2026-08-22T18:04:22.537217+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "54b6e1ad3b4930df41fe9733db7f43c9946bc86dd3260b2dbbf5f0c01038bb24",
+  "file_size_bytes": 2027747,
+  "immutable": true
+}

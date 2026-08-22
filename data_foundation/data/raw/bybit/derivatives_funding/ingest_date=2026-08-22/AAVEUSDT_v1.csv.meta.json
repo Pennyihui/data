@@ -1,0 +1,18 @@
+{
+  "batch_id": "AAVEUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_AAVEUSDT_funding.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/funding/history",
+    "symbol": "AAVEUSDT",
+    "category": "linear",
+    "limit": 200,
+    "pagination": "endTime cursor walk, full history",
+    "fetched_at": "2026-08-22T18:04:58.511309+00:00"
+  },
+  "ingested_at": "2026-08-22T18:04:58.512313+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "b221016bbebdcd7a496810444c5d2d497422956283eb42045155881f0811b58a",
+  "file_size_bytes": 200366,
+  "immutable": true
+}

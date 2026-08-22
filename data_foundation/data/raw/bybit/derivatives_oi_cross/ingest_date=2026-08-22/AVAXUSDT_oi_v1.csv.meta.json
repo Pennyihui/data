@@ -1,0 +1,19 @@
+{
+  "batch_id": "AVAXUSDT_oi_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_AVAXUSDT_oi.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/open-interest",
+    "symbol": "AVAXUSDT",
+    "category": "linear",
+    "intervalTime": "1h",
+    "limit": 200,
+    "pagination": "cursor walk",
+    "fetched_at": "2026-08-22T17:42:56.123533+00:00"
+  },
+  "ingested_at": "2026-08-22T17:42:56.125577+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "f7eb522910e781452889d05864465b4de0742d1dc8873aacc59cfda14bcd1fcb",
+  "file_size_bytes": 1847788,
+  "immutable": true
+}

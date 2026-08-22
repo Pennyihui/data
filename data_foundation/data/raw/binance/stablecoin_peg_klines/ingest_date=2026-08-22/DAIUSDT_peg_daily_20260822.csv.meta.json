@@ -1,0 +1,19 @@
+{
+  "batch_id": "DAIUSDT_peg_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_DAIUSDT_peg.csv",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines",
+    "base_host": "https://api.binance.com",
+    "symbol": "DAIUSDT",
+    "interval": "1h",
+    "days": 3,
+    "note": "empty: 该交易对近 3 天无成交 (DAIUSDT 自 2020-08 起 Binance 现货停牌)",
+    "fetched_at": "2026-08-22T18:32:15.247611+00:00"
+  },
+  "ingested_at": "2026-08-22T18:32:15.250616+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "aac3d462e15d517268944d18f885c04efd1848afe099fbc9e49aef022fc46b98",
+  "file_size_bytes": 149,
+  "immutable": true
+}

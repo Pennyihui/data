@@ -1,0 +1,22 @@
+{
+  "batch_id": "macro_VIX_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\macro_VIX_v1.json",
+  "source": {
+    "api": "https://query1.finance.yahoo.com/v8/finance/chart/^VIX",
+    "params": {
+      "range": "5y",
+      "interval": "1d",
+      "events": "history"
+    },
+    "fetched_at": "2026-08-22T16:47:49.768804+00:00",
+    "rows": 1305,
+    "series": "VIX",
+    "symbol": "^VIX"
+  },
+  "ingested_at": "2026-08-22T16:47:49.771176+00:00",
+  "timestamp_unit": "us",
+  "timezone": "UTC",
+  "checksum_sha256": "770e2f9b3cc3d9ede01e0b27e62caabefafbbab8690f155a2179424fa0cf001c",
+  "file_size_bytes": 142959,
+  "immutable": true
+}

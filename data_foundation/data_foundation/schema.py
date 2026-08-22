@@ -257,6 +257,77 @@ DERIVATIVES_RATIO_COLUMNS = [
     ("source_batch_id", "string"),
 ]
 
+# 跨所未平仓合约 (聚合源: Coinalyze / Bybit 等, 补 Binance 500h 上限)
+DERIVATIVES_OI_CROSS_COLUMNS = [
+    ("venue_id", "string"),               # 交易所名 (bybit | bitget | binance ...)
+    ("asset", "string"),                  # BTC | ETH ...
+    ("timestamp_utc", "timestamp[us, tz=UTC]"),
+    ("open_interest_contracts", "float64"),
+    ("open_interest_usd", "float64"),
+    ("data_available_at", "timestamp[us, tz=UTC]"),
+    ("source_batch_id", "string"),
+]
+
+# 强平/清算聚合 (聚合源: Coinalyze 等)
+DERIVATIVES_LIQUIDATION_COLUMNS = [
+    ("venue_id", "string"),
+    ("asset", "string"),
+    ("timestamp_utc", "timestamp[us, tz=UTC]"),
+    ("side", "string"),                   # long | short
+    ("amount_usd", "float64"),
+    ("data_available_at", "timestamp[us, tz=UTC]"),
+    ("source_batch_id", "string"),
+]
+
+# 恐惧贪婪指数 (日频, alternative.me)
+SENTIMENT_FNG_COLUMNS = [
+    ("date_utc", "timestamp[us, tz=UTC]"),
+    ("value", "int64"),
+    ("classification", "string"),
+    ("data_available_at", "timestamp[us, tz=UTC]"),
+    ("source_batch_id", "string"),
+]
+
+# 宏观序列 (日频收盘: DXY | SPX | NDX | VIX | GOLD | US10Y ...)
+MACRO_DAILY_COLUMNS = [
+    ("series", "string"),
+    ("date_utc", "timestamp[us, tz=UTC]"),
+    ("close", "float64"),
+    ("data_available_at", "timestamp[us, tz=UTC]"),
+    ("source_batch_id", "string"),
+]
+
+# 资产主映射 (统一主键: 同一资产跨所 symbol/链上地址/CMC id)
+ASSET_MASTER_COLUMNS = [
+    ("asset", "string"),                  # 统一基础资产名 (BTC | USDT ...)
+    ("venue_id", "string"),               # binance | okx | coinbase | ethereum ...
+    ("market_type", "string"),            # spot | perpetual | onchain | offchain
+    ("instrument_id", "string"),
+    ("symbol", "string"),
+    ("quote_asset", "string"),
+    ("chain_id", "string"),               # 链上映射用
+    ("contract_address", "string"),
+    ("cmc_id", "string"),
+    ("cmc_slug", "string"),
+    ("listing_time", "timestamp[us, tz=UTC]"),
+    ("delisting_time", "timestamp[us, tz=UTC]"),
+    ("status", "string"),
+    ("data_available_at", "timestamp[us, tz=UTC]"),
+    ("source_batch_id", "string"),
+]
+
+# 上市宇宙 (Binance Vision 归档枚举, 含已下架 -> 消幸存者偏差)
+LISTING_UNIVERSE_COLUMNS = [
+    ("venue_id", "string"),
+    ("market_type", "string"),
+    ("symbol", "string"),
+    ("first_period", "string"),           # YYYY-MM 首次出现
+    ("last_period", "string"),            # YYYY-MM 最后出现
+    ("status", "string"),                 # active | delisted
+    ("data_available_at", "timestamp[us, tz=UTC]"),
+    ("source_batch_id", "string"),
+]
+
 # 数据集 -> 列定义
 DATASETS = {
     "market_candle_spot_1h": MARKET_CANDLE_COLUMNS,
@@ -280,6 +351,12 @@ DATASETS = {
     "oracle_snapshot": ORACLE_SNAPSHOT_COLUMNS,
     "solana_snapshot": SOLANA_SNAPSHOT_COLUMNS,
     "derivatives_ratio": DERIVATIVES_RATIO_COLUMNS,
+    "derivatives_oi_cross": DERIVATIVES_OI_CROSS_COLUMNS,
+    "derivatives_liquidation": DERIVATIVES_LIQUIDATION_COLUMNS,
+    "sentiment_fng": SENTIMENT_FNG_COLUMNS,
+    "macro_daily": MACRO_DAILY_COLUMNS,
+    "asset_master": ASSET_MASTER_COLUMNS,
+    "listing_universe": LISTING_UNIVERSE_COLUMNS,
 }
 
 # 每条记录必须存在的元数据字段

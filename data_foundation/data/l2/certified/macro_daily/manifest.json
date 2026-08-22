@@ -1,0 +1,29 @@
+{
+  "dataset": "macro_daily",
+  "schema_version": "1.0.0",
+  "source_batches": [
+    "macro_DXY_v1",
+    "macro_GOLD_v1",
+    "macro_NDX_v1",
+    "macro_SPX_v1",
+    "macro_US10Y_v1",
+    "macro_VIX_v1"
+  ],
+  "coverage_start": "2021-08-23 00:00:00+00:00",
+  "coverage_end": "2026-08-21 00:00:00+00:00",
+  "row_count": 7535,
+  "duplicate_count": 0,
+  "gap_count": 0,
+  "suspect_count": 0,
+  "timestamp_unit": "us",
+  "timezone": "UTC",
+  "certification_status": "certified",
+  "certified_at": "2026-08-22T19:54:37.680146+00:00",
+  "aggregation_rules": {
+    "note": "Yahoo Finance chart 日频收盘近 5 年; series=DXY|SPX|NDX|VIX|GOLD|US10Y; US10Y=^TNX 原始值即百分比收益率(实测, 未÷10); 主键 (series, date_utc)"
+  },
+  "quality_rule_version": "1.0.0",
+  "notes": [],
+  "finalized_at": "2026-08-22T19:54:37.680146+00:00",
+  "note_agg": "stats recomputed across all venues by finalize.py"
+}

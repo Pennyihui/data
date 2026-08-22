@@ -1,0 +1,17 @@
+{
+  "batch_id": "XRPUSD_cb_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_cb_XRP_1h.csv",
+  "source": {
+    "api": "coinbase /products/{id}/candles",
+    "product": "XRP-USD",
+    "granularity": 3600,
+    "days": 3,
+    "fetched_at": "2026-08-22T18:32:01.931081+00:00"
+  },
+  "ingested_at": "2026-08-22T18:32:01.932128+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "0a73cf04f5568571d6f7619fc5abe3d9930efcd9dd82aa95496695cc5db6f267",
+  "file_size_bytes": 3997,
+  "immutable": true
+}

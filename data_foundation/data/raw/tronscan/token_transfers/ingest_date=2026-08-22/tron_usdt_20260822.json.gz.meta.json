@@ -1,0 +1,17 @@
+{
+  "batch_id": "tron_usdt_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\tron_usdt_20260822.json.gz",
+  "source": {
+    "api": "https://apilist.tronscanapi.com/api/token_trc20/transfers",
+    "token": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+    "note": "token_trc20/transfers 翻页 (深度上限内)",
+    "fetched_at": "2026-08-22T16:57:03.188120+00:00",
+    "records": 10000
+  },
+  "ingested_at": "2026-08-22T16:57:03.192330+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "35791af0e6f832bfb66c9f169c88ce7b22ba1c3098d489bbad9ef9b1cccfc756",
+  "file_size_bytes": 1576792,
+  "immutable": true
+}

@@ -1,0 +1,18 @@
+{
+  "batch_id": "XRPUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_XRPUSDT_funding.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/funding/history",
+    "symbol": "XRPUSDT",
+    "category": "linear",
+    "limit": 200,
+    "pagination": "endTime cursor walk, full history",
+    "fetched_at": "2026-08-22T17:24:32.472053+00:00"
+  },
+  "ingested_at": "2026-08-22T17:24:32.473892+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "8c5577005d58ec06e65baadeeec09f3735b961d115eb9fe0587e5ac162f2213d",
+  "file_size_bytes": 201501,
+  "immutable": true
+}

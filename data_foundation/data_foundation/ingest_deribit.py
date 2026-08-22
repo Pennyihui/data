@@ -171,3 +171,43 @@ def ingest_deribit_all(days: int = 90, dvol_resolution: int = 3600,
         print(f"  deribit index {idx}: index_price={res.get('index_price')}",
               flush=True)
     return written
+
+
+def ingest_deribit_dvol_deep(days: int = 2500, resolution: int = 3600,
+                             currencies=("BTC", "ETH")) -> list:
+    """DVOL 深回填 (子代理 B): 独立批次 dvol_{cur}_deep_v2, 不触碰 v1 批次。
+
+    days=2500 试探至 DVOL 最早可用 (~2021-03); 复用 fetch_dvol_history 的
+    continuation 分页。断点续传: 批次+currency 已存在则跳过。
+    """
+    written = []
+    now = datetime.now(timezone.utc).isoformat()
+    tmp_dir = os.path.join(RAW_DIR, "_tmp")
+    os.makedirs(tmp_dir, exist_ok=True)
+    for cur in currencies:
+        bid = f"dvol_{cur.lower()}_deep_v2"
+        if _already("deribit", "dvol_15m", bid, "currency", cur):
+            print(f"  deribit DVOL {cur}: 批次 {bid} 已存在, 跳过", flush=True)
+            continue
+        rows = fetch_dvol_history(cur, days=days, resolution=resolution)
+        if not rows:
+            print(f"  [warn] deribit DVOL {cur}: 深回填返回空", flush=True)
+            continue
+        tmp = os.path.join(tmp_dir, f"deribit_dvol_{cur.lower()}_deep.json")
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(rows, f)
+        written.append(write_raw_file(
+            tmp, "deribit", "dvol_15m", batch_id=bid,
+            source={"api": "deribit /public/get_volatility_index_data",
+                    "currency": cur, "resolution_seconds": resolution,
+                    "resolution_label": DVOL_RESOLUTIONS.get(resolution,
+                                                             str(resolution)),
+                    "days": days, "deep_backfill": True, "fetched_at": now,
+                    "note": "深回填: days=2500 试探至 DVOL 最早可用 (~2021-03); "
+                            "官方 resolution 枚举无 15M, 取 1H; OHLC 数组"},
+            timestamp_unit="ms", ext="json"))
+        first = datetime.fromtimestamp(int(rows[0][0]) / 1000, tz=timezone.utc)
+        last = datetime.fromtimestamp(int(rows[-1][0]) / 1000, tz=timezone.utc)
+        print(f"  deribit DVOL {cur}: {len(rows)} 行 (deep, {days} 天, "
+              f"{first.isoformat()} ~ {last.isoformat()})", flush=True)
+    return written

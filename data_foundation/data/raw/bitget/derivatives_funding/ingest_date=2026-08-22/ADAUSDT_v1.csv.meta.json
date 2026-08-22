@@ -1,0 +1,18 @@
+{
+  "batch_id": "ADAUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bitget_ADAUSDT_funding.csv",
+  "source": {
+    "api": "https://api.bitget.com/api/v2/mix/market/history-fund-rate",
+    "symbol": "ADAUSDT",
+    "productType": "USDT-FUTURES",
+    "pageSize": 100,
+    "note": "Bitget v2 公开 API 仅返回最近 ~100 条资金费 (~33 天); startTime/endTime/idLessThan 分页参数实测被忽略, v1 API 已下线; 全历史需付费数据源",
+    "fetched_at": "2026-08-22T17:02:00.076769+00:00"
+  },
+  "ingested_at": "2026-08-22T17:02:00.077824+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "e09e297385b48b4fd02f0915230658778801aff2fd02cbb06193c373d0424e27",
+  "file_size_bytes": 3426,
+  "immutable": true
+}

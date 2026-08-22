@@ -1,0 +1,19 @@
+{
+  "batch_id": "ARBUSDT_oi_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_ARBUSDT_oi.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/open-interest",
+    "symbol": "ARBUSDT",
+    "category": "linear",
+    "intervalTime": "1h",
+    "limit": 200,
+    "pagination": "cursor walk",
+    "fetched_at": "2026-08-22T18:14:45.804994+00:00"
+  },
+  "ingested_at": "2026-08-22T18:14:45.806925+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "d3929c2cf7c78d0111efd327d0bc8ec7c49a4594cd0cefe0e55d0ed19ebbd61d",
+  "file_size_bytes": 1328879,
+  "immutable": true
+}

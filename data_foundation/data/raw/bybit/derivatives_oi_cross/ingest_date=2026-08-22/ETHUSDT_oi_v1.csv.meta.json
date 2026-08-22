@@ -1,0 +1,19 @@
+{
+  "batch_id": "ETHUSDT_oi_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\_scratch_subA\\cache\\bybit_ETHUSDT_oi.csv",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/open-interest",
+    "symbol": "ETHUSDT",
+    "category": "linear",
+    "intervalTime": "1h",
+    "limit": 200,
+    "pagination": "cursor walk",
+    "fetched_at": "2026-08-22T17:12:23.152937+00:00"
+  },
+  "ingested_at": "2026-08-22T17:12:23.167174+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "03c86be152d99aff2c67dfec06fa035120e19159b5ed61d3837f6855629e7789",
+  "file_size_bytes": 2139410,
+  "immutable": true
+}

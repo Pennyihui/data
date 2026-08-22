@@ -1,0 +1,15 @@
+{
+  "batch_id": "stablecoin_exchange_outflow_total",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_stablecoin_exchange_outflow_total.json",
+  "source": {
+    "api": "github ErcinDedeoglu/crypto-market-data",
+    "metric": "stablecoin_exchange_outflow_total",
+    "fetched_at": "2026-08-22T18:32:13.385571+00:00"
+  },
+  "ingested_at": "2026-08-22T18:32:13.387750+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "06eb1b7a29d0849ffbcc3d88ad1c79b3aa2bd1bc6e53af28edf00bfe265683a0",
+  "file_size_bytes": 169069,
+  "immutable": true
+}
