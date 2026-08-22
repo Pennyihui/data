@@ -45,72 +45,121 @@ def _dec(value_hex: str, decimals: int) -> float:
     return int(value_hex, 16) / (10 ** decimals)
 
 
+def _read_raw_json(path: str):
+    """读原始日志 JSON, 兼容 .json 与 .json.gz (历史回填批次为 gz 压缩)。"""
+    if path.endswith(".gz"):
+        import gzip
+        with gzip.open(path, "rt", encoding="utf-8") as f:
+            return json.load(f)
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
 def decode_transfers() -> pd.DataFrame:
-    """原始日志 -> token_transfer 解码宽表 (ethereum + arbitrum)。"""
+    """原始日志 -> token_transfer 解码宽表 (ethereum + arbitrum)。
+
+    枚举全部转账日志批次: 一次性 v1 批次 + 每日 daily_YYYYMMDD 批次
+    (+ 历史回填的 .json.gz), 按 [chain_id, token, tx_hash, log_index] 去重。
+    """
     frames = []
     for chain_id, cfg in CHAIN_ERC20.items():
         for tok, meta in cfg["tokens"].items():
-            for p in _raw_files(cfg["venue"], "erc20_transfer_logs",
-                                f"{tok}_transfer_logs_v1"):
-                with open(p, encoding="utf-8") as f:
-                    logs = json.load(f)
-                if not logs:
+            prefix = f"{tok}_transfer_logs"
+            for m in list_raw_batches(cfg["venue"], "erc20_transfer_logs"):
+                bid = m["batch_id"]
+                if not bid.startswith(prefix):
                     continue
-                dec = meta["decimals"]
-                rows = [{
-                    "token": tok,
-                    "block_number": int(l["blockNumber"], 16),
-                    "tx_hash": l["transactionHash"],
-                    "log_index": int(l["logIndex"], 16),
-                    "from_address": _hex_addr(l["topics"][1]),
-                    "to_address": _hex_addr(l["topics"][2]),
-                    "value_raw": l["data"],
-                    "value_decimal": _dec(l["data"][:66], dec),
-                    "is_mint": l["topics"][1] == "0x" + "0" * 64,
-                    "is_burn": l["topics"][2] == "0x" + "0" * 64,
-                } for l in logs]
-                d = pd.DataFrame(rows)
-                d["chain_id"] = chain_id
-                frames.append(d)
+                ingest = m["ingested_at"][:10]
+                d_dir = os.path.join(RAW_DIR, cfg["venue"], "erc20_transfer_logs",
+                                     f"ingest_date={ingest}")
+                if not os.path.isdir(d_dir):
+                    continue
+                for f in sorted(os.listdir(d_dir)):
+                    if not f.startswith(bid) or f.endswith(".meta.json"):
+                        continue
+                    logs = _read_raw_json(os.path.join(d_dir, f))
+                    if not logs:
+                        continue
+                    dec = meta["decimals"]
+                    rows = [{
+                        "token": tok,
+                        "block_number": int(l["blockNumber"], 16),
+                        "tx_hash": l["transactionHash"],
+                        "log_index": int(l["logIndex"], 16),
+                        "from_address": _hex_addr(l["topics"][1]),
+                        "to_address": _hex_addr(l["topics"][2]),
+                        "value_raw": l["data"],
+                        "value_decimal": _dec(l["data"][:66], dec),
+                        "is_mint": l["topics"][1] == "0x" + "0" * 64,
+                        "is_burn": l["topics"][2] == "0x" + "0" * 64,
+                    } for l in logs]
+                    d = pd.DataFrame(rows)
+                    d["chain_id"] = chain_id
+                    frames.append(d)
+                    del rows, d
     if not frames:
         return pd.DataFrame()
     out = pd.concat(frames, ignore_index=True)
+    del frames
     # 跨批次重叠去重 (多次运行/窗口重叠)
     out = out.drop_duplicates(["chain_id", "token", "tx_hash", "log_index"],
                               keep="first")
     return out
 
 
-def block_timestamps(chain_id: str = "ethereum") -> dict:
-    """窗口边界块时间戳 (用于线性插值)。"""
+def block_timestamps(chain_id: str = "ethereum") -> list[dict]:
+    """全部窗口边界块文件 -> [ {start_block,end_block,start_timestamp,end_timestamp} ]。
+
+    兼容 window_blocks_v1 (单窗口) 与 window_blocks_daily_YYYYMMDD (逐日窗口,
+    历史回填); 数值兼容 int/hex 字符串。
+    """
     venue = CHAIN_ERC20[chain_id]["venue"]
-    for p in _raw_files(venue, "erc20_transfer_logs", "window_blocks_v1"):
-        with open(p, encoding="utf-8") as f:
-            w = json.load(f)
-        return {k: int(str(v), 0) for k, v in w.items()
-                if k in ("start_block", "end_block", "start_timestamp",
-                         "end_timestamp")}
-    return {}
+    keys = ("start_block", "end_block", "start_timestamp", "end_timestamp")
+    out = []
+    for m in list_raw_batches(venue, "erc20_transfer_logs"):
+        if not m["batch_id"].startswith("window_blocks"):
+            continue
+        ingest = m["ingested_at"][:10]
+        d_dir = os.path.join(RAW_DIR, venue, "erc20_transfer_logs",
+                             f"ingest_date={ingest}")
+        if not os.path.isdir(d_dir):
+            continue
+        for f in sorted(os.listdir(d_dir)):
+            if not f.startswith(m["batch_id"]) or f.endswith(".meta.json"):
+                continue
+            w = _read_raw_json(os.path.join(d_dir, f))
+            if isinstance(w, dict) and all(k in w for k in keys):
+                out.append({k: int(str(w[k]), 0) for k in keys})
+    return out
 
 
 def add_timestamps(df: pd.DataFrame) -> pd.DataFrame:
-    """按 (chain_id, 块号) 线性插值时间戳 (边界块精确, 中间 ±10 分钟, manifest 注明)。"""
+    """按 (chain_id, 块号) 分段线性插值时间戳。
+
+    锚点 = 各窗口边界块的真实时间戳 (逐日窗口下误差 < 分钟级);
+    无锚点的链置 NaT。
+    """
+    import numpy as np
+
     if df.empty:
         return df.copy()
     frames = []
     for chain_id, g in df.groupby("chain_id", sort=False):
-        w = block_timestamps(chain_id)
         g = g.copy()
-        if not w or "start_block" not in w:
+        anchors: dict[int, int] = {}
+        for w in block_timestamps(chain_id):
+            anchors[w["start_block"]] = w["start_timestamp"]
+            anchors[w["end_block"]] = w["end_timestamp"]
+        if not anchors:
             g["block_timestamp_utc"] = pd.Series(
                 pd.NaT, index=g.index, dtype="datetime64[ns, UTC]")
         else:
-            slope = (w["end_timestamp"] - w["start_timestamp"]) / max(
-                w["end_block"] - w["start_block"], 1)
-            g["block_timestamp_utc"] = pd.to_datetime(
-                w["start_timestamp"] + (g["block_number"] - w["start_block"]) * slope,
-                unit="s", utc=True)
+            bx = np.array(sorted(anchors), dtype=float)
+            by = np.array([anchors[int(b)] for b in sorted(anchors)], dtype=float)
+            ts = np.interp(g["block_number"].to_numpy(dtype=float), bx, by)
+            g["block_timestamp_utc"] = pd.to_datetime(ts, unit="s", utc=True)
         frames.append(g)
+        del g
     return pd.concat(frames, ignore_index=True) if frames else df.copy()
 
 

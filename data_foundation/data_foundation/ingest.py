@@ -74,19 +74,10 @@ def ingest_external_derivatives(symbols=None, assets=None) -> list[str]:
 
 
 def _get_json(url, params, retries=8, timeout=25):
-    last = None
-    for i in range(retries):
-        try:
-            r = requests.get(url, params=params, timeout=timeout, headers=UA)
-            if r.status_code == 429:
-                time.sleep(5)
-                continue
-            r.raise_for_status()
-            return r.json()
-        except Exception as e:  # noqa: BLE001
-            last = e
-            time.sleep(min(1.5 * (i + 1), 12))
-    raise RuntimeError(str(last)[:150])
+    # 统一走 netpath 四级链路 (vision直连 -> 7897 -> 专用端口 -> socks5/钉IP)
+    from . import netpath
+    return netpath.fetch_json(url, params=params, retries=retries,
+                              timeout=timeout)
 
 
 def fetch_exchange_info() -> list[str]:

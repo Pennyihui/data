@@ -1,0 +1,14 @@
+{
+  "batch_id": "metadata_okx_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\metadata_okx_20260822.json",
+  "source": {
+    "api": "okx /public/instruments (SPOT+SWAP)",
+    "fetched_at": "2026-08-21T20:09:24.334874+00:00"
+  },
+  "ingested_at": "2026-08-22T00:00:00+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "374107acd10048a0eddb59d45805d5b4b7fa05bfb7dd042162707e597781fdad",
+  "file_size_bytes": 2157214,
+  "immutable": true
+}

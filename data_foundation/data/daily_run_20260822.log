@@ -1,0 +1,61 @@
+[20:07:25] ======================================================================
+[20:07:25] 每日增量调度开始 | 日期戳=20260822 | ingest_date=2026-08-22
+[20:07:25] 源: ['metadata']
+[20:07:25] 代理: http://127.0.0.1:7897 | 日志: D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_run_20260822.log
+[20:07:25] ======================================================================
+[20:08:12]   metadata binance_spot: binance /api/v3/exchangeInfo (现货, 全 symbol) -> metadata_binance_spot_20260822
+[20:08:58]   metadata binance_perp: binance fapi /fapi/v1/exchangeInfo (USDT-M 永续, 全 symbol) -> metadata_binance_perp_20260822
+[20:09:24]   metadata okx: okx /public/instruments (SPOT+SWAP) -> metadata_okx_20260822
+[20:10:21]   metadata coinbase: coinbase /products (全 products) -> metadata_coinbase_20260822
+[20:10:21]   metadata binance_spot: 归一化 3681 行
+[20:10:21]   metadata binance_perp: 归一化 872 行
+[20:10:22]   metadata okx: 归一化 1833 行
+[20:10:22]   metadata coinbase: 归一化 833 行
+[20:10:23]   metadata 完成: 新写批次 4, 各 venue PIT 已重认证
+[20:10:23] [metadata] OK (179s)
+[20:10:23] ======================================================================
+[20:10:23] 调度完成 | 失败源: 无
+[20:10:23] manifest: D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_manifest.json
+[20:10:23] ======================================================================
+[11:24:04] ======================================================================
+[11:24:04] 每日增量调度开始 | 日期戳=20260822 | ingest_date=2026-08-22
+[11:24:04] 源: ['binance_funding']
+[11:24:04] 代理: http://127.0.0.1:7897 | 日志: D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_run_20260822.log
+[11:25:01] 网络链路探测: T0_vision=不可用, T1_p7897=不可用, T2_p7900=562ms, T2_p7906=不可用, T2_p7907=不可用, T2_p7904=不可用, T2_p7902=233ms, T3_socks5h=不可用, T3_doh_pin=不可用
+[11:25:01] ======================================================================
+[11:25:03]   BTCUSDT: 90 条资金费率 -> BTCUSDT_funding_daily_20260822
+[11:25:03]   ETHUSDT: 90 条资金费率 -> ETHUSDT_funding_daily_20260822
+[11:25:03]   SOLUSDT: 90 条资金费率 -> SOLUSDT_funding_daily_20260822
+[11:25:03]   BNBUSDT: 90 条资金费率 -> BNBUSDT_funding_daily_20260822
+[11:25:04]   XRPUSDT: 90 条资金费率 -> XRPUSDT_funding_daily_20260822
+[11:25:04]   ADAUSDT: 90 条资金费率 -> ADAUSDT_funding_daily_20260822
+[11:25:04]   DOGEUSDT: 90 条资金费率 -> DOGEUSDT_funding_daily_20260822
+[11:25:04]   AVAXUSDT: 90 条资金费率 -> AVAXUSDT_funding_daily_20260822
+[11:25:05]   LINKUSDT: 90 条资金费率 -> LINKUSDT_funding_daily_20260822
+[11:25:05]   LTCUSDT: 90 条资金费率 -> LTCUSDT_funding_daily_20260822
+[11:25:05]   DOTUSDT: 90 条资金费率 -> DOTUSDT_funding_daily_20260822
+[11:25:05]   UNIUSDT: 90 条资金费率 -> UNIUSDT_funding_daily_20260822
+[11:25:06]   AAVEUSDT: 90 条资金费率 -> AAVEUSDT_funding_daily_20260822
+[11:25:06]   ARBUSDT: 90 条资金费率 -> ARBUSDT_funding_daily_20260822
+[11:25:06]   POLUSDT: 100 条资金费率 -> POLUSDT_funding_daily_20260822
+[11:25:06] [binance_funding] OK (5s)
+[11:25:06] ======================================================================
+[11:25:06] 调度完成 | 失败源: 无
+[11:25:06] manifest: D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_manifest.json
+[11:25:06] ======================================================================
+[11:25:29] ======================================================================
+[11:25:29] 每日增量调度开始 | 日期戳=20260822 | ingest_date=2026-08-22
+[11:25:29] 源: ['metadata']
+[11:25:29] 代理: http://127.0.0.1:7897 | 日志: D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_run_20260822.log
+[11:26:26] 网络链路探测: T0_vision=不可用, T1_p7897=不可用, T2_p7900=474ms, T2_p7906=不可用, T2_p7907=不可用, T2_p7904=不可用, T2_p7902=269ms, T3_socks5h=不可用, T3_doh_pin=不可用
+[11:26:26] ======================================================================
+[11:26:37]   metadata binance_spot: 今日批次已存在, 跳过抓取 (幂等)
+[11:26:37]   metadata binance_perp: 今日批次已存在, 跳过抓取 (幂等)
+[11:26:37]   metadata okx: 今日批次已存在, 跳过抓取 (幂等)
+[11:26:37]   metadata coinbase: 今日批次已存在, 跳过抓取 (幂等)
+[11:26:40]   metadata 完成: 新写批次 0, 各 venue PIT 已重认证
+[11:26:40] [metadata] OK (13s)
+[11:26:40] ======================================================================
+[11:26:40] 调度完成 | 失败源: 无
+[11:26:40] manifest: D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_manifest.json
+[11:26:40] ======================================================================

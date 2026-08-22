@@ -1,0 +1,17 @@
+{
+  "batch_id": "LTCUSDT_funding_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_LTCUSDT_funding.csv",
+  "source": {
+    "api": "fapi /fapi/v1/fundingRate",
+    "symbol": "LTCUSDT",
+    "days": 30,
+    "startTime_ms": 1784805902288,
+    "fetched_at": "2026-08-22T11:25:05.339257+00:00"
+  },
+  "ingested_at": "2026-08-22T11:25:05.340255+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "7ce5ad577c4b1112ec1957993f76728eb28ff2ea548ec778b42a6ddb106ebc6d",
+  "file_size_bytes": 4379,
+  "immutable": true
+}

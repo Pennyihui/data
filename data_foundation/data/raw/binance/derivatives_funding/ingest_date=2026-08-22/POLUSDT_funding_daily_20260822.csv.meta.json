@@ -1,0 +1,17 @@
+{
+  "batch_id": "POLUSDT_funding_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_POLUSDT_funding.csv",
+  "source": {
+    "api": "fapi /fapi/v1/fundingRate",
+    "symbol": "POLUSDT",
+    "days": 30,
+    "startTime_ms": 1784805902288,
+    "fetched_at": "2026-08-22T11:25:06.486716+00:00"
+  },
+  "ingested_at": "2026-08-22T11:25:06.487787+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "1f8a2a416ec5c898dc77ee89d6f145ddab044220a7515af14ab3704945b71aef",
+  "file_size_bytes": 4818,
+  "immutable": true
+}

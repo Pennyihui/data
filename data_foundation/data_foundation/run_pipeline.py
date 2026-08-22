@@ -40,12 +40,26 @@ def stage_l0(assets):
 
 
 def normalize_instruments() -> None:
-    """exchangeInfo -> L1 instrument 表 (仅 MVP 交易对)。"""
+    """exchangeInfo -> L1 instrument 表 (仅 MVP 交易对)。
+
+    仅用于全新环境的 bootstrap 单快照; 若目标已是 PIT 快照历史
+    (含 data_available_at 列), 则跳过, 避免覆写 run_daily metadata 源
+    累积的时点历史 (见 metadata_pit.py)。
+    """
     import glob
 
     import pandas as pd
     from .l0 import list_raw_batches
     from .l1 import instrument_id
+    pit_file = os.path.join(L1_DIR, "instrument", "binance", "instruments.parquet")
+    if os.path.exists(pit_file):
+        try:
+            _old = pd.read_parquet(pit_file)
+        except Exception:  # noqa: BLE001
+            _old = None
+        if _old is not None and "data_available_at" in _old.columns:
+            print("  [skip] instrument 已是 PIT 快照历史, 由 run_daily metadata 源维护")
+            return
     frames = []
     for meta in list_raw_batches("binance", "exchange_metadata"):
         mtype = "spot" if "spot" in meta["batch_id"] else "perpetual"
@@ -629,9 +643,9 @@ def stage_onchain(days=1, hours=24):
     for ds, s in accum.items():
         build_dataset_manifest(ds, "*", "*", "*", "*", s, ["onchain_v1"],
                                {"note": "阶段4 链上; Ethereum+Arbitrum ERC-20 "
-                                "(USDT/USDC/DAI) 日志近1天, 自适应分窗抓取, "
-                                "时间戳=窗口边界块线性插值(±10min), "
-                                "Solana 快照=getTokenSupply(USDC)+槽位/高度, "
+                                "(USDT/USDC/DAI) 全量批次解码 (v1 + daily_YYYYMMDD "
+                                "+ 历史回填 .json.gz), 逐日窗口边界块分段线性插值"
+                                "时间戳, Solana 快照=getTokenSupply(USDC)+槽位/高度, "
                                 "DEX量/费率/预言机为聚合快照"})
     print("阶段4 完成")
 

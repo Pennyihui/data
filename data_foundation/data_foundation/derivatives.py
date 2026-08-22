@@ -10,8 +10,9 @@ import pyarrow.parquet as pq
 
 from .config import L1_DIR
 from .l1 import instrument_id, load_raw_batches
-from .schema import (DERIVATIVES_FUNDING_COLUMNS, DERIVATIVES_MARK_COLUMNS,
-                     DERIVATIVES_OI_COLUMNS, DERIVATIVES_RATIO_COLUMNS)
+from .schema import (DERIVATIVES_FUNDING_COLUMNS, DERIVATIVES_INDEX_COLUMNS,
+                     DERIVATIVES_MARK_COLUMNS, DERIVATIVES_OI_COLUMNS,
+                     DERIVATIVES_RATIO_COLUMNS)
 
 
 def write_derivatives_parquet(df: pd.DataFrame, dataset: str, venue_id: str,
@@ -87,6 +88,25 @@ def normalize_mark_price(venue_id: str, symbol: str) -> pd.DataFrame:
     df["source_batch_id"] = "binance_mark_v1"
     df = df.drop_duplicates("open_time_utc", keep="first").sort_values("open_time_utc")
     cols = [c for c, _ in DERIVATIVES_MARK_COLUMNS]
+    return df[[c for c in cols if c in df.columns]]
+
+
+def normalize_index_price(venue_id: str, symbol: str) -> pd.DataFrame:
+    """指数价 K 线 (1h) -> derivatives_index_price (index_* 列)。与 normalize_mark_price 同构。"""
+    df = _concat_raw(venue_id, "derivatives_index_price", symbol)
+    if df.empty:
+        return df
+    df["venue_id"] = venue_id
+    df["instrument_id"] = instrument_id(symbol)
+    df["symbol"] = symbol
+    df["open_time_utc"] = pd.to_datetime(df["open_time"], utc=True)
+    for a, b in [("open", "index_open"), ("high", "index_high"),
+                 ("low", "index_low"), ("close", "index_close")]:
+        df[b] = pd.to_numeric(df.get(a), errors="coerce")
+    df["data_available_at"] = df["open_time_utc"] + pd.Timedelta(hours=1)
+    df["source_batch_id"] = "binance_index_v1"
+    df = df.drop_duplicates("open_time_utc", keep="first").sort_values("open_time_utc")
+    cols = [c for c, _ in DERIVATIVES_INDEX_COLUMNS]
     return df[[c for c in cols if c in df.columns]]
 
 

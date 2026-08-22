@@ -21,25 +21,36 @@ from .config import CERTIFIED_DIR
 
 
 def scan_dataset(dataset_dir: str) -> dict | None:
-    """统计某数据集目录下所有 data.parquet (跨 venue)。"""
+    """统计某数据集目录下所有 data.parquet (跨 venue)。
+
+    只读必要列 (行数取 parquet 元数据), 避免 token_transfer 级大表全量载入。
+    """
     files = glob.glob(os.path.join(dataset_dir, "**", "data.parquet"), recursive=True)
     if not files:
         return None
     row_count = dup = gap = suspect = 0
     cov_start = cov_end = None
     for f in files:
-        df = pq.read_table(f).to_pandas()
-        row_count += len(df)
-        if "is_suspect" in df.columns:
-            suspect += int(df["is_suspect"].sum())
-        if "is_gap" in df.columns:
-            gap += int(df["is_gap"].sum())
-        # 主键重复度: 用首列时间近似 (重复统计仅在含 key 语义时准确, 这里保守按 0)
-        time_col = next((c for c in df.columns
-                         if c in ("open_time_utc", "timestamp_utc", "funding_time_utc",
-                                  "date_utc", "time_utc", "fetched_at",
-                                  "block_timestamp_utc", "snapshot_utc")), df.columns[0])
-        s = df[time_col].dropna()
+        pf = pq.ParquetFile(f)
+        row_count += pf.metadata.num_rows
+        sch = pf.schema_arrow
+        names = set(sch.names)
+        if "is_suspect" in names:
+            suspect += int(pf.read(columns=["is_suspect"])
+                           .column("is_suspect").to_pandas().sum())
+        if "is_gap" in names:
+            gap += int(pf.read(columns=["is_gap"])
+                       .column("is_gap").to_pandas().sum())
+        # 时间列: 优先已知主键时间列, 其次首个 datetime 列, 最后退回首列
+        prefer = ("open_time_utc", "timestamp_utc", "funding_time_utc",
+                  "date_utc", "time_utc", "fetched_at", "block_timestamp_utc",
+                  "snapshot_utc", "data_available_at")
+        time_col = next((c for c in prefer if c in names), None)
+        if time_col is None:
+            dt_cols = [n for n in sch.names
+                       if str(sch.field(n).type).startswith("timestamp")]
+            time_col = dt_cols[0] if dt_cols else sch.names[0]
+        s = pf.read(columns=[time_col]).column(time_col).to_pandas().dropna()
         if len(s):
             v_min, v_max = s.min(), s.max()
             if cov_start is None or v_min < cov_start:

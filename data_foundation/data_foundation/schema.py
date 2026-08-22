@@ -58,6 +58,10 @@ INSTRUMENT_COLUMNS = [
     ("underlying_asset", "string"),
     ("data_available_at", "timestamp[us, tz=UTC]"),
     ("source_batch_id", "string"),
+    # 审计派生列 (PIT 快照刷新时从 certified K 线重算): 该 symbol 在 certified
+    # market_candle_spot_1h / market_candle_perpetual_1h 中的首末根 open_time。
+    ("first_data_utc", "timestamp[us, tz=UTC]"),
+    ("last_data_utc", "timestamp[us, tz=UTC]"),
 ]
 
 # ---------------------------------------------------------------------------

@@ -31,22 +31,13 @@ MARK_HEADERS = ["ts", "open", "high", "low", "close", "confirm"]
 
 
 def _get(path, params, retries=8, timeout=30):
-    last = None
-    for i in range(retries):
-        try:
-            r = requests.get(f"{BASE}{path}", params=params, timeout=timeout, headers=UA)
-            if r.status_code == 429:
-                time.sleep(5)
-                continue
-            r.raise_for_status()
-            j = r.json()
-            if j.get("code") != "0":
-                raise RuntimeError(f"OKX {path}: {j.get('msg')}")
-            return j["data"]
-        except Exception as e:  # noqa: BLE001
-            last = e
-            time.sleep(min(1.5 * (i + 1), 12))
-    raise RuntimeError(str(last)[:150])
+    # 统一走 netpath 四级链路 (OKX 无直连镜像, 通常 T1_p7897 即通)
+    from . import netpath
+    j = netpath.fetch_json(f"{BASE}{path}", params=params, retries=retries,
+                           timeout=timeout)
+    if j.get("code") != "0":
+        raise RuntimeError(f"OKX {path}: {j.get('msg')}")
+    return j["data"]
 
 
 def _write_csv(rows, headers, tmp_name):

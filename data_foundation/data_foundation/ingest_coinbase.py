@@ -26,19 +26,10 @@ ASSETS = {"BTC": "BTC-USD", "ETH": "ETH-USD", "SOL": "SOL-USD", "XRP": "XRP-USD"
 
 
 def _get(path, params=None, retries=8, timeout=30):
-    last = None
-    for i in range(retries):
-        try:
-            r = requests.get(f"{BASE}{path}", params=params, timeout=timeout, headers=UA)
-            if r.status_code == 429:
-                time.sleep(5)
-                continue
-            r.raise_for_status()
-            return r.json()
-        except Exception as e:  # noqa: BLE001
-            last = e
-            time.sleep(min(1.5 * (i + 1), 12))
-    raise RuntimeError(str(last)[:150])
+    # 统一走 netpath 四级链路
+    from . import netpath
+    return netpath.fetch_json(f"{BASE}{path}", params=params, retries=retries,
+                              timeout=timeout)
 
 
 def _already(venue: str, dataset: str, batch_id: str) -> bool:

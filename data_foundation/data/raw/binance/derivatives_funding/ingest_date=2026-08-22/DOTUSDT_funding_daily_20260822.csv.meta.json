@@ -1,0 +1,17 @@
+{
+  "batch_id": "DOTUSDT_funding_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_DOTUSDT_funding.csv",
+  "source": {
+    "api": "fapi /fapi/v1/fundingRate",
+    "symbol": "DOTUSDT",
+    "days": 30,
+    "startTime_ms": 1784805902288,
+    "fetched_at": "2026-08-22T11:25:05.559204+00:00"
+  },
+  "ingested_at": "2026-08-22T11:25:05.560538+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "9699dbbc3cc6a1532a80f9b0246c7baf27f9d2b6c4fc58015744f96bd8bd32d4",
+  "file_size_bytes": 4292,
+  "immutable": true
+}

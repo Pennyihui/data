@@ -1,0 +1,17 @@
+{
+  "batch_id": "ARBUSDT_funding_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_ARBUSDT_funding.csv",
+  "source": {
+    "api": "fapi /fapi/v1/fundingRate",
+    "symbol": "ARBUSDT",
+    "days": 30,
+    "startTime_ms": 1784805902288,
+    "fetched_at": "2026-08-22T11:25:06.229672+00:00"
+  },
+  "ingested_at": "2026-08-22T11:25:06.230696+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "8c4a5e0fa80441db79bff8ae2bb2a991ff486c7378ca3f558eb8f884dd34a5e4",
+  "file_size_bytes": 4308,
+  "immutable": true
+}

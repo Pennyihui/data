@@ -35,22 +35,13 @@ def _proxies():
 
 
 def _get(path, params, retries=8, timeout=30):
-    """GET Deribit 公开端点, 重试+指数退避 (代理间歇性不稳定)。"""
-    last = None
-    for i in range(retries):
-        try:
-            r = requests.get(f"{BASE}{path}", params=params, timeout=timeout,
-                             headers=UA, proxies=_proxies())
-            if r.status_code != 200:
-                raise RuntimeError(f"HTTP {r.status_code}")
-            j = r.json()
-            if j.get("error"):
-                raise RuntimeError(f"Deribit {path}: {j['error']}")
-            return j
-        except Exception as e:  # noqa: BLE001
-            last = e
-            time.sleep(min(1.5 * (i + 1), 12))
-    raise RuntimeError(f"Deribit {path} 请求失败 (8 次重试): {str(last)[:150]}")
+    """GET Deribit 公开端点 — 统一走 netpath 四级链路 (DERIBIT_PROXY 环境变量废弃)。"""
+    from . import netpath
+    j = netpath.fetch_json(f"{BASE}{path}", params=params, retries=retries,
+                           timeout=timeout)
+    if j.get("error"):
+        raise RuntimeError(f"Deribit {path}: {j['error']}")
+    return j
 
 
 def fetch_dvol_history(currency: str, days: int = 90, resolution: int = 3600,

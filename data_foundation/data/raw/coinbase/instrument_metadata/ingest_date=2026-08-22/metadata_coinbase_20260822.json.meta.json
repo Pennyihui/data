@@ -1,0 +1,14 @@
+{
+  "batch_id": "metadata_coinbase_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\metadata_coinbase_20260822.json",
+  "source": {
+    "api": "coinbase /products (全 products)",
+    "fetched_at": "2026-08-21T20:10:21.512659+00:00"
+  },
+  "ingested_at": "2026-08-22T00:00:00+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "cb406eccf85599844a776724e5322027ca23aa6d8e17c177d080fe8d7c9af579",
+  "file_size_bytes": 381125,
+  "immutable": true
+}

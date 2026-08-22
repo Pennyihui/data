@@ -2,26 +2,38 @@
   "dataset": "derivatives_funding",
   "schema_version": "1.0.0",
   "source_batches": [
-    "BTCUSDT_okx_v1",
-    "ETHUSDT_okx_v1",
-    "SOLUSDT_okx_v1",
-    "XRPUSDT_okx_v1"
+    "funding_gap_BTCUSDT_v2",
+    "funding_gap_ETHUSDT_v2",
+    "funding_gap_SOLUSDT_v2",
+    "funding_gap_BNBUSDT_v2",
+    "funding_gap_XRPUSDT_v2",
+    "funding_gap_ADAUSDT_v2",
+    "funding_gap_DOGEUSDT_v2",
+    "funding_gap_AVAXUSDT_v2",
+    "funding_gap_LINKUSDT_v2",
+    "funding_gap_LTCUSDT_v2",
+    "funding_gap_DOTUSDT_v2",
+    "funding_gap_UNIUSDT_v2",
+    "funding_gap_AAVEUSDT_v2",
+    "funding_gap_ARBUSDT_v2",
+    "funding_gap_POLUSDT_v2"
   ],
   "coverage_start": "2019-09-10 08:00:00+00:00",
-  "coverage_end": "2026-08-21 16:00:00.001000+00:00",
-  "row_count": 99461,
+  "coverage_end": "2026-08-21 20:00:00+00:00",
+  "row_count": 103735,
   "duplicate_count": 0,
   "gap_count": 0,
   "suspect_count": 0,
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-21T19:28:19.334640+00:00",
+  "certified_at": "2026-08-22T15:05:41.046323+00:00",
   "aggregation_rules": {
-    "note": "OKX 1H; basis=swap/spot-1; OI 仅当前快照(OKX 无历史 OI 接口)"
+    "interval": "8h",
+    "note": "Binance fapi /fapi/v1/fundingRate, gap-fill"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-21T19:28:19.334640+00:00",
+  "finalized_at": "2026-08-22T15:05:41.046323+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

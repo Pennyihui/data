@@ -1,0 +1,25 @@
+{
+  "batch_id": "funding_gap_POLUSDT_v2",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\a_funding_gap_POLUSDT_v2.csv",
+  "source": {
+    "api": "fapi /fapi/v1/fundingRate",
+    "symbol": "POLUSDT",
+    "fetch_symbols": [
+      "MATICUSDT",
+      "POLUSDT"
+    ],
+    "market_type": "perpetual",
+    "gap_fill": true,
+    "merged": true,
+    "cadence_h": 4,
+    "startTime_ms": 1567296000000,
+    "endTime_ms": 1787344027070,
+    "fetched_at": "2026-08-21T20:27:10.965211+00:00"
+  },
+  "ingested_at": "2026-08-21T20:27:10.967581+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "735e657f89212607ed64643ffca07d2a6f6345514bf6091db85097fc0e5ac1c6",
+  "file_size_bytes": 191664,
+  "immutable": true
+}

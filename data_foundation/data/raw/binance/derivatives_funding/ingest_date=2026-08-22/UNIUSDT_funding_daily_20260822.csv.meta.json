@@ -1,0 +1,17 @@
+{
+  "batch_id": "UNIUSDT_funding_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_UNIUSDT_funding.csv",
+  "source": {
+    "api": "fapi /fapi/v1/fundingRate",
+    "symbol": "UNIUSDT",
+    "days": 30,
+    "startTime_ms": 1784805902288,
+    "fetched_at": "2026-08-22T11:25:05.780383+00:00"
+  },
+  "ingested_at": "2026-08-22T11:25:05.780998+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "51db0e663c4cf0243be87f43c9cbf4981cec0ddac0bc3a830637e0ab3d3ad0a5",
+  "file_size_bytes": 4283,
+  "immutable": true
+}

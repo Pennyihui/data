@@ -59,16 +59,44 @@ def load_derivatives(venue: str, instrument: str, dataset: str) -> pd.DataFrame:
     return df.sort_values(df.columns[0]).reset_index(drop=True)
 
 
-def load_instruments(venue: str = "binance") -> pd.DataFrame:
-    p = os.path.join(CERTIFIED_DIR, "instrument", venue, "instruments.parquet")
-    if not os.path.exists(p):
-        p = os.path.join(os.path.dirname(CERTIFIED_DIR), "..", "l1", "instrument", venue,
-                         "instruments.parquet")
-    df = pd.read_parquet(p)
+def load_instruments(venue_id: str | None = None, market_type: str | None = None,
+                     as_of=None) -> pd.DataFrame:
+    """读取 certified PIT instrument 元数据 (跨 venue 合并)。
+
+    as_of 语义: 保留 data_available_at <= as_of 的每 (venue_id, symbol)
+    最后一版快照 (取 max data_available_at); as_of=None 取最新版本。
+    venue_id / market_type 可过滤; 返回 INSTRUMENT_COLUMNS 列。
+    """
+    from .schema import INSTRUMENT_COLUMNS
+    root = os.path.join(CERTIFIED_DIR, "instrument")
+    if venue_id:
+        venues = [venue_id]
+    elif os.path.isdir(root):
+        venues = sorted(d for d in os.listdir(root)
+                        if os.path.isdir(os.path.join(root, d)))
+    else:
+        venues = []
+    frames = []
+    for v in venues:
+        d = os.path.join(root, v, "all")
+        if not os.path.isdir(d):
+            continue
+        frames.append(pq.read_table(d).to_pandas())
+    if not frames:
+        return pd.DataFrame(columns=[c for c, _ in INSTRUMENT_COLUMNS])
+    df = pd.concat(frames, ignore_index=True)
     for c in df.columns:
-        if "time" in c:
+        if "time" in c or c == "data_available_at" or c.endswith("_utc"):
             df[c] = pd.to_datetime(df[c], utc=True)
-    return df
+    if market_type:
+        df = df[df["market_type"] == market_type]
+    if as_of is not None:
+        df = df[df["data_available_at"] <= pd.Timestamp(as_of, tz="UTC")]
+    # Binance 现货/永续 symbol 字符串相同, 去重键必须含 market_type
+    df = df.sort_values("data_available_at").drop_duplicates(
+        subset=["venue_id", "symbol", "market_type"], keep="last").reset_index(drop=True)
+    cols = [c for c, _ in INSTRUMENT_COLUMNS]
+    return df[[c for c in cols if c in df.columns]]
 
 
 def load_manifest(dataset: str) -> dict:

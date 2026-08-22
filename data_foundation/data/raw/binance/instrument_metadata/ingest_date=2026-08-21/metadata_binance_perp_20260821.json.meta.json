@@ -1,0 +1,14 @@
+{
+  "batch_id": "metadata_binance_perp_20260821",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\metadata_binance_perp_20260821.json",
+  "source": {
+    "api": "binance fapi /fapi/v1/exchangeInfo (USDT-M 永续, 全 symbol)",
+    "fetched_at": "2026-08-21T20:05:12.212182+00:00"
+  },
+  "ingested_at": "2026-08-21T20:05:12.214195+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "90fd76df6cd6c46203e9f52d333cb8055e8d3a14eaf1a91f0b7e98bdaf9d270f",
+  "file_size_bytes": 1170153,
+  "immutable": true
+}

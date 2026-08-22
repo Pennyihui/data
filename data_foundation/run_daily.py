@@ -24,6 +24,7 @@ run_daily.py — 每日增量任务调度器 (L0 Raw -> L1 Normalized -> L2 Cert
   coinbase         Coinbase BTC-USD/ETH-USD/SOL-USD/XRP-USD 1h K线 (近 3 天)
   stablecoins      DefiLlama 供应量快照 + Ercin 稳定币流向(5 文件) + Binance USDC/DAI peg K线
   onchain          链上: ERC-20 Transfer 日志(昨天00:00->今天00:00 UTC) + mempool + DEX + Chainlink
+  metadata         三所合约规格 PIT 快照 (Binance 现货/永续 + OKX SPOT/SWAP + Coinbase products)
   rebuild          L1/L2 重建 (stage_l1/l2/okx/coinbase/stablecoins/onchain)
 """
 from __future__ import annotations
@@ -61,6 +62,7 @@ os.environ.setdefault("HTTPS_PROXY", PROXY)
 UA = {"User-Agent": "Mozilla/5.0 (data-foundation)"}
 
 from data_foundation.config import DATA_ROOT, MVP_ASSETS, RAW_DIR  # noqa: E402
+from data_foundation import netpath  # noqa: E402  统一四级网络链路
 from data_foundation.l0 import list_raw_batches, sha256_file  # noqa: E402
 
 # ============================================================
@@ -90,6 +92,10 @@ def log(msg: str) -> None:
             pass
 
 
+# netpath 的通道切换日志统一走 run_daily.log (带时间戳、进日志文件)
+netpath.set_logger(log)
+
+
 class _Tee:
     """把子函数(阶段 print)同时写进日志文件。"""
 
@@ -108,58 +114,31 @@ class _Tee:
 
 
 # ============================================================
-# 基础 HTTP (统一代理 + 8 次重试 + 退避, 与各 ingest 模块同款)
+# 基础 HTTP (统一走 netpath 四级链路: vision直连 -> 7897 -> 专用端口 -> socks5/钉IP)
 # ============================================================
 def _get_json(url, params=None, retries=8, timeout=25, headers=None):
-    last = None
-    for i in range(retries):
-        try:
-            r = requests.get(url, params=params, timeout=timeout,
-                             headers=headers or UA, proxies=PROXIES)
-            if r.status_code == 429:
-                time.sleep(5)
-                continue
-            r.raise_for_status()
-            return r.json()
-        except Exception as e:  # noqa: BLE001
-            last = e
-            time.sleep(min(1.5 * (i + 1), 12))
-    raise RuntimeError(f"{url}: {str(last)[:150]}")
+    return netpath.fetch_json(url, params=params, retries=retries,
+                              timeout=timeout, headers=headers)
 
 
 def _get_text(url, params=None, retries=8, timeout=30, headers=None):
-    last = None
-    for i in range(retries):
-        try:
-            r = requests.get(url, params=params, timeout=timeout,
-                             headers=headers or UA, proxies=PROXIES)
-            if r.status_code == 429:
-                time.sleep(5)
-                continue
-            r.raise_for_status()
-            return r.text
-        except Exception as e:  # noqa: BLE001
-            last = e
-            time.sleep(min(1.5 * (i + 1), 12))
-    raise RuntimeError(f"{url}: {str(last)[:150]}")
+    return netpath.fetch_text(url, params=params, retries=retries,
+                              timeout=timeout, headers=headers)
 
 
 def _pick_binance_base() -> str:
-    """探测可用的 Binance 现货端点 (api.binance.com 优先, 超时则 vision 镜像)。"""
+    """Binance 现货端点: api.binance.com 优先 (vision 镜像由 netpath T0 兜底);
+    全链路都不可用时退到 vision 基址写 URL (meta 记录 base_host 便于追溯)。"""
     if _binance_base["host"]:
         return _binance_base["host"]
-    for b in BINANCE_BASES:
-        for _ in range(2):
-            try:
-                requests.get(f"{b}/api/v3/klines",
-                             params={"symbol": "BTCUSDT", "interval": "1h", "limit": 1},
-                             timeout=8, headers=UA, proxies=PROXIES).raise_for_status()
-                _binance_base["host"] = b
-                log(f"  binance 现货端点选定: {b}")
-                return b
-            except Exception:  # noqa: BLE001
-                time.sleep(1.5)
-    _binance_base["host"] = BINANCE_BASES[0]
+    try:
+        netpath.fetch_json(f"{BINANCE_BASES[0]}/api/v3/klines",
+                           {"symbol": "BTCUSDT", "interval": "1h", "limit": 1},
+                           retries=2, timeout=10)
+        _binance_base["host"] = BINANCE_BASES[0]
+    except Exception:  # noqa: BLE001
+        _binance_base["host"] = BINANCE_BASES[1]
+    log(f"  binance 现货端点选定: {_binance_base['host']}")
     return _binance_base["host"]
 
 
@@ -384,23 +363,11 @@ OKX_ASSETS = ["BTC", "ETH", "SOL", "XRP"]
 
 
 def _okx_get(path, params, retries=8, timeout=30):
-    last = None
-    for i in range(retries):
-        try:
-            r = requests.get(f"{OKX_BASE}{path}", params=params, timeout=timeout,
-                             headers=UA, proxies=PROXIES)
-            if r.status_code == 429:
-                time.sleep(5)
-                continue
-            r.raise_for_status()
-            j = r.json()
-            if j.get("code") != "0":
-                raise RuntimeError(f"OKX {path}: {j.get('msg')}")
-            return j["data"]
-        except Exception as e:  # noqa: BLE001
-            last = e
-            time.sleep(min(1.5 * (i + 1), 12))
-    raise RuntimeError(str(last)[:150])
+    j = netpath.fetch_json(f"{OKX_BASE}{path}", params=params, retries=retries,
+                           timeout=timeout)
+    if j.get("code") != "0":
+        raise RuntimeError(f"OKX {path}: {j.get('msg')}")
+    return j["data"]
 
 
 def _okx_candles(inst, days=3, history_path="/market/history-candles"):
@@ -535,20 +502,8 @@ CB_ASSETS = {"BTC": "BTC-USD", "ETH": "ETH-USD", "SOL": "SOL-USD", "XRP": "XRP-U
 
 
 def _cb_get(path, params=None, retries=8, timeout=30):
-    last = None
-    for i in range(retries):
-        try:
-            r = requests.get(f"{CB_BASE}{path}", params=params, timeout=timeout,
-                             headers=UA, proxies=PROXIES)
-            if r.status_code == 429:
-                time.sleep(5)
-                continue
-            r.raise_for_status()
-            return r.json()
-        except Exception as e:  # noqa: BLE001
-            last = e
-            time.sleep(min(1.5 * (i + 1), 12))
-    raise RuntimeError(str(last)[:150])
+    return netpath.fetch_json(f"{CB_BASE}{path}", params=params,
+                              retries=retries, timeout=timeout)
 
 
 def _cb_candles(product, days=3):
@@ -691,11 +646,12 @@ def _rpc(method, params, retries=4, timeout=20):
     for i in range(retries):
         for rpc in RPCS:
             try:
-                r = requests.post(rpc, json={"jsonrpc": "2.0", "id": 1,
-                                             "method": method, "params": params},
-                                  timeout=timeout, headers=UA, proxies=PROXIES)
-                r.raise_for_status()
-                j = r.json()
+                # netpath 四级链路 (RPC 域名无污染问题, 通常 T1 即通;
+                # 单次不轮换, 由外层 RPCS 列表做主机级 failover)
+                j = netpath.post_json(rpc, json_body={"jsonrpc": "2.0", "id": 1,
+                                                      "method": method,
+                                                      "params": params},
+                                      timeout=timeout, retries=1)
                 if "result" in j:
                     return j["result"]
                 errors.append(f"{rpc}: {str(j)[:80]}")
@@ -904,7 +860,72 @@ def run_onchain() -> dict:
 
 
 # ============================================================
-# 源 8: rebuild — L1/L2 重建 (复用 run_pipeline 阶段函数)
+# 源 8: metadata — 三所合约规格 PIT 快照 (L0 raw 日批次 + L1/L2 认证)
+# ============================================================
+def run_metadata() -> dict:
+    """抓 4 组元数据 (Binance 现货/永续 + OKX SPOT/SWAP + Coinbase products)
+    -> 写 raw 日批次 (幂等) -> metadata_pit.normalize + certify 追加进
+    l1/instrument 并重认证 (PIT 快照历史)。"""
+    import pandas as pd
+    from data_foundation import metadata_pit as mp
+    date = _CTX["date"]
+    n = 0
+    notes = []
+
+    def _grab(key, venue, fetch, api_desc):
+        """抓取一组元数据并写 raw 日批次 (幂等)。返回 payload 或 None。"""
+        nonlocal n
+        bid = f"metadata_{key}_{date}"
+        if _already_today(venue, "instrument_metadata", bid):
+            log(f"  metadata {key}: 今日批次已存在, 跳过抓取 (幂等)")
+            return None
+        payload = fetch()
+        tmp = os.path.join(RAW_DIR, "_tmp", f"{bid}.json")
+        os.makedirs(os.path.dirname(tmp), exist_ok=True)
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(payload, f, ensure_ascii=False)
+        _write_raw(tmp, venue, "instrument_metadata", bid,
+                   {"api": api_desc, "fetched_at": _now_iso()}, ext="json")
+        n += 1
+        log(f"  metadata {key}: {api_desc} -> {bid}")
+        return payload
+
+    spot_p = _grab("binance_spot", "binance", mp.fetch_binance_spot,
+                   "binance /api/v3/exchangeInfo (现货, 全 symbol)")
+    perp_p = _grab("binance_perp", "binance", mp.fetch_binance_perp,
+                   "binance fapi /fapi/v1/exchangeInfo (USDT-M 永续, 全 symbol)")
+    okx_p = _grab("okx", "okx", mp.fetch_okx,
+                  "okx /public/instruments (SPOT+SWAP)")
+    cb_p = _grab("coinbase", "coinbase", mp.fetch_coinbase,
+                 "coinbase /products (全 products)")
+
+    new_by_venue, bids_by_venue = {}, {}
+
+    def _norm(venue, key, payload, norm_fn):
+        if payload is None:
+            return
+        bid = f"metadata_{key}_{date}"
+        df = norm_fn(payload, pd.Timestamp.now(tz="UTC"), bid)
+        new_by_venue.setdefault(venue, []).append(df)
+        bids_by_venue.setdefault(venue, set()).add(bid)
+        log(f"  metadata {key}: 归一化 {len(df)} 行")
+
+    _norm("binance", "binance_spot", spot_p, mp.normalize_binance_spot)
+    _norm("binance", "binance_perp", perp_p, mp.normalize_binance_perp)
+    _norm("okx", "okx", okx_p, mp.normalize_okx)
+    _norm("coinbase", "coinbase", cb_p, mp.normalize_coinbase)
+
+    for venue in ("binance", "okx", "coinbase"):
+        new_df = pd.concat(new_by_venue.get(venue, []), ignore_index=True) \
+            if new_by_venue.get(venue) else None
+        mp.certify_venue(venue, new_df=new_df,
+                         batch_ids=bids_by_venue.get(venue))
+    log(f"  metadata 完成: 新写批次 {n}, 各 venue PIT 已重认证")
+    return {"batches": n, "notes": notes}
+
+
+# ============================================================
+# 源 9: rebuild — L1/L2 重建 (复用 run_pipeline 阶段函数)
 # ============================================================
 def run_rebuild() -> dict:
     from data_foundation.run_pipeline import (stage_coinbase, stage_l1, stage_l2,
@@ -971,7 +992,8 @@ def _stage_onchain_no_l0(stage_onchain) -> None:
 # 源注册表
 # ============================================================
 ALL_SOURCES = ["binance_klines", "binance_funding", "binance_stats",
-               "okx", "coinbase", "stablecoins", "onchain", "rebuild"]
+               "okx", "coinbase", "stablecoins", "onchain", "metadata",
+               "rebuild"]
 SOURCES = {
     "binance_klines": run_binance_klines,
     "binance_funding": run_binance_funding,
@@ -980,6 +1002,7 @@ SOURCES = {
     "coinbase": run_coinbase,
     "stablecoins": run_stablecoins,
     "onchain": run_onchain,
+    "metadata": run_metadata,
     "rebuild": run_rebuild,
 }
 
@@ -1031,6 +1054,11 @@ def _write_manifest(results: dict) -> str:
     }
     m["failed"] = [k for k, v in results.items() if v["status"] == "failed"]
     m["history"] = history[-30:]
+    # 网络观测: 本次运行实际使用的通道与切换次数 (回溯"走的哪条道")
+    try:
+        m["network"] = netpath.stats_snapshot()
+    except Exception:  # noqa: BLE001
+        pass
     with open(path, "w", encoding="utf-8") as f:
         json.dump(m, f, ensure_ascii=False, indent=2)
     return path
@@ -1100,6 +1128,15 @@ def main() -> int:
     log(f"每日增量调度开始 | 日期戳={date_str} | ingest_date={_CTX['ingest_date']}")
     log(f"源: {sources}")
     log(f"代理: {PROXY} | 日志: {_LOG}")
+    # 网络链路启动探测 (vision直连 -> 7897 -> 专用端口 -> socks5/钉IP), 失败驱动降级
+    try:
+        _pr = netpath.probe(timeout=8)
+        _line = ", ".join(
+            f"{k}={'%dms' % v['ms'] if v.get('ok') else '不可用'}"
+            for k, v in _pr.items())
+        log(f"网络链路探测: {_line}")
+    except Exception as e:  # noqa: BLE001
+        log(f"[warn] 网络链路探测失败: {str(e)[:80]} (各源仍会自行重试)")
     log("=" * 70)
 
     results = {}

@@ -76,12 +76,13 @@ def _fetch_klines(sym: str) -> str | None:
     for attempt in range(8):
         try:
             while True:
-                r = requests.get("https://api.binance.com/api/v3/klines",
-                                 params={"symbol": sym, "interval": "1h",
-                                         "startTime": cursor, "limit": 1000},
-                                 timeout=25, headers=UA)
-                r.raise_for_status()
-                data = r.json()
+                # 统一走 netpath 四级链路 (retries=1: 外层已有 8 轮退避)
+                from . import netpath
+                data = netpath.fetch_json(
+                    "https://api.binance.com/api/v3/klines",
+                    params={"symbol": sym, "interval": "1h",
+                            "startTime": cursor, "limit": 1000},
+                    retries=1, timeout=25)
                 if not data:
                     break
                 rows.extend(data)

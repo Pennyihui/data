@@ -1,0 +1,17 @@
+{
+  "batch_id": "BTCUSDT_funding_daily_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\daily_BTCUSDT_funding.csv",
+  "source": {
+    "api": "fapi /fapi/v1/fundingRate",
+    "symbol": "BTCUSDT",
+    "days": 30,
+    "startTime_ms": 1784805902288,
+    "fetched_at": "2026-08-22T11:25:03.190643+00:00"
+  },
+  "ingested_at": "2026-08-22T11:25:03.192893+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "805c93c70033960f2dedf6894bd6df293fc06dac39cdbb1aa4751504e81334df",
+  "file_size_bytes": 4628,
+  "immutable": true
+}

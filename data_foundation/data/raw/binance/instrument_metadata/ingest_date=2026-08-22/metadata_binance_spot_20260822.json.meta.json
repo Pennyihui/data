@@ -1,0 +1,14 @@
+{
+  "batch_id": "metadata_binance_spot_20260822",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\metadata_binance_spot_20260822.json",
+  "source": {
+    "api": "binance /api/v3/exchangeInfo (现货, 全 symbol)",
+    "fetched_at": "2026-08-21T20:08:12.809635+00:00"
+  },
+  "ingested_at": "2026-08-22T00:00:00+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "a35caa042ee05145b731802962e468a8094d9efe391b85c27b1645ca430b01ad",
+  "file_size_bytes": 18796900,
+  "immutable": true
+}

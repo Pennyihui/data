@@ -1,84 +1,67 @@
 {
-  "last_run": "2026-08-21T18:49:55.000246+00:00",
-  "date": "20260821",
+  "last_run": "2026-08-22T11:26:40.279756+00:00",
+  "date": "20260822",
   "sources": {
-    "binance_klines": {
+    "metadata": {
       "status": "ok",
       "detail": "",
-      "elapsed_sec": 22.0,
-      "batches": 0,
-      "notes": [
-        "binance 现货端点: https://data-api.binance.vision"
-      ]
-    },
-    "binance_funding": {
-      "status": "failed",
-      "detail": "RuntimeError: fapi.binance.com 经代理不可达 (超时), 资金费率未抓取",
-      "elapsed_sec": 0.0,
+      "elapsed_sec": 13.4,
       "batches": 0,
       "notes": []
-    },
-    "binance_stats": {
-      "status": "failed",
-      "detail": "RuntimeError: fapi.binance.com 经代理不可达 (超时), 统计接口未抓取",
-      "elapsed_sec": 0.0,
-      "batches": 0,
-      "notes": []
-    },
-    "okx": {
-      "status": "ok",
-      "detail": "",
-      "elapsed_sec": 0.7,
-      "batches": 0,
-      "notes": []
-    },
-    "coinbase": {
-      "status": "ok",
-      "detail": "",
-      "elapsed_sec": 0.1,
-      "batches": 0,
-      "notes": []
-    },
-    "stablecoins": {
-      "status": "ok",
-      "detail": "",
-      "elapsed_sec": 0.1,
-      "batches": 0,
-      "notes": []
-    },
-    "onchain": {
-      "status": "ok",
-      "detail": "",
-      "elapsed_sec": 9.1,
-      "batches": 0,
-      "notes": []
-    },
-    "rebuild": {
-      "status": "ok",
-      "detail": "",
-      "elapsed_sec": 1002.8,
-      "batches": 6,
-      "notes": [
-        "binance_l1=ok",
-        "binance_l2=ok",
-        "okx=ok",
-        "coinbase=ok",
-        "stablecoins=ok",
-        "onchain=ok"
-      ]
     }
   },
-  "failed": [
-    "binance_funding",
-    "binance_stats"
-  ],
+  "failed": [],
   "history": [
     {
       "date": "20260821",
-      "failed": [
-        "binance_funding",
-        "binance_stats"
-      ]
+      "failed": []
+    },
+    {
+      "date": "20260822",
+      "failed": []
     }
-  ]
+  ],
+  "network": {
+    "current_channel": "T2_p7900",
+    "switches": 0,
+    "per_transport": {
+      "T0_vision": {
+        "ok": 0,
+        "fail": 0
+      },
+      "T1_p7897": {
+        "ok": 0,
+        "fail": 0
+      },
+      "T2_p7900": {
+        "ok": 0,
+        "fail": 0
+      },
+      "T2_p7906": {
+        "ok": 0,
+        "fail": 0
+      },
+      "T2_p7907": {
+        "ok": 0,
+        "fail": 0
+      },
+      "T2_p7904": {
+        "ok": 0,
+        "fail": 0
+      },
+      "T2_p7902": {
+        "ok": 0,
+        "fail": 0
+      },
+      "T3_socks5h": {
+        "ok": 0,
+        "fail": 0
+      },
+      "T3_doh_pin": {
+        "ok": 0,
+        "fail": 0
+      }
+    },
+    "has_pysocks": true
+  }
 }

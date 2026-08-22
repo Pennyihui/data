@@ -2,23 +2,23 @@
   "dataset": "onchain_daily_aggregate",
   "schema_version": "1.0.0",
   "source_batches": [
-    "onchain_v1"
+    "onchain_backfill_v2"
   ],
-  "coverage_start": "2026-08-19 00:00:00+00:00",
+  "coverage_start": "2026-08-01 00:00:00+00:00",
   "coverage_end": "2026-08-21 00:00:00+00:00",
-  "row_count": 12,
+  "row_count": 124,
   "duplicate_count": 0,
   "gap_count": 0,
   "suspect_count": 0,
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-21T19:28:21.755811+00:00",
+  "certified_at": "2026-08-22T15:05:48.364253+00:00",
   "aggregation_rules": {
-    "note": "阶段4 链上; Ethereum+Arbitrum ERC-20 (USDT/USDC/DAI) 日志近1天, 自适应分窗抓取, 时间戳=窗口边界块线性插值(±10min), Solana 快照=getTokenSupply(USDC)+槽位/高度, DEX量/费率/预言机为聚合快照"
+    "note": "ERC-20 转账日频聚合 (Ethereum+Arbitrum × USDT/USDC/DAI); large>=1e6 token 面值; 去重后按日精确重算"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-21T19:28:21.755811+00:00",
+  "finalized_at": "2026-08-22T15:05:48.364253+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }
