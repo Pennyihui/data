@@ -13,12 +13,12 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-22T19:54:41.928014+00:00",
+  "certified_at": "2026-08-22T22:37:26.354816+00:00",
   "aggregation_rules": {
     "note": "Coinbase REST candles 回填近 1 年, 可扩展; 无 confirm 字段(全为已收盘 bar)"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-22T19:54:41.928014+00:00",
+  "finalized_at": "2026-08-22T22:37:26.354816+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

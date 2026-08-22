@@ -1,0 +1,24 @@
+{
+  "dataset": "btc_network_daily",
+  "schema_version": "1.0.0",
+  "source_batches": [
+    "btc_network_v1"
+  ],
+  "coverage_start": "2009-01-03 00:00:00+00:00",
+  "coverage_end": "2026-08-21 00:00:00+00:00",
+  "row_count": 79595,
+  "duplicate_count": 0,
+  "gap_count": 0,
+  "suspect_count": 0,
+  "timestamp_unit": "us",
+  "timezone": "UTC",
+  "certification_status": "certified",
+  "certified_at": "2026-08-22T22:37:13.207244+00:00",
+  "aggregation_rules": {
+    "note": "blockchain.info charts sampled=false; 日频序列直接取点, market-cap 取每日最后值(收盘口径), mempool-size 取每日均值; 丢弃抓取当日不完整日值; 日频序列滞后约 6 天; 主键 (metric, date_utc)"
+  },
+  "quality_rule_version": "1.0.0",
+  "notes": [],
+  "finalized_at": "2026-08-22T22:37:13.207244+00:00",
+  "note_agg": "stats recomputed across all venues by finalize.py"
+}

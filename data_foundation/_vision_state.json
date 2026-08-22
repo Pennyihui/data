@@ -18,7 +18,7 @@
   ],
   "accum": {
     "derivatives_open_interest": {
-      "row_count": 596194,
+      "row_count": 1192388,
       "duplicate_count": 0,
       "gap_count": 0,
       "suspect_count": 0,
@@ -26,7 +26,7 @@
       "coverage_end": "2026-08-22 18:00:00+00:00"
     },
     "derivatives_ratio_glsr": {
-      "row_count": 589907,
+      "row_count": 1179814,
       "duplicate_count": 0,
       "gap_count": 0,
       "suspect_count": 0,
@@ -34,7 +34,7 @@
       "coverage_end": "2026-08-22 18:00:00+00:00"
     },
     "derivatives_ratio_tlsr_acct": {
-      "row_count": 496263,
+      "row_count": 992526,
       "duplicate_count": 0,
       "gap_count": 0,
       "suspect_count": 0,
@@ -42,7 +42,7 @@
       "coverage_end": "2026-08-22 18:00:00+00:00"
     },
     "derivatives_ratio_tlsr_pos": {
-      "row_count": 496318,
+      "row_count": 992636,
       "duplicate_count": 0,
       "gap_count": 0,
       "suspect_count": 0,
@@ -50,7 +50,7 @@
       "coverage_end": "2026-08-22 18:00:00+00:00"
     },
     "derivatives_ratio_taker": {
-      "row_count": 555840,
+      "row_count": 1111680,
       "duplicate_count": 0,
       "gap_count": 0,
       "suspect_count": 0,
@@ -60,14 +60,14 @@
   },
   "downloaded_files": 24776,
   "missing_days": [],
-  "last_update": "2026-08-22T19:50:09.849334+00:00",
+  "last_update": "2026-08-22T22:36:15.054213+00:00",
   "overlap": {
     "BTCUSDT": {
-      "derivatives_open_interest": 52322,
-      "derivatives_ratio_glsr": 51838,
-      "derivatives_ratio_tlsr_acct": 44633,
-      "derivatives_ratio_tlsr_pos": 44637,
-      "derivatives_ratio_taker": 49215
+      "derivatives_open_interest": 580,
+      "derivatives_ratio_glsr": 580,
+      "derivatives_ratio_tlsr_acct": 580,
+      "derivatives_ratio_tlsr_pos": 580,
+      "derivatives_ratio_taker": 581
     },
     "ETHUSDT": {
       "derivatives_open_interest": 580,

@@ -16,12 +16,12 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-22T19:54:29.410104+00:00",
+  "certified_at": "2026-08-22T22:37:12.934902+00:00",
   "aggregation_rules": {
     "note": "OKX 1H; basis=swap/spot-1; OI 仅当前快照(OKX 无历史 OI 接口)"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-22T19:54:29.411102+00:00",
+  "finalized_at": "2026-08-22T22:37:12.934902+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

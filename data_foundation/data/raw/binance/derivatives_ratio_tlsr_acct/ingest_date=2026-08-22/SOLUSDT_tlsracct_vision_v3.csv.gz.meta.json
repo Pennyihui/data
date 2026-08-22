@@ -1,0 +1,16 @@
+{
+  "batch_id": "SOLUSDT_tlsracct_vision_v3",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\SOLUSDT_tlsracct_vision_v3.csv.gz",
+  "source": {
+    "api": "binance-vision metrics 回填转标准批次",
+    "symbol": "SOLUSDT",
+    "rows": 33722,
+    "note": "Vision 5min->1h 末值; ratio 恒等式填充(short=1,long=ratio)"
+  },
+  "ingested_at": "2026-08-22T22:39:14.054774+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "d3586193ab65a91943401ab09b1f60f25969a09dae3186c0e60430538fc8b228",
+  "file_size_bytes": 352370,
+  "immutable": true
+}

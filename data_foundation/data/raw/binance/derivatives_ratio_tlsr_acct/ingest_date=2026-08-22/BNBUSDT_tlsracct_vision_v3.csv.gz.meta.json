@@ -1,0 +1,16 @@
+{
+  "batch_id": "BNBUSDT_tlsracct_vision_v3",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\BNBUSDT_tlsracct_vision_v3.csv.gz",
+  "source": {
+    "api": "binance-vision metrics 回填转标准批次",
+    "symbol": "BNBUSDT",
+    "rows": 33722,
+    "note": "Vision 5min->1h 末值; ratio 恒等式填充(short=1,long=ratio)"
+  },
+  "ingested_at": "2026-08-22T22:39:15.815850+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "7c238c04ac62cf6d64d9100ac87590a4c5f3c62b3e79f9ad030eab1299234d74",
+  "file_size_bytes": 347720,
+  "immutable": true
+}

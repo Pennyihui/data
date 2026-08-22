@@ -1,0 +1,16 @@
+{
+  "batch_id": "DOTUSDT_tlsracct_vision_v3",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\DOTUSDT_tlsracct_vision_v3.csv.gz",
+  "source": {
+    "api": "binance-vision metrics 回填转标准批次",
+    "symbol": "DOTUSDT",
+    "rows": 33721,
+    "note": "Vision 5min->1h 末值; ratio 恒等式填充(short=1,long=ratio)"
+  },
+  "ingested_at": "2026-08-22T22:39:25.816614+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "c714365b25121cc98f854c2abbe363d31ea02551863a5d9eb9db2945fde11061",
+  "file_size_bytes": 347676,
+  "immutable": true
+}

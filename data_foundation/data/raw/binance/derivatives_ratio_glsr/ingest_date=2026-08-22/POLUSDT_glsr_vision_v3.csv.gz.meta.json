@@ -1,0 +1,16 @@
+{
+  "batch_id": "POLUSDT_glsr_vision_v3",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\POLUSDT_glsr_vision_v3.csv.gz",
+  "source": {
+    "api": "binance-vision metrics 回填转标准批次",
+    "symbol": "POLUSDT",
+    "rows": 16997,
+    "note": "Vision 5min->1h 末值; ratio 恒等式填充(short=1,long=ratio)"
+  },
+  "ingested_at": "2026-08-22T22:39:08.311817+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "6e99d6e95365eec40b3d4fcf91e4f622a65507bfd33d680006bcec806ae34151",
+  "file_size_bytes": 157733,
+  "immutable": true
+}

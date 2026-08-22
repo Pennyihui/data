@@ -328,6 +328,25 @@ LISTING_UNIVERSE_COLUMNS = [
     ("source_batch_id", "string"),
 ]
 
+# BTC 网络日频 (blockchain.info charts, 长格式)
+BTC_NETWORK_DAILY_COLUMNS = [
+    ("metric", "string"),                 # hash_rate | difficulty | active_addresses ...
+    ("date_utc", "timestamp[us, tz=UTC]"),
+    ("value", "float64"),
+    ("data_available_at", "timestamp[us, tz=UTC]"),
+    ("source_batch_id", "string"),
+]
+
+# Coin Metrics 社区版资产网络日频 (长格式; usdt/usdc/dai/eth/btc)
+CM_ASSET_DAILY_COLUMNS = [
+    ("asset", "string"),
+    ("metric", "string"),                 # TxCnt | AdrActCnt | PriceUSD ...
+    ("date_utc", "timestamp[us, tz=UTC]"),
+    ("value", "float64"),
+    ("data_available_at", "timestamp[us, tz=UTC]"),
+    ("source_batch_id", "string"),
+]
+
 # 数据集 -> 列定义
 DATASETS = {
     "market_candle_spot_1h": MARKET_CANDLE_COLUMNS,
@@ -357,6 +376,8 @@ DATASETS = {
     "macro_daily": MACRO_DAILY_COLUMNS,
     "asset_master": ASSET_MASTER_COLUMNS,
     "listing_universe": LISTING_UNIVERSE_COLUMNS,
+    "btc_network_daily": BTC_NETWORK_DAILY_COLUMNS,
+    "cm_asset_daily": CM_ASSET_DAILY_COLUMNS,
 }
 
 # 每条记录必须存在的元数据字段

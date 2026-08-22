@@ -27,18 +27,18 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-22T19:54:37.350898+00:00",
+  "certified_at": "2026-08-22T22:37:22.390915+00:00",
   "aggregation_rules": {
     "source": "Binance Vision 官方 futures metrics 归档 (data.binance.vision/data/futures/um/daily/metrics)",
     "resample": "源=Vision官方metrics 5分钟粒度, 重采样1h取末值 (每小时组取最后一行, timestamp 取整点)",
     "dedup": "与现有 21 天 API 行合并: 现有行优先 (先到先得), 新历史行按主键去重",
     "merge_overlap_dropped": {
       "BTCUSDT": {
-        "derivatives_open_interest": 52322,
-        "derivatives_ratio_glsr": 51838,
-        "derivatives_ratio_tlsr_acct": 44633,
-        "derivatives_ratio_tlsr_pos": 44637,
-        "derivatives_ratio_taker": 49215
+        "derivatives_open_interest": 580,
+        "derivatives_ratio_glsr": 580,
+        "derivatives_ratio_tlsr_acct": 580,
+        "derivatives_ratio_tlsr_pos": 580,
+        "derivatives_ratio_taker": 581
       },
       "ETHUSDT": {
         "derivatives_open_interest": 580,
@@ -146,6 +146,6 @@
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-22T19:54:37.350898+00:00",
+  "finalized_at": "2026-08-22T22:37:22.390915+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

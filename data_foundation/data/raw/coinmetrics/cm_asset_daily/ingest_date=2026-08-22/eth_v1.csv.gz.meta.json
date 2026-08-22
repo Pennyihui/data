@@ -1,0 +1,17 @@
+{
+  "batch_id": "eth_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\eth_v1.csv.gz",
+  "source": {
+    "api": "https://raw.githubusercontent.com/coinmetrics/data/master/csv/eth.csv",
+    "fetched_at": "2026-08-22T22:15:23.943930+00:00",
+    "rows": 3953,
+    "asset": "eth",
+    "note": "community archive csv (raw)"
+  },
+  "ingested_at": "2026-08-22T22:15:24.176315+00:00",
+  "timestamp_unit": "us",
+  "timezone": "UTC",
+  "checksum_sha256": "902780470c5a99ab5f7f4e889ef6d2d22605d1da2f8ab1b3d063cf2a6012dc4d",
+  "file_size_bytes": 1010078,
+  "immutable": true
+}

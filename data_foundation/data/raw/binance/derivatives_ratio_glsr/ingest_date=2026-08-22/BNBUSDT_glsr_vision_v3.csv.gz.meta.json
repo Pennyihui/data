@@ -1,0 +1,16 @@
+{
+  "batch_id": "BNBUSDT_glsr_vision_v3",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\BNBUSDT_glsr_vision_v3.csv.gz",
+  "source": {
+    "api": "binance-vision metrics 回填转标准批次",
+    "symbol": "BNBUSDT",
+    "rows": 40926,
+    "note": "Vision 5min->1h 末值; ratio 恒等式填充(short=1,long=ratio)"
+  },
+  "ingested_at": "2026-08-22T22:38:49.101550+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "68736fc160dcdf9fb9adea7401379b6dd282a54e8210d38cc190d1aee36d309f",
+  "file_size_bytes": 451737,
+  "immutable": true
+}

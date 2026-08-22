@@ -1,0 +1,16 @@
+{
+  "batch_id": "BTCUSDT_tlsrpos_vision_v3",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\BTCUSDT_tlsrpos_vision_v3.csv.gz",
+  "source": {
+    "api": "binance-vision metrics 回填转标准批次",
+    "symbol": "BTCUSDT",
+    "rows": 44656,
+    "note": "Vision 5min->1h 末值; ratio 恒等式填充(short=1,long=ratio)"
+  },
+  "ingested_at": "2026-08-22T22:39:33.222609+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "193bb05a14b8c322090e6eff1d7ab51fe8813bfe531bd4d8fc17a7820fec82e1",
+  "file_size_bytes": 391300,
+  "immutable": true
+}

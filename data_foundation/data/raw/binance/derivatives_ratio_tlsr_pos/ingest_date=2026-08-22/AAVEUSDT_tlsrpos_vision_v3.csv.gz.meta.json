@@ -1,0 +1,16 @@
+{
+  "batch_id": "AAVEUSDT_tlsrpos_vision_v3",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\AAVEUSDT_tlsrpos_vision_v3.csv.gz",
+  "source": {
+    "api": "binance-vision metrics 回填转标准批次",
+    "symbol": "AAVEUSDT",
+    "rows": 33725,
+    "note": "Vision 5min->1h 末值; ratio 恒等式填充(short=1,long=ratio)"
+  },
+  "ingested_at": "2026-08-22T22:39:53.827904+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "f69ef38c8b047a9ecb29f6fc1ad936f40c6307fbb336f1ceff4d22951aafa8f6",
+  "file_size_bytes": 297529,
+  "immutable": true
+}

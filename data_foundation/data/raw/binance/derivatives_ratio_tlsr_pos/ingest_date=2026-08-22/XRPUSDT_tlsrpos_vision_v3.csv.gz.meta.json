@@ -1,0 +1,16 @@
+{
+  "batch_id": "XRPUSDT_tlsrpos_vision_v3",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\XRPUSDT_tlsrpos_vision_v3.csv.gz",
+  "source": {
+    "api": "binance-vision metrics 回填转标准批次",
+    "symbol": "XRPUSDT",
+    "rows": 33749,
+    "note": "Vision 5min->1h 末值; ratio 恒等式填充(short=1,long=ratio)"
+  },
+  "ingested_at": "2026-08-22T22:39:39.762439+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "160ec0c0c44e68ed4117f332ad6918c18531b90dab2c289670dde59b5821ae39",
+  "file_size_bytes": 299349,
+  "immutable": true
+}

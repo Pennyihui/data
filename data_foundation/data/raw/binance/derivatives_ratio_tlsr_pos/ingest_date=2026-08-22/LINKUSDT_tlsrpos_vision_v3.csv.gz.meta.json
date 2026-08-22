@@ -1,0 +1,16 @@
+{
+  "batch_id": "LINKUSDT_tlsrpos_vision_v3",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\LINKUSDT_tlsrpos_vision_v3.csv.gz",
+  "source": {
+    "api": "binance-vision metrics 回填转标准批次",
+    "symbol": "LINKUSDT",
+    "rows": 33725,
+    "note": "Vision 5min->1h 末值; ratio 恒等式填充(short=1,long=ratio)"
+  },
+  "ingested_at": "2026-08-22T22:39:46.911878+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "9404904ad1cc16ae04cff66bff11f16b4f0e50c70ad7abe446e9a4b88f761f4d",
+  "file_size_bytes": 299696,
+  "immutable": true
+}

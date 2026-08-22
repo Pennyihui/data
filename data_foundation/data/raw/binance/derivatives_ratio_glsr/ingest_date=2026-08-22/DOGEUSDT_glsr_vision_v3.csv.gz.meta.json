@@ -1,0 +1,16 @@
+{
+  "batch_id": "DOGEUSDT_glsr_vision_v3",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\DOGEUSDT_glsr_vision_v3.csv.gz",
+  "source": {
+    "api": "binance-vision metrics 回填转标准批次",
+    "symbol": "DOGEUSDT",
+    "rows": 40926,
+    "note": "Vision 5min->1h 末值; ratio 恒等式填充(short=1,long=ratio)"
+  },
+  "ingested_at": "2026-08-22T22:38:54.670217+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "16b2118266ebcf423a978717968dd11c4e50dda4041932f93a64472a48227c8e",
+  "file_size_bytes": 449729,
+  "immutable": true
+}

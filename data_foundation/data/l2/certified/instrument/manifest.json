@@ -15,7 +15,7 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-22T19:54:37.604183+00:00",
+  "certified_at": "2026-08-22T22:37:22.612920+00:00",
   "aggregation_rules": {
     "note": "PIT 合约规格历史: 每 (venue,symbol) 每次抓取追加一行, data_available_at=抓取时刻; as_of 查询取最后版本; listing_time: Binance永续=onboardDate, OKX=listTime, Binance现货/Coinbase=certified K线首根近似; first/last_data_utc 为 certified K 线覆盖审计列",
     "key": [
@@ -32,6 +32,6 @@
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-22T19:54:37.604183+00:00",
+  "finalized_at": "2026-08-22T22:37:22.612920+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

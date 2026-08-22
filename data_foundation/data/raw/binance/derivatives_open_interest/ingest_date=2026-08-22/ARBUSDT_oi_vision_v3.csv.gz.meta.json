@@ -1,0 +1,16 @@
+{
+  "batch_id": "ARBUSDT_oi_vision_v3",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\ARBUSDT_oi_vision_v3.csv.gz",
+  "source": {
+    "api": "binance-vision metrics 回填转标准批次",
+    "symbol": "ARBUSDT",
+    "rows": 29946,
+    "note": "Vision 5min->1h 末值; ratio 恒等式填充(short=1,long=ratio)"
+  },
+  "ingested_at": "2026-08-22T22:38:40.022874+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "db0548061a58180c4e5a6d7e088bf53acbc3a6514bbe04998da0c844a731ceb5",
+  "file_size_bytes": 514659,
+  "immutable": true
+}

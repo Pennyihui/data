@@ -1,0 +1,16 @@
+{
+  "batch_id": "ETHUSDT_tlsracct_vision_v3",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\ETHUSDT_tlsracct_vision_v3.csv.gz",
+  "source": {
+    "api": "binance-vision metrics 回填转标准批次",
+    "symbol": "ETHUSDT",
+    "rows": 33721,
+    "note": "Vision 5min->1h 末值; ratio 恒等式填充(short=1,long=ratio)"
+  },
+  "ingested_at": "2026-08-22T22:39:12.450798+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "bd02a73081252df067fab0836fd4685e6d85705eb884cbe462f12b18cd20db75",
+  "file_size_bytes": 353667,
+  "immutable": true
+}

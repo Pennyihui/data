@@ -1,0 +1,16 @@
+{
+  "batch_id": "LINKUSDT_taker_vision_v3",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\LINKUSDT_taker_vision_v3.csv.gz",
+  "source": {
+    "api": "binance-vision metrics 回填转标准批次",
+    "symbol": "LINKUSDT",
+    "rows": 38303,
+    "note": "Vision 5min->1h 末值; ratio 恒等式填充(short=1,long=ratio)"
+  },
+  "ingested_at": "2026-08-22T22:40:14.167554+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "3b51e36a819de634b4cbb8383114e6f65620f40df601fb8ff29aef13ea542d4a",
+  "file_size_bytes": 386421,
+  "immutable": true
+}

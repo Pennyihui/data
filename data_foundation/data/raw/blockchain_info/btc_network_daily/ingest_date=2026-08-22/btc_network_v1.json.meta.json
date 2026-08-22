@@ -1,0 +1,35 @@
+{
+  "batch_id": "btc_network_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\btc_network_all.json",
+  "source": {
+    "api": "https://api.blockchain.info/charts",
+    "params": {
+      "timespan": "all",
+      "format": "json",
+      "sampled": "false"
+    },
+    "fetched_at": "2026-08-22T22:15:45.398671+00:00",
+    "slugs": [
+      "hash-rate",
+      "difficulty",
+      "miners-revenue",
+      "n-unique-addresses",
+      "n-transactions",
+      "n-transactions-total",
+      "mempool-size",
+      "median-confirmation-time",
+      "market-cap",
+      "estimated-transaction-volume-usd",
+      "cost-per-transaction",
+      "transaction-fees",
+      "estimated-transaction-volume"
+    ],
+    "rows": 1355668
+  },
+  "ingested_at": "2026-08-22T22:15:48.425596+00:00",
+  "timestamp_unit": "us",
+  "timezone": "UTC",
+  "checksum_sha256": "8988b72db54cb3f3f40cf9e3ae7e4de5f1d761e0c3a63c556087d2768986f7b8",
+  "file_size_bytes": 51191413,
+  "immutable": true
+}

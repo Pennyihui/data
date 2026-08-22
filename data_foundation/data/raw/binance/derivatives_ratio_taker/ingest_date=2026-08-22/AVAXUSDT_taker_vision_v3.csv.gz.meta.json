@@ -1,0 +1,16 @@
+{
+  "batch_id": "AVAXUSDT_taker_vision_v3",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\AVAXUSDT_taker_vision_v3.csv.gz",
+  "source": {
+    "api": "binance-vision metrics 回填转标准批次",
+    "symbol": "AVAXUSDT",
+    "rows": 38302,
+    "note": "Vision 5min->1h 末值; ratio 恒等式填充(short=1,long=ratio)"
+  },
+  "ingested_at": "2026-08-22T22:40:12.334215+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "87fe96b926ebf08b4762ecb975a0592f052989e09b46bf4e54abed26abf21d33",
+  "file_size_bytes": 386117,
+  "immutable": true
+}

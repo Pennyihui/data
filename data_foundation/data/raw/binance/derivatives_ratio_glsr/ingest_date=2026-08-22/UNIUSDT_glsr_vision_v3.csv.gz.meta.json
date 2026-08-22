@@ -1,0 +1,16 @@
+{
+  "batch_id": "UNIUSDT_glsr_vision_v3",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\UNIUSDT_glsr_vision_v3.csv.gz",
+  "source": {
+    "api": "binance-vision metrics 回填转标准批次",
+    "symbol": "UNIUSDT",
+    "rows": 40925,
+    "note": "Vision 5min->1h 末值; ratio 恒等式填充(short=1,long=ratio)"
+  },
+  "ingested_at": "2026-08-22T22:39:04.213835+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "584c605f4a0a4dd972276426fd8d700e59857ec6927a84e230d0e9dfff0f278c",
+  "file_size_bytes": 446407,
+  "immutable": true
+}

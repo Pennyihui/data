@@ -1,0 +1,16 @@
+{
+  "batch_id": "LTCUSDT_glsr_vision_v3",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\raw\\_tmp\\LTCUSDT_glsr_vision_v3.csv.gz",
+  "source": {
+    "api": "binance-vision metrics 回填转标准批次",
+    "symbol": "LTCUSDT",
+    "rows": 40926,
+    "note": "Vision 5min->1h 末值; ratio 恒等式填充(short=1,long=ratio)"
+  },
+  "ingested_at": "2026-08-22T22:39:00.383719+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "864cac1408af054464baf9512721a330871be35777a3db739c3e869c43b0806e",
+  "file_size_bytes": 450988,
+  "immutable": true
+}
