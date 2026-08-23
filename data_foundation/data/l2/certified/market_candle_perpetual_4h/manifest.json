@@ -1,0 +1,25 @@
+{
+  "dataset": "market_candle_perpetual_4h",
+  "schema_version": "1.0.0",
+  "source_batches": [
+    "derived_from_1h_v1"
+  ],
+  "coverage_start": "2019-09-08 16:00:00+00:00",
+  "coverage_end": "2026-08-23 20:00:00+00:00",
+  "row_count": 2207881,
+  "duplicate_count": 0,
+  "gap_count": 0,
+  "suspect_count": 44,
+  "timestamp_unit": "us",
+  "timezone": "UTC",
+  "certification_status": "certified",
+  "certified_at": "2026-08-23T21:09:20.816608+00:00",
+  "aggregation_rules": {
+    "method": "resample 1h->4h (UTC 对齐), OHLC=first/max/min/last, 量求和; 由标准层无损派生",
+    "base_interval": "1h"
+  },
+  "quality_rule_version": "1.0.0",
+  "notes": [],
+  "finalized_at": "2026-08-23T21:09:20.816608+00:00",
+  "note_agg": "stats recomputed across all venues by finalize.py"
+}
