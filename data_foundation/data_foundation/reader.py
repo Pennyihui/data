@@ -8,6 +8,7 @@ reader.py — L2 Certified 读取 API (L3 研究默认读取层)
   from data_foundation.reader import load_candles
   df = load_candles("binance", "BTC-USDT", "1h")
   df = load_candles("binance", "BTC-USDT", "1h", as_of="2026-08-01")
+  uni = load_universe(as_of="2026-08-22", layer="tradeable")   # 三层宇宙成员
 """
 from __future__ import annotations
 
@@ -97,6 +98,39 @@ def load_instruments(venue_id: str | None = None, market_type: str | None = None
         subset=["venue_id", "symbol", "market_type"], keep="last").reset_index(drop=True)
     cols = [c for c, _ in INSTRUMENT_COLUMNS]
     return df[[c for c in cols if c in df.columns]]
+
+
+def load_universe(as_of=None, layer: str = "tradeable",
+                  base_asset: str | None = None) -> pd.DataFrame:
+    """读取 certified universe_membership (三层交易宇宙) 成员快照。
+
+    layer ∈ {"research", "backtest", "tradeable"}: 返回通过该层的成员行
+    (schema 全部列, 外加 certified 附加列 is_suspect/quality_reason/date)。
+    as_of: str | Timestamp, 归一化为 UTC 日过滤 date_utc; None = 全部日期。
+    base_asset: 可选, 精确过滤统一基础资产 (如 "BTC")。
+    """
+    from .schema import UNIVERSE_MEMBERSHIP_COLUMNS
+    valid = ("research", "backtest", "tradeable")
+    if layer not in valid:
+        raise ValueError(f"layer 必须是 {valid} 之一, 收到: {layer!r}")
+    root = os.path.join(CERTIFIED_DIR, "universe_membership", "builder", "all")
+    if not os.path.isdir(root):
+        raise FileNotFoundError(root)
+    df = pq.read_table(root).to_pandas()
+    for c in df.columns:
+        if "time" in c or c == "date_utc" or c.endswith("_utc") \
+                or c == "data_available_at":
+            df[c] = pd.to_datetime(df[c], utc=True)
+    df = df[df[f"layer_{layer}"].fillna(False)]
+    if as_of is not None:
+        day = pd.Timestamp(as_of, tz="UTC").normalize()
+        hi = day + pd.Timedelta(days=1)
+        df = df[(df["date_utc"] >= day) & (df["date_utc"] < hi)]
+    if base_asset is not None:
+        df = df[df["base_asset"] == base_asset]
+    cols = [c for c, _ in UNIVERSE_MEMBERSHIP_COLUMNS]
+    return df[[c for c in cols if c in df.columns]].sort_values(
+        ["date_utc", "symbol"]).reset_index(drop=True)
 
 
 def load_manifest(dataset: str) -> dict:

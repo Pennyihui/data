@@ -14,7 +14,7 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-23T10:26:27.736326+00:00",
+  "certified_at": "2026-08-23T12:06:01.361806+00:00",
   "aggregation_rules": {
     "method": "按 (currency, snapshot_utc, expiry_utc) 聚合: ATM IV=min|strike-underlying| 期权的 mark_iv, median_iv=该到期所有有效 IV 中位数, option_count=有效 IV 期权数",
     "inputs": [
@@ -23,6 +23,6 @@
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-23T10:26:27.736326+00:00",
+  "finalized_at": "2026-08-23T12:06:01.361806+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

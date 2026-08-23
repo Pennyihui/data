@@ -1,76 +1,16 @@
 {
-  "last_run": "2026-08-23T01:20:32.277982+00:00",
-  "date": "20260822",
+  "last_run": "2026-08-23T12:05:46.074624+00:00",
+  "date": "20260823",
   "sources": {
-    "binance_klines": {
-      "status": "ok",
-      "detail": "",
-      "elapsed_sec": 8.5,
-      "batches": 15,
-      "notes": [
-        "binance 现货端点: https://api.binance.com"
-      ]
-    },
-    "binance_funding": {
-      "status": "ok",
-      "detail": "",
-      "elapsed_sec": 1.0,
-      "batches": 0,
-      "notes": []
-    },
-    "binance_stats": {
-      "status": "ok",
-      "detail": "",
-      "elapsed_sec": 23.2,
-      "batches": 75,
-      "notes": []
-    },
-    "okx": {
-      "status": "ok",
-      "detail": "",
-      "elapsed_sec": 18.9,
-      "batches": 24,
-      "notes": []
-    },
-    "coinbase": {
-      "status": "ok",
-      "detail": "",
-      "elapsed_sec": 6.4,
-      "batches": 4,
-      "notes": []
-    },
-    "stablecoins": {
-      "status": "ok",
-      "detail": "",
-      "elapsed_sec": 13.4,
-      "batches": 8,
-      "notes": []
-    },
-    "onchain": {
-      "status": "ok",
-      "detail": "",
-      "elapsed_sec": 1271.1,
-      "batches": 8,
-      "notes": []
-    },
-    "metadata": {
+    "universe": {
       "status": "ok",
       "detail": "",
       "elapsed_sec": 1.9,
-      "batches": 0,
-      "notes": []
-    },
-    "rebuild": {
-      "status": "failed",
-      "detail": "RuntimeError: L1/L2 重建部分阶段失败: onchain | 详情见日志 D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\data\\daily_run_20260822.log",
-      "elapsed_sec": 0.0,
-      "batches": 0,
+      "batches": 1,
       "notes": []
     }
   },
-  "failed": [
-    "rebuild"
-  ],
+  "failed": [],
   "history": [
     {
       "date": "20260821",
@@ -81,6 +21,10 @@
       "failed": [
         "rebuild"
       ]
+    },
+    {
+      "date": "20260823",
+      "failed": []
     }
   ],
   "network": {
@@ -96,8 +40,8 @@
         "fail": 0
       },
       "T2_p7900": {
-        "ok": 812,
-        "fail": 1
+        "ok": 0,
+        "fail": 0
       },
       "T2_p7906": {
         "ok": 0,

@@ -347,6 +347,28 @@ CM_ASSET_DAILY_COLUMNS = [
     ("source_batch_id", "string"),
 ]
 
+# 交易宇宙每日成员快照 (三层: 研究⊇回测⊇交易)
+UNIVERSE_MEMBERSHIP_COLUMNS = [
+    ("date_utc", "timestamp[us, tz=UTC]"),
+    ("symbol", "string"),
+    ("base_asset", "string"),
+    ("quote_asset", "string"),
+    ("venue_id", "string"),
+    ("market_type", "string"),
+    ("first_trade_date", "timestamp[us, tz=UTC]"),
+    ("last_trade_date", "timestamp[us, tz=UTC]"),
+    ("age_days", "int64"),
+    ("avg_volume_30d_usd", "float64"),    # 近30日日均quote成交额 (K线)
+    ("median_volume_30d_usd", "float64"),
+    ("market_cap_usd", "float64"),        # CMC 当日市值 (匹配不到为 NaN)
+    ("gap_ratio_30d", "float64"),         # 近30日K线缺口率
+    ("layer_research", "bool"),           # PIT 真实存在即可
+    ("layer_backtest", "bool"),           # + 质量门(有数据/缺口率达标/年龄)
+    ("layer_tradeable", "bool"),          # + 流动性/市值门槛
+    ("data_available_at", "timestamp[us, tz=UTC]"),
+    ("source_batch_id", "string"),
+]
+
 # 数据集 -> 列定义
 DATASETS = {
     "market_candle_spot_1h": MARKET_CANDLE_COLUMNS,
@@ -378,6 +400,7 @@ DATASETS = {
     "listing_universe": LISTING_UNIVERSE_COLUMNS,
     "btc_network_daily": BTC_NETWORK_DAILY_COLUMNS,
     "cm_asset_daily": CM_ASSET_DAILY_COLUMNS,
+    "universe_membership": UNIVERSE_MEMBERSHIP_COLUMNS,
 }
 
 # 每条记录必须存在的元数据字段

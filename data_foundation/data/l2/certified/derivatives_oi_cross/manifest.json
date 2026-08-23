@@ -27,13 +27,13 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-23T10:26:18.779843+00:00",
+  "certified_at": "2026-08-23T12:05:52.734642+00:00",
   "aggregation_rules": {
     "interval": "1h",
     "note": "venue 级 OI 历史: bybit (cursor 全量), open_interest_usd=contracts x mark_close(1h) 折算"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-23T10:26:18.779843+00:00",
+  "finalized_at": "2026-08-23T12:05:52.734642+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

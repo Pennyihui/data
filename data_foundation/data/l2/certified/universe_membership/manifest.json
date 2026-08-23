@@ -1,0 +1,24 @@
+{
+  "dataset": "universe_membership",
+  "schema_version": "1.0.0",
+  "source_batches": [
+    "universe_v1"
+  ],
+  "coverage_start": "2020-01-01 00:00:00+00:00",
+  "coverage_end": "2026-08-23 00:00:00+00:00",
+  "row_count": 816731,
+  "duplicate_count": 0,
+  "gap_count": 0,
+  "suspect_count": 0,
+  "timestamp_unit": "us",
+  "timezone": "UTC",
+  "certification_status": "certified",
+  "certified_at": "2026-08-23T12:06:08.516457+00:00",
+  "aggregation_rules": {
+    "note": "三层宇宙每日快照 (research⊇backtest⊇tradeable); 研究层无K线时 volume/gap 列为合法 NaN, 不计 suspect; 默认规则 quote=USDT, age>=90d, 30d中位成额>=1e6, 市值>=5e7(已知时), gap<=5%"
+  },
+  "quality_rule_version": "1.0.0",
+  "notes": [],
+  "finalized_at": "2026-08-23T12:06:08.516457+00:00",
+  "note_agg": "stats recomputed across all venues by finalize.py"
+}

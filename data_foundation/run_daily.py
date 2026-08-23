@@ -1028,11 +1028,21 @@ def run_cross_deriv() -> dict:
 
 
 # ============================================================
+# 源 12: universe — 三层宇宙每日快照增量 (研究⊇回测⊇交易)
+# ============================================================
+def run_universe() -> dict:
+    from data_foundation import universe_builder as ub
+    r = ub.run_daily_entry() or {}
+    return {"batches": int(r.get("rows", 1)), "notes": []}
+
+
+# ============================================================
 # 源注册表
 # ============================================================
 ALL_SOURCES = ["binance_klines", "binance_funding", "binance_stats",
                "okx", "coinbase", "stablecoins", "onchain", "metadata",
-               "sentiment_macro", "tron", "cross_deriv", "rebuild"]
+               "sentiment_macro", "tron", "cross_deriv", "universe",
+               "rebuild"]
 SOURCES = {
     "binance_klines": run_binance_klines,
     "binance_funding": run_binance_funding,
@@ -1045,6 +1055,7 @@ SOURCES = {
     "sentiment_macro": run_sentiment_macro,
     "tron": run_tron,
     "cross_deriv": run_cross_deriv,
+    "universe": run_universe,
     "rebuild": run_rebuild,
 }
 

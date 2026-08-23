@@ -113,8 +113,10 @@ def certify_derivatives(df: pd.DataFrame, time_col: str,
     key_cols: 主键列 (缺省 [time_col]); 如 supply 的主键是 [token, date_utc]。
     """
     df = df.copy()
-    core = core_numeric_cols or [c for c in df.select_dtypes(include=[np.number]).columns
-                                 if c != time_col]
+    # 空列表 [] 表示"明确不做数值检查", 与 None (默认=全部数值列) 语义区分
+    core = (core_numeric_cols if core_numeric_cols is not None
+            else [c for c in df.select_dtypes(include=[np.number]).columns
+                  if c != time_col])
     keys = key_cols or [time_col]
     reasons = {}
     ok = pd.Series(True, index=df.index)
