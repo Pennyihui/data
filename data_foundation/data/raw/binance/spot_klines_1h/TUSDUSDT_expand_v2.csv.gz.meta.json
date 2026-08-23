@@ -1,0 +1,20 @@
+{
+  "batch_id": "TUSDUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "TUSDUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2018-05",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:58:09.919387+00:00"
+  },
+  "ingested_at": "2026-08-23T12:58:14.276140+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "c242e8b60abe7db6d870ef8a65f51de3b26eae3661696c0b8fc211b10e60f6f4",
+  "file_size_bytes": 2522907,
+  "row_count": 68065,
+  "immutable": true
+}

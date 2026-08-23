@@ -1,0 +1,20 @@
+{
+  "batch_id": "CAKEUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "CAKEUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2021-02",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:44:14.945233+00:00"
+  },
+  "ingested_at": "2026-08-23T12:44:19.004039+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "f85d286c00ef2aa814c3e02cf375b256faf52a0ca2cdc27c8a97689c1f8291ea",
+  "file_size_bytes": 2129386,
+  "row_count": 48258,
+  "immutable": true
+}

@@ -1,0 +1,20 @@
+{
+  "batch_id": "BCHUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "BCHUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2019-11",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:43:35.947286+00:00"
+  },
+  "ingested_at": "2026-08-23T12:43:42.007918+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "e34593f26cd9f47ef441fc58f1d5b55814a10663032742daac592853723c3388",
+  "file_size_bytes": 2671969,
+  "row_count": 59011,
+  "immutable": true
+}

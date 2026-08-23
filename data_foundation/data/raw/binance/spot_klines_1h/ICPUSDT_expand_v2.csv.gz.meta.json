@@ -1,0 +1,20 @@
+{
+  "batch_id": "ICPUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "ICPUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2021-05",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:51:51.079434+00:00"
+  },
+  "ingested_at": "2026-08-23T12:51:54.816290+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "6b78a885762bc94b4ef2bc216e106de57eb4d11c339e16a02e8eee3d4a3d40eb",
+  "file_size_bytes": 2065407,
+  "row_count": 46325,
+  "immutable": true
+}

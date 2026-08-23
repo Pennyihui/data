@@ -1,0 +1,20 @@
+{
+  "batch_id": "ASTERUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "ASTERUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2025-10",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:42:11.652261+00:00"
+  },
+  "ingested_at": "2026-08-23T12:42:12.397473+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "84e0fd92b65561276e36367c92dca2f6d1c16d117f0541c2e00d467c57437e5d",
+  "file_size_bytes": 335619,
+  "row_count": 7705,
+  "immutable": true
+}

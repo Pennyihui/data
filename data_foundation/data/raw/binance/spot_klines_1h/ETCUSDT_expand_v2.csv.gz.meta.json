@@ -1,0 +1,20 @@
+{
+  "batch_id": "ETCUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "ETCUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2018-06",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:45:21.954734+00:00"
+  },
+  "ingested_at": "2026-08-23T12:45:28.494364+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "84a895cdf022967da129fd1e016aa6934b487c621d5397041139a3c83dd81966",
+  "file_size_bytes": 3186005,
+  "row_count": 71779,
+  "immutable": true
+}

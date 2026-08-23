@@ -1,0 +1,20 @@
+{
+  "batch_id": "WLFIUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "WLFIUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2025-09",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:59:26.927573+00:00"
+  },
+  "ingested_at": "2026-08-23T12:59:27.523882+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "e026a7e98e87b8ecd441b97a176b178c6340c9e475f9874b7940454e2ed0a5d3",
+  "file_size_bytes": 369863,
+  "row_count": 8544,
+  "immutable": true
+}

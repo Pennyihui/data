@@ -1,0 +1,20 @@
+{
+  "batch_id": "MORPHOUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "MORPHOUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2025-10",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:53:18.301548+00:00"
+  },
+  "ingested_at": "2026-08-23T12:53:19.033251+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "c8d83c50b72922ab80e329b869228b7df0bf8fdc54dca6b82bdad13a357f6187",
+  "file_size_bytes": 328262,
+  "row_count": 7774,
+  "immutable": true
+}

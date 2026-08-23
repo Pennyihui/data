@@ -1,0 +1,20 @@
+{
+  "batch_id": "RENDERUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "RENDERUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2024-07",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:55:50.164617+00:00"
+  },
+  "ingested_at": "2026-08-23T12:55:51.562168+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "e0a32a4b40bec4804c9820b9f659fe288c60d05fc8c4686b0142443888439d9e",
+  "file_size_bytes": 814180,
+  "row_count": 18197,
+  "immutable": true
+}

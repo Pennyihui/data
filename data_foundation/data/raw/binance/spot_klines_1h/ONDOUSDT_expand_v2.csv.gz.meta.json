@@ -1,0 +1,20 @@
+{
+  "batch_id": "ONDOUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "ONDOUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2025-04",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:54:16.908297+00:00"
+  },
+  "ingested_at": "2026-08-23T12:54:17.790479+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "7a901dc669290479d4f12640241c5d6665baef707b5bf52f0c9d4b2ab0e23252",
+  "file_size_bytes": 541168,
+  "row_count": 11975,
+  "immutable": true
+}

@@ -9,7 +9,8 @@ universe_builder.py — 三层交易宇宙构建器 (研究 ⊇ 回测 ⊇ 交�
   - L1 asset_master/master (symbol -> base_asset/quote_asset 跨所映射, 7226 行)
     (缺失时回退 L2 certified/asset_master)
   - L2 certified/market_candle_spot_1h/binance/spot/{INST}/interval=1h
-    (24 个 instrument: 15 MVP 现役 + 9 下架对; 缺失时回退 L1) —— 流动性/缺口率来源
+    (动态扫描该目录下全部 instrument: 15 MVP + G 回填 9 下架 + J 扩容 38
+     CMC 流动性门槛币; 缺失时回退 L1) —— 流动性/缺口率来源
   - CMC 市值史: <project_root>/../data_new/additional/cmc_daily_marketcap_ranking.csv
     (按 base_asset 匹配填 market_cap_usd; 匹配不到为 NaN, 市值门槛不否决)
 
@@ -27,7 +28,7 @@ universe_builder.py — 三层交易宇宙构建器 (研究 ⊇ 回测 ⊇ 交�
   layer_tradeable  : backtest + median_volume_30d_usd>=min_median_volume_30d_usd +
                      (市值已知时) market_cap_usd>=min_market_cap_usd
 
-性能: 24 个 instrument 的日频成交额/缺口序列 + CMC 市值 + 上市宇宙一次性装载为
+性能: 全部有 K 线 instrument 的日频成交额/缺口序列 + CMC 市值 + 上市宇宙一次性装载为
 模块级缓存 (_UniverseData), 日循环内只做内存切片, 不反复读 parquet。
 
 用法:
@@ -146,7 +147,7 @@ class _UniverseData:
         quote_map = dict(zip(sub["symbol"], sub["quote_asset"].fillna("")))
         return asset_map, quote_map
 
-    # -- 24 instrument 日频序列: {symbol: DataFrame(date, daily_vol, has_gap)} --
+    # -- 全部有 K 线 instrument 的日频序列: {symbol: DataFrame(date, daily_vol, has_gap)} --
     @staticmethod
     def _load_candle_daily() -> tuple[dict, list]:
         roots = [
@@ -257,7 +258,7 @@ def build_universe(as_of, rules: dict | None = None) -> pd.DataFrame:
     out["venue_id"] = "binance"
     out["market_type"] = "spot"
 
-    # 流动性/缺口 (仅 24 个有 K 线的 symbol; 其余保持 NaN)
+    # 流动性/缺口 (仅对有 K 线的 symbol; 其余保持 NaN)
     out["avg_volume_30d_usd"] = np.nan
     out["median_volume_30d_usd"] = np.nan
     out["gap_ratio_30d"] = np.nan
@@ -293,7 +294,6 @@ def build_universe(as_of, rules: dict | None = None) -> pd.DataFrame:
     mcap_known = out["market_cap_usd"].notna()
     mcap_ok = (~mcap_known) | (out["market_cap_usd"] >= rules["min_market_cap_usd"])
     layer_tradeable = layer_backtest & vol_ok & mcap_ok
-
     out["layer_research"] = True
     out["layer_backtest"] = layer_backtest
     out["layer_tradeable"] = layer_tradeable
@@ -320,7 +320,10 @@ def _write_all(df: pd.DataFrame, rules: dict) -> tuple[str, str]:
 
     l1_root = write_onchain_parquet(df, "universe_membership", "builder", "date_utc")
 
-    cdf = certify_derivatives(df, "date_utc", core_numeric_cols=["avg_volume_30d_usd"],
+    # core_numeric_cols=[] 语义 = 明确不做数值列检查 (l2.py):
+    # research 层大部分 symbol 无 K 线, avg_volume_30d_usd 等为 NaN 是合法状态,
+    # 不视为 suspect; 仅检查主键唯一与时间不超可用时间。
+    cdf = certify_derivatives(df, "date_utc", core_numeric_cols=[],
                               key_cols=["symbol", "date_utc"])
     l2_root = write_certified_derivatives(cdf, "universe_membership", "builder",
                                           "all", "date_utc")
@@ -347,8 +350,11 @@ def _write_all(df: pd.DataFrame, rules: dict) -> tuple[str, str]:
                        "按 base_asset 匹配, 取 date <= date_utc 的最近值; 匹配不到为 NaN, "
                        "市值门槛不否决 (仅市值已知时生效)"),
         "note": ("research 成员 = as_of 当日 PIT 真实存在的 symbol (仅存成员行, 非成员无行); "
-                 "无 K 线的 research 成员 avg_volume_30d_usd=NaN -> certified "
-                 "is_suspect=True (预期行为, 表示缺少 K 线流动性证据)"),
+                 "2026-08 扩容: K 线覆盖 CMC 流动性门槛币种 (历史日成交额>=1M USD) "
+                 "(子代理 J, expand_v2 REST 分页 + delisted_v2 Vision 归档 + LUNAUSDT 手动补), "
+                 "tradeable/backtest 层基于真实 K 线流动性证据; "
+                 "仍无 K 线的 research 成员 avg_volume_30d_usd=NaN -> certified 仅查主键唯一"
+                 "与时间边界 (core_numeric_cols=[]), NaN 为合法状态不标 suspect"),
     }
     build_dataset_manifest("universe_membership", "builder", "*", "*", "*",
                            stats, source_batches, aggregation_rules)

@@ -1,0 +1,20 @@
+{
+  "batch_id": "UUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "UUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2026-01",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:59:05.046218+00:00"
+  },
+  "ingested_at": "2026-08-23T12:59:05.308837+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "6667eace6c9cb0c3479ce20cc21e4481a8855e5b3b616557d765522fc2d2826e",
+  "file_size_bytes": 183288,
+  "row_count": 5333,
+  "immutable": true
+}

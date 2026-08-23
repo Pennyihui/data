@@ -1,0 +1,20 @@
+{
+  "batch_id": "PEPEUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "PEPEUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2023-05",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:55:01.970782+00:00"
+  },
+  "ingested_at": "2026-08-23T12:55:03.083428+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "6ad01fb6403a6b605056c3760bd00535ca3903b7c640b114c5bf2130612fd024",
+  "file_size_bytes": 1459303,
+  "row_count": 28939,
+  "immutable": true
+}

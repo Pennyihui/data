@@ -1,0 +1,20 @@
+{
+  "batch_id": "NEARUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "NEARUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2020-10",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:53:44.053822+00:00"
+  },
+  "ingested_at": "2026-08-23T12:53:48.219807+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "bb610e7400c580693817e5eec878f114760b9ebc0df20af66d2e2483861bf541",
+  "file_size_bytes": 2282298,
+  "row_count": 51324,
+  "immutable": true
+}

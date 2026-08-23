@@ -1,0 +1,20 @@
+{
+  "batch_id": "HBARUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "HBARUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2019-09",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T13:02:35.476791+00:00"
+  },
+  "ingested_at": "2026-08-23T13:02:40.025128+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "38bc521adf1462fb6f5bdf5598f77e083f842fbb8fd1372f6ebfffe29fc6c11b",
+  "file_size_bytes": 2633924,
+  "row_count": 60454,
+  "immutable": true
+}

@@ -1,0 +1,20 @@
+{
+  "batch_id": "SUIUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "SUIUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2023-05",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:56:41.984174+00:00"
+  },
+  "ingested_at": "2026-08-23T12:56:44.185457+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "22baa5efd10650e9a446df6d3bb395e1e59cfc42011d13737e5366dd56311e18",
+  "file_size_bytes": 1388653,
+  "row_count": 28993,
+  "immutable": true
+}

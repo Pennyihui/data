@@ -16,12 +16,12 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-23T12:05:56.436198+00:00",
+  "certified_at": "2026-08-23T13:11:27.468027+00:00",
   "aggregation_rules": {
     "note": "DVOL 波动率指数 (BTC/ETH); 官方 get_volatility_index_data resolution 枚举仅 [1,60,3600,43200,'1D'] 秒 (无 15M), 当前取 3600s=1H; dvol=close/100 (百分数→小数); 深回填: days=2500 试探至 DVOL 最早可用 (~2021-03), deep_v2 批次 + v1 批次合并去重 (currency, timestamp_utc)"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-23T12:05:56.436198+00:00",
+  "finalized_at": "2026-08-23T13:11:27.468027+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

@@ -1,0 +1,20 @@
+{
+  "batch_id": "GRAMUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "GRAMUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2026-07",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:39:27.598713+00:00"
+  },
+  "ingested_at": "2026-08-23T12:39:29.703230+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "5ed50b0da57b135d7414290784700bc8272aa7b0790c8dd0ac153032dc4eb035",
+  "file_size_bytes": 54233,
+  "row_count": 1253,
+  "immutable": true
+}

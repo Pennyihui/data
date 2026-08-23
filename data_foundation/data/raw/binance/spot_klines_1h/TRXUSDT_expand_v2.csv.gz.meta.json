@@ -1,0 +1,20 @@
+{
+  "batch_id": "TRXUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "TRXUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2018-06",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:57:32.727619+00:00"
+  },
+  "ingested_at": "2026-08-23T12:57:38.502709+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "a18e23c0c0a402177e50de66d6beaccc809bf46ee3ee16080f170bc683ebe671",
+  "file_size_bytes": 3394158,
+  "row_count": 71794,
+  "immutable": true
+}

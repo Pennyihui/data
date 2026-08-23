@@ -1,0 +1,20 @@
+{
+  "batch_id": "WLDUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "WLDUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2023-07",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:59:19.909626+00:00"
+  },
+  "ingested_at": "2026-08-23T12:59:21.988896+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "76dcf1b05a359845f84f095c95eb1cc116a8d2095a8cd836b6d8f57cfa4f6c09",
+  "file_size_bytes": 1196528,
+  "row_count": 27028,
+  "immutable": true
+}

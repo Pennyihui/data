@@ -1,0 +1,20 @@
+{
+  "batch_id": "TAOUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "TAOUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2024-04",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:56:55.637443+00:00"
+  },
+  "ingested_at": "2026-08-23T12:56:57.472780+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "2fef3412758d25ed6b45d87ce60f34adf271ba4d1acdc1a410e69cc9e1d98307",
+  "file_size_bytes": 969121,
+  "row_count": 20737,
+  "immutable": true
+}

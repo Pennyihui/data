@@ -1,0 +1,20 @@
+{
+  "batch_id": "ENAUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "ENAUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2024-04",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:44:35.111332+00:00"
+  },
+  "ingested_at": "2026-08-23T12:44:37.364637+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "99870d04330ba9bf96db9cca60384aead2e12ba6b61bb3cb57c6467f5cb499fe",
+  "file_size_bytes": 1014669,
+  "row_count": 20957,
+  "immutable": true
+}

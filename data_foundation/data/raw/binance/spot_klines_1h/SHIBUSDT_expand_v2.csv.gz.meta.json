@@ -1,0 +1,20 @@
+{
+  "batch_id": "SHIBUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "SHIBUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2021-05",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:56:18.805833+00:00"
+  },
+  "ingested_at": "2026-08-23T12:56:20.651083+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "3fc7130b867bc0aa5200129f8f8062fb1554e60045b0e8ca5cfb2e1ca6b428be",
+  "file_size_bytes": 2339903,
+  "row_count": 46339,
+  "immutable": true
+}

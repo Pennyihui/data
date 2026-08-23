@@ -1,0 +1,20 @@
+{
+  "batch_id": "NEXOUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "NEXOUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2022-04",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:54:06.886383+00:00"
+  },
+  "ingested_at": "2026-08-23T12:54:10.022491+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "9ae7396dce999368b7386a340db892856d5c729f2fc3b914cecf105333a6e867",
+  "file_size_bytes": 1515067,
+  "row_count": 37846,
+  "immutable": true
+}

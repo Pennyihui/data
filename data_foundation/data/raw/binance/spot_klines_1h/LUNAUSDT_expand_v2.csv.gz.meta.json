@@ -1,0 +1,20 @@
+{
+  "batch_id": "LUNAUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "LUNAUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2020-08",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:53:06.885006+00:00"
+  },
+  "ingested_at": "2026-08-23T12:53:11.077670+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "62fb9f4ad850866a40c03d4ccb67a461de1fbaff670f0c7a214268b0873ee4df",
+  "file_size_bytes": 2428590,
+  "row_count": 52178,
+  "immutable": true
+}

@@ -1,0 +1,658 @@
+{
+  "targets": [
+    {
+      "symbol": "ALGOUSDT",
+      "status": "active",
+      "first_period": "2019-06",
+      "last_period": "2026-07",
+      "cmc_max_vol": 4812069644.5,
+      "source": "cmc"
+    },
+    {
+      "symbol": "ASTERUSDT",
+      "status": "active",
+      "first_period": "2025-10",
+      "last_period": "2026-07",
+      "cmc_max_vol": 3257755654.3,
+      "source": "cmc"
+    },
+    {
+      "symbol": "ATOMUSDT",
+      "status": "active",
+      "first_period": "2019-04",
+      "last_period": "2026-07",
+      "cmc_max_vol": 4260699809.83,
+      "source": "cmc"
+    },
+    {
+      "symbol": "BCHUSDT",
+      "status": "active",
+      "first_period": "2019-11",
+      "last_period": "2026-07",
+      "cmc_max_vol": 29574589032.55,
+      "source": "cmc"
+    },
+    {
+      "symbol": "CAKEUSDT",
+      "status": "active",
+      "first_period": "2021-02",
+      "last_period": "2026-07",
+      "cmc_max_vol": 1415201673.84,
+      "source": "cmc"
+    },
+    {
+      "symbol": "ENAUSDT",
+      "status": "active",
+      "first_period": "2024-04",
+      "last_period": "2026-07",
+      "cmc_max_vol": 2650805952.22,
+      "source": "cmc"
+    },
+    {
+      "symbol": "ETCUSDT",
+      "status": "active",
+      "first_period": "2018-06",
+      "last_period": "2026-07",
+      "cmc_max_vol": 42721411412.66,
+      "source": "cmc"
+    },
+    {
+      "symbol": "ETHFIUSDT",
+      "status": "active",
+      "first_period": "2024-03",
+      "last_period": "2026-07",
+      "cmc_max_vol": 1589210597.16,
+      "source": "cmc"
+    },
+    {
+      "symbol": "FILUSDT",
+      "status": "active",
+      "first_period": "2020-10",
+      "last_period": "2026-07",
+      "cmc_max_vol": 12367984683.38,
+      "source": "cmc"
+    },
+    {
+      "symbol": "GRAMUSDT",
+      "status": "active",
+      "first_period": "2026-07",
+      "last_period": "2026-07",
+      "cmc_max_vol": 1918093456.12,
+      "source": "cmc"
+    },
+    {
+      "symbol": "HBARUSDT",
+      "status": "active",
+      "first_period": "2019-09",
+      "last_period": "2026-07",
+      "cmc_max_vol": 6950735928.44,
+      "source": "cmc"
+    },
+    {
+      "symbol": "ICPUSDT",
+      "status": "active",
+      "first_period": "2021-05",
+      "last_period": "2026-07",
+      "cmc_max_vol": 1766366511.33,
+      "source": "cmc"
+    },
+    {
+      "symbol": "JSTUSDT",
+      "status": "active",
+      "first_period": "2020-08",
+      "last_period": "2026-07",
+      "cmc_max_vol": 1543617297.52,
+      "source": "cmc"
+    },
+    {
+      "symbol": "JUPUSDT",
+      "status": "active",
+      "first_period": "2024-01",
+      "last_period": "2026-07",
+      "cmc_max_vol": 1706170015.49,
+      "source": "cmc"
+    },
+    {
+      "symbol": "LUNAUSDT",
+      "status": "active",
+      "first_period": "2020-08",
+      "last_period": "2026-07",
+      "cmc_max_vol": NaN,
+      "source": "manual_luna"
+    },
+    {
+      "symbol": "MORPHOUSDT",
+      "status": "active",
+      "first_period": "2025-10",
+      "last_period": "2026-07",
+      "cmc_max_vol": 1639500499.52,
+      "source": "cmc"
+    },
+    {
+      "symbol": "NEARUSDT",
+      "status": "active",
+      "first_period": "2020-10",
+      "last_period": "2026-07",
+      "cmc_max_vol": 3214172232.03,
+      "source": "cmc"
+    },
+    {
+      "symbol": "NEXOUSDT",
+      "status": "active",
+      "first_period": "2022-04",
+      "last_period": "2026-07",
+      "cmc_max_vol": 293608568.3,
+      "source": "cmc"
+    },
+    {
+      "symbol": "ONDOUSDT",
+      "status": "active",
+      "first_period": "2025-04",
+      "last_period": "2026-07",
+      "cmc_max_vol": 1287469086.71,
+      "source": "cmc"
+    },
+    {
+      "symbol": "PAXGUSDT",
+      "status": "active",
+      "first_period": "2020-08",
+      "last_period": "2026-07",
+      "cmc_max_vol": 9995704847.06,
+      "source": "cmc"
+    },
+    {
+      "symbol": "PEPEUSDT",
+      "status": "active",
+      "first_period": "2023-05",
+      "last_period": "2026-07",
+      "cmc_max_vol": 15693561365.73,
+      "source": "cmc"
+    },
+    {
+      "symbol": "PUMPUSDT",
+      "status": "active",
+      "first_period": "2025-09",
+      "last_period": "2026-07",
+      "cmc_max_vol": 1405616737.54,
+      "source": "cmc"
+    },
+    {
+      "symbol": "QNTUSDT",
+      "status": "active",
+      "first_period": "2021-07",
+      "last_period": "2026-07",
+      "cmc_max_vol": 606818194.12,
+      "source": "cmc"
+    },
+    {
+      "symbol": "RENDERUSDT",
+      "status": "active",
+      "first_period": "2024-07",
+      "last_period": "2026-07",
+      "cmc_max_vol": 5138268866.46,
+      "source": "cmc"
+    },
+    {
+      "symbol": "RLUSDUSDT",
+      "status": "active",
+      "first_period": "2026-01",
+      "last_period": "2026-07",
+      "cmc_max_vol": 2025335614.61,
+      "source": "cmc"
+    },
+    {
+      "symbol": "SHIBUSDT",
+      "status": "active",
+      "first_period": "2021-05",
+      "last_period": "2026-07",
+      "cmc_max_vol": 39053846018.37,
+      "source": "cmc"
+    },
+    {
+      "symbol": "SKYUSDT",
+      "status": "active",
+      "first_period": "2025-09",
+      "last_period": "2026-07",
+      "cmc_max_vol": 143137342.55,
+      "source": "cmc"
+    },
+    {
+      "symbol": "SUIUSDT",
+      "status": "active",
+      "first_period": "2023-05",
+      "last_period": "2026-07",
+      "cmc_max_vol": 4536784983.36,
+      "source": "cmc"
+    },
+    {
+      "symbol": "TAOUSDT",
+      "status": "active",
+      "first_period": "2024-04",
+      "last_period": "2026-07",
+      "cmc_max_vol": 1411478235.28,
+      "source": "cmc"
+    },
+    {
+      "symbol": "TRXUSDT",
+      "status": "active",
+      "first_period": "2018-06",
+      "last_period": "2026-07",
+      "cmc_max_vol": 13973157817.56,
+      "source": "cmc"
+    },
+    {
+      "symbol": "TUSDUSDT",
+      "status": "active",
+      "first_period": "2018-05",
+      "last_period": "2026-07",
+      "cmc_max_vol": 4203082456.84,
+      "source": "cmc"
+    },
+    {
+      "symbol": "USD1USDT",
+      "status": "active",
+      "first_period": "2025-05",
+      "last_period": "2026-07",
+      "cmc_max_vol": 7087061361.4,
+      "source": "cmc"
+    },
+    {
+      "symbol": "USDCUSDT",
+      "status": "active",
+      "first_period": "2018-12",
+      "last_period": "2026-07",
+      "cmc_max_vol": 61799248386.3,
+      "source": "cmc"
+    },
+    {
+      "symbol": "UUSDT",
+      "status": "active",
+      "first_period": "2026-01",
+      "last_period": "2026-07",
+      "cmc_max_vol": 3289850631.12,
+      "source": "cmc"
+    },
+    {
+      "symbol": "WLDUSDT",
+      "status": "active",
+      "first_period": "2023-07",
+      "last_period": "2026-07",
+      "cmc_max_vol": 4369508745.82,
+      "source": "cmc"
+    },
+    {
+      "symbol": "WLFIUSDT",
+      "status": "active",
+      "first_period": "2025-09",
+      "last_period": "2026-07",
+      "cmc_max_vol": 3870513637.69,
+      "source": "cmc"
+    },
+    {
+      "symbol": "XLMUSDT",
+      "status": "active",
+      "first_period": "2018-05",
+      "last_period": "2026-07",
+      "cmc_max_vol": 11123965940.54,
+      "source": "cmc"
+    },
+    {
+      "symbol": "ZECUSDT",
+      "status": "active",
+      "first_period": "2019-03",
+      "last_period": "2026-07",
+      "cmc_max_vol": 12719387643.06,
+      "source": "cmc"
+    }
+  ],
+  "results": [
+    {
+      "symbol": "ALGOUSDT",
+      "status": "skipped"
+    },
+    {
+      "symbol": "ASTERUSDT",
+      "status": "skipped"
+    },
+    {
+      "symbol": "ATOMUSDT",
+      "status": "skipped"
+    },
+    {
+      "symbol": "BCHUSDT",
+      "status": "skipped"
+    },
+    {
+      "symbol": "CAKEUSDT",
+      "status": "skipped"
+    },
+    {
+      "symbol": "ENAUSDT",
+      "status": "skipped"
+    },
+    {
+      "symbol": "ETCUSDT",
+      "status": "skipped"
+    },
+    {
+      "symbol": "ETHFIUSDT",
+      "status": "skipped"
+    },
+    {
+      "symbol": "FILUSDT",
+      "status": "skipped"
+    },
+    {
+      "symbol": "GRAMUSDT",
+      "status": "skipped"
+    },
+    {
+      "row_count": 46325,
+      "duplicate_count": 0,
+      "gap_count": 2,
+      "suspect_count": 0,
+      "coverage_start": "2021-05-11 01:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "ICPUSDT",
+      "status": "ok",
+      "batch_id": "ICPUSDT_expand_v2"
+    },
+    {
+      "row_count": 52859,
+      "duplicate_count": 0,
+      "gap_count": 5,
+      "suspect_count": 0,
+      "coverage_start": "2020-08-11 06:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "JSTUSDT",
+      "status": "ok",
+      "batch_id": "JSTUSDT_expand_v2"
+    },
+    {
+      "row_count": 22437,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2024-01-31 16:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "JUPUSDT",
+      "status": "ok",
+      "batch_id": "JUPUSDT_expand_v2"
+    },
+    {
+      "row_count": 52178,
+      "duplicate_count": 0,
+      "gap_count": 6,
+      "suspect_count": 0,
+      "coverage_start": "2020-08-21 10:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "LUNAUSDT",
+      "status": "ok",
+      "batch_id": "LUNAUSDT_expand_v2"
+    },
+    {
+      "row_count": 7774,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2025-10-03 15:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "MORPHOUSDT",
+      "status": "ok",
+      "batch_id": "MORPHOUSDT_expand_v2"
+    },
+    {
+      "row_count": 51324,
+      "duplicate_count": 0,
+      "gap_count": 5,
+      "suspect_count": 0,
+      "coverage_start": "2020-10-14 05:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "NEARUSDT",
+      "status": "ok",
+      "batch_id": "NEARUSDT_expand_v2"
+    },
+    {
+      "row_count": 37846,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2022-04-29 14:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "NEXOUSDT",
+      "status": "ok",
+      "batch_id": "NEXOUSDT_expand_v2"
+    },
+    {
+      "row_count": 11975,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2025-04-11 14:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "ONDOUSDT",
+      "status": "ok",
+      "batch_id": "ONDOUSDT_expand_v2"
+    },
+    {
+      "row_count": 52445,
+      "duplicate_count": 0,
+      "gap_count": 5,
+      "suspect_count": 0,
+      "coverage_start": "2020-08-28 12:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "PAXGUSDT",
+      "status": "ok",
+      "batch_id": "PAXGUSDT_expand_v2"
+    },
+    {
+      "row_count": 28939,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2023-05-05 18:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "PEPEUSDT",
+      "status": "ok",
+      "batch_id": "PEPEUSDT_expand_v2"
+    },
+    {
+      "row_count": 8305,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2025-09-11 12:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "PUMPUSDT",
+      "status": "ok",
+      "batch_id": "PUMPUSDT_expand_v2"
+    },
+    {
+      "row_count": 44424,
+      "duplicate_count": 0,
+      "gap_count": 2,
+      "suspect_count": 0,
+      "coverage_start": "2021-07-29 06:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "QNTUSDT",
+      "status": "ok",
+      "batch_id": "QNTUSDT_expand_v2"
+    },
+    {
+      "row_count": 18197,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2024-07-26 08:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "RENDERUSDT",
+      "status": "ok",
+      "batch_id": "RENDERUSDT_expand_v2"
+    },
+    {
+      "row_count": 5117,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2026-01-22 08:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "RLUSDUSDT",
+      "status": "ok",
+      "batch_id": "RLUSDUSDT_expand_v2"
+    },
+    {
+      "row_count": 46339,
+      "duplicate_count": 0,
+      "gap_count": 2,
+      "suspect_count": 0,
+      "coverage_start": "2021-05-10 11:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "SHIBUSDT",
+      "status": "ok",
+      "batch_id": "SHIBUSDT_expand_v2"
+    },
+    {
+      "row_count": 8165,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2025-09-17 08:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "SKYUSDT",
+      "status": "ok",
+      "batch_id": "SKYUSDT_expand_v2"
+    },
+    {
+      "row_count": 28993,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2023-05-03 12:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "SUIUSDT",
+      "status": "ok",
+      "batch_id": "SUIUSDT_expand_v2"
+    },
+    {
+      "row_count": 20737,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2024-04-11 12:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "TAOUSDT",
+      "status": "ok",
+      "batch_id": "TAOUSDT_expand_v2"
+    },
+    {
+      "row_count": 71794,
+      "duplicate_count": 0,
+      "gap_count": 17,
+      "suspect_count": 0,
+      "coverage_start": "2018-06-11 11:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "TRXUSDT",
+      "status": "ok",
+      "batch_id": "TRXUSDT_expand_v2"
+    },
+    {
+      "row_count": 68065,
+      "duplicate_count": 0,
+      "gap_count": 18,
+      "suspect_count": 0,
+      "coverage_start": "2018-05-31 09:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "TUSDUSDT",
+      "status": "ok",
+      "batch_id": "TUSDUSDT_expand_v2"
+    },
+    {
+      "row_count": 10993,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2025-05-22 12:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "USD1USDT",
+      "status": "ok",
+      "batch_id": "USD1USDT_expand_v2"
+    },
+    {
+      "row_count": 63347,
+      "duplicate_count": 0,
+      "gap_count": 14,
+      "suspect_count": 0,
+      "coverage_start": "2018-12-15 03:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "USDCUSDT",
+      "status": "ok",
+      "batch_id": "USDCUSDT_expand_v2"
+    },
+    {
+      "row_count": 5333,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2026-01-13 08:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "UUSDT",
+      "status": "ok",
+      "batch_id": "UUSDT_expand_v2"
+    },
+    {
+      "row_count": 27028,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2023-07-24 09:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "WLDUSDT",
+      "status": "ok",
+      "batch_id": "WLDUSDT_expand_v2"
+    },
+    {
+      "row_count": 8544,
+      "duplicate_count": 0,
+      "gap_count": 0,
+      "suspect_count": 0,
+      "coverage_start": "2025-09-01 13:00:00+00:00",
+      "coverage_end": "2026-08-23 12:00:00+00:00",
+      "symbol": "WLFIUSDT",
+      "status": "ok",
+      "batch_id": "WLFIUSDT_expand_v2"
+    },
+    {
+      "row_count": 72061,
+      "duplicate_count": 0,
+      "gap_count": 17,
+      "suspect_count": 0,
+      "coverage_start": "2018-05-31 09:00:00+00:00",
+      "coverage_end": "2026-08-23 13:00:00+00:00",
+      "symbol": "XLMUSDT",
+      "status": "ok",
+      "batch_id": "XLMUSDT_expand_v2"
+    },
+    {
+      "row_count": 65044,
+      "duplicate_count": 0,
+      "gap_count": 12,
+      "suspect_count": 0,
+      "coverage_start": "2019-03-21 04:00:00+00:00",
+      "coverage_end": "2026-08-23 13:00:00+00:00",
+      "symbol": "ZECUSDT",
+      "status": "ok",
+      "batch_id": "ZECUSDT_expand_v2"
+    },
+    {
+      "symbol": "HBARUSDT",
+      "status": "ok",
+      "row_count": 60454,
+      "suspect_count": 0,
+      "gap_count": 10,
+      "duplicate_count": 0,
+      "batch_id": "HBARUSDT_expand_v2",
+      "retried": true
+    }
+  ],
+  "failures": []
+}

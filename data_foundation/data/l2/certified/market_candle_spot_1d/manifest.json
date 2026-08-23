@@ -27,13 +27,13 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-23T12:05:59.401630+00:00",
+  "certified_at": "2026-08-23T13:11:30.374280+00:00",
   "aggregation_rules": {
     "method": "resample from 1h",
     "version": "1.0"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-23T12:05:59.401630+00:00",
+  "finalized_at": "2026-08-23T13:11:30.374280+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

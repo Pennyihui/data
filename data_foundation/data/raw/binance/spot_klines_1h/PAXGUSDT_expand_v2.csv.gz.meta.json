@@ -1,0 +1,20 @@
+{
+  "batch_id": "PAXGUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "PAXGUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2020-08",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:54:42.860767+00:00"
+  },
+  "ingested_at": "2026-08-23T12:54:46.581089+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "ef2a093c61920737905cd0fc3673308917d380b41d9b4ae106a7b431df2ee488",
+  "file_size_bytes": 2189200,
+  "row_count": 52445,
+  "immutable": true
+}

@@ -1,0 +1,20 @@
+{
+  "batch_id": "ETHFIUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "ETHFIUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2024-03",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:45:45.608207+00:00"
+  },
+  "ingested_at": "2026-08-23T12:45:47.801761+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "b9ae9760b4328064e1819837a0d9209ccf839150482cff9dc177d58d3699fb8d",
+  "file_size_bytes": 896668,
+  "row_count": 21313,
+  "immutable": true
+}

@@ -1,0 +1,20 @@
+{
+  "batch_id": "FILUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "FILUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2020-10",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:46:16.614613+00:00"
+  },
+  "ingested_at": "2026-08-23T12:46:21.655121+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "5b2d965a3c4ca40cc4634ec7b4ec82e6265935fa45510176ea296e2e0b46c67d",
+  "file_size_bytes": 2342168,
+  "row_count": 51288,
+  "immutable": true
+}

@@ -1,0 +1,20 @@
+{
+  "batch_id": "ATOMUSDT_expand_v2",
+  "source": {
+    "api": "https://api.binance.com/api/v3/klines (netpath->data-api.binance.vision)",
+    "symbol": "ATOMUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "first_period": "2019-04",
+    "last_period": "2026-07",
+    "fetch_mode": "rest",
+    "fetched_at": "2026-08-23T12:42:49.842304+00:00"
+  },
+  "ingested_at": "2026-08-23T12:42:56.588160+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "800ec4314c73eff3f893055c0189c852f582ea69635aa1317f6b645106b83aec",
+  "file_size_bytes": 2905031,
+  "row_count": 64107,
+  "immutable": true
+}
