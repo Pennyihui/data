@@ -55,6 +55,7 @@ from .schema import UNIVERSE_MEMBERSHIP_COLUMNS
 # ---------------------------------------------------------------------------
 DEFAULT_RULES = {
     "quote": "USDT",                      # 报价资产过滤; None = 不过滤
+    "min_life_days": 365,                 # 研究层: 归档生命周期下限 (first~last 月末跨度)
     "min_age_days": 90,                   # 回测层: 最低上市年龄
     "min_median_volume_30d_usd": 1_000_000,   # 交易层: 近30日中位日成交额门槛
     "min_market_cap_usd": 50_000_000,          # 交易层: 市值门槛 (未知则不否决)
@@ -63,8 +64,9 @@ DEFAULT_RULES = {
 }
 
 LAYER_DEFINITIONS = {
-    "layer_research": "as_of ∈ [first_trade_date, last_trade_date], 由 first/last_period "
-                      "转月首/月末近似; status=active 视为无上界; 与 K 线有无无关 (PIT 真实存在即可)",
+    "layer_research": "as_of ∈ [first_trade_date, last_trade_date] 且归档生命周期 "
+                      "(first_period 月首 -> last_period 月末) >= min_life_days; "
+                      "status=active 视为无上界; 与 K 线有无无关 (PIT 真实存在即可)",
     "layer_backtest": "research 且 age_days >= min_age_days 且 有 K 线数据且 "
                       "gap_ratio_30d <= max_gap_ratio_30d 且 近30日有数据天数 "
                       ">= min_history_days_for_volume",
@@ -247,13 +249,15 @@ def build_universe(as_of, rules: dict | None = None) -> pd.DataFrame:
     last = (pd.to_datetime(lu["last_period"] + "-01", utc=True)
             + pd.offsets.MonthEnd(0)).dt.normalize()
     alive = (as_of >= first) & ((lu["status"] == "active") | (as_of <= last))
-    out = lu[alive].copy()
+    # 研究层规则: 归档生命周期 >= min_life_days
+    life_ok = ((last - first).dt.days >= rules["min_life_days"])[alive].to_numpy()
+    out = lu[alive][life_ok].copy()
     if out.empty:
         return _empty_frame()
 
     out["date_utc"] = as_of
-    out["first_trade_date"] = first[alive].to_numpy()
-    out["last_trade_date"] = last[alive].to_numpy()
+    out["first_trade_date"] = first[alive][life_ok].to_numpy()
+    out["last_trade_date"] = last[alive][life_ok].to_numpy()
     out["age_days"] = ((as_of - out["first_trade_date"]).dt.days).astype("int64")
     out["venue_id"] = "binance"
     out["market_type"] = "spot"
@@ -284,7 +288,7 @@ def build_universe(as_of, rules: dict | None = None) -> pd.DataFrame:
     # 市值 (CMC 按 base_asset 匹配; 匹配不到为 NaN)
     out["market_cap_usd"] = out["base_asset"].map(d.mcap_row(as_of))
 
-    # 三层
+    # 三层 (research 已在上方按 min_life_days 门控)
     age_ok = out["age_days"] >= rules["min_age_days"]
     has_data = out["_hist_days"] >= 1
     gap_ok = out["gap_ratio_30d"].fillna(np.inf) <= rules["max_gap_ratio_30d"]

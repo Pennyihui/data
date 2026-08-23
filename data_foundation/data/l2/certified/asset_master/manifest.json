@@ -15,12 +15,12 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-23T13:11:17.232612+00:00",
+  "certified_at": "2026-08-23T20:07:08.029741+00:00",
   "aggregation_rules": {
     "note": "asset_master 全量重建: A=certified/instrument 最新快照 (每 venue+symbol+market_type 取 max data_available_at); B=Ethereum/Arbitrum USDT/USDC/DAI 合约 + Solana USDC mint (market_type=onchain); C=coingecko 排名 CSV 按 symbol 匹配 cmc_slug (CMC 排名 CSV 无数字 id 列, cmc_id 留空); 去重键 (asset, venue_id, market_type, instrument_id)"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-23T13:11:17.232612+00:00",
+  "finalized_at": "2026-08-23T20:07:08.029741+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

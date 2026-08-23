@@ -3,19 +3,18 @@
   "schema_version": "1.0.0",
   "source_batches": [
     "legacy_snapshot",
-    "metadata_coinbase_20260821",
-    "metadata_coinbase_20260822"
+    "metadata_coinbase_20260823"
   ],
   "coverage_start": "2026-08-20 16:40:14.802154+00:00",
-  "coverage_end": "2026-08-21 20:10:22.349841+00:00",
-  "row_count": 17682,
+  "coverage_end": "2026-08-23 19:10:08.692281+00:00",
+  "row_count": 19569,
   "duplicate_count": 0,
   "gap_count": 0,
-  "suspect_count": 1938,
+  "suspect_count": 1937,
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-23T13:11:27.536423+00:00",
+  "certified_at": "2026-08-23T20:07:54.505433+00:00",
   "aggregation_rules": {
     "note": "PIT 合约规格历史: 每 (venue,symbol) 每次抓取追加一行, data_available_at=抓取时刻; as_of 查询取最后版本; listing_time: Binance永续=onboardDate, OKX=listTime, Binance现货/Coinbase=certified K线首根近似; first/last_data_utc 为 certified K 线覆盖审计列",
     "key": [
@@ -32,6 +31,6 @@
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-23T13:11:27.536423+00:00",
+  "finalized_at": "2026-08-23T20:07:54.505433+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

@@ -19,18 +19,18 @@
     "POLUSDT_v1"
   ],
   "coverage_start": "2020-09-01 00:00:00+00:00",
-  "coverage_end": "2026-08-22 18:00:00+00:00",
-  "row_count": 496318,
+  "coverage_end": "2026-08-23 18:00:00+00:00",
+  "row_count": 496678,
   "duplicate_count": 0,
   "gap_count": 0,
   "suspect_count": 0,
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-23T13:11:27.361645+00:00",
+  "certified_at": "2026-08-23T20:07:54.153568+00:00",
   "aggregation_rules": null,
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-23T13:11:27.361645+00:00",
+  "finalized_at": "2026-08-23T20:07:54.153568+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

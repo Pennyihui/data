@@ -14,7 +14,7 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-23T13:11:31.937595+00:00",
+  "certified_at": "2026-08-23T20:08:41.745512+00:00",
   "aggregation_rules": {
     "method": "近 2 个到期日: OTM put(strike<underlying 且 |moneyness|<=10%) 平均 mark_iv - OTM call 平均 mark_iv",
     "inputs": [
@@ -23,6 +23,6 @@
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-23T13:11:31.937595+00:00",
+  "finalized_at": "2026-08-23T20:08:41.745512+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }
