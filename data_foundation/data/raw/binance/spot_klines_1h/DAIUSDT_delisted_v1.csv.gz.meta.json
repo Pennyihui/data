@@ -1,0 +1,24 @@
+{
+  "batch_id": "DAIUSDT_delisted_v1",
+  "source": {
+    "api": "binance-vision monthly klines",
+    "url_template": "https://data.binance.vision/data/spot/monthly/klines/{SYM}/1h/{SYM}-1h-{YYYY-MM}.zip",
+    "symbol": "DAIUSDT",
+    "interval": "1h",
+    "market_type": "spot",
+    "months": [
+      "2020-07",
+      "2020-08"
+    ],
+    "first_period": "2020-07",
+    "last_period": "2020-08",
+    "fetched_at": "2026-08-23T10:11:55.560688+00:00"
+  },
+  "ingested_at": "2026-08-23T10:11:55.560688+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "322843297382d777b8159f67d88fea882431b47b6d8a1431ae5fe06154769327",
+  "file_size_bytes": 19071,
+  "row_count": 470,
+  "immutable": true
+}

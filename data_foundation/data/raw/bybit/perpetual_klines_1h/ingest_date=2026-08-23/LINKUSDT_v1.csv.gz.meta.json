@@ -1,0 +1,20 @@
+{
+  "batch_id": "LINKUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\_tmp\\bybit_LINKUSDT_klines_1h.csv.gz",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/kline",
+    "category": "linear",
+    "symbol": "LINKUSDT",
+    "interval": "60",
+    "limit": 1000,
+    "start": 1577836800000,
+    "pagination": "start cursor walk (oldest+1h), full history",
+    "fetched_at": "2026-08-23T10:19:36.913671+00:00"
+  },
+  "ingested_at": "2026-08-23T10:19:36.916824+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "a3733471bf53b0ec057cb3a9147dd21c210286d19bc00c2567f6e17946ca3fd6",
+  "file_size_bytes": 1418342,
+  "immutable": true
+}

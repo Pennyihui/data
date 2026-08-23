@@ -14,12 +14,12 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-22T22:37:27.222820+00:00",
+  "certified_at": "2026-08-23T10:26:27.551480+00:00",
   "aggregation_rules": {
     "note": "get_book_summary_by_currency kind=option 全链快照; bid_iv/ask_iv 该端点不提供→NaN; mark_iv=百分数/100; expiry_utc=到期日 08:00 UTC; open_interest/volume 单位为币"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-22T22:37:27.222820+00:00",
+  "finalized_at": "2026-08-23T10:26:27.551480+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

@@ -1,0 +1,20 @@
+{
+  "batch_id": "AVAXUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\_tmp\\bybit_AVAXUSDT_klines_1h.csv.gz",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/kline",
+    "category": "linear",
+    "symbol": "AVAXUSDT",
+    "interval": "60",
+    "limit": 1000,
+    "start": 1577836800000,
+    "pagination": "start cursor walk (oldest+1h), full history",
+    "fetched_at": "2026-08-23T10:18:41.114292+00:00"
+  },
+  "ingested_at": "2026-08-23T10:18:41.131661+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "3561666d67c6bf42c5ec88ae29dd18db997293f13928f06dd7459fd6bad0cb85",
+  "file_size_bytes": 1154861,
+  "immutable": true
+}

@@ -1,0 +1,20 @@
+{
+  "batch_id": "UNIUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\_tmp\\bybit_UNIUSDT_klines_1h.csv.gz",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/kline",
+    "category": "linear",
+    "symbol": "UNIUSDT",
+    "interval": "60",
+    "limit": 1000,
+    "start": 1577836800000,
+    "pagination": "start cursor walk (oldest+1h), full history",
+    "fetched_at": "2026-08-23T10:22:11.735195+00:00"
+  },
+  "ingested_at": "2026-08-23T10:22:11.738537+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "9e8b5127643d0b7a32b7027278cd989a2b183eb76b4425532724267ff1407dbe",
+  "file_size_bytes": 1099723,
+  "immutable": true
+}

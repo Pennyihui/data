@@ -1,0 +1,20 @@
+{
+  "batch_id": "XRPUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\_tmp\\bybit_XRPUSDT_klines_1h.csv.gz",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/kline",
+    "category": "linear",
+    "symbol": "XRPUSDT",
+    "interval": "60",
+    "limit": 1000,
+    "start": 1577836800000,
+    "pagination": "start cursor walk (oldest+1h), full history",
+    "fetched_at": "2026-08-23T10:16:10.744578+00:00"
+  },
+  "ingested_at": "2026-08-23T10:16:10.747604+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "99bebac057f59f6816de7f1c4b5d0da9c1d33a5c24bdce92d24b36cb02a3329d",
+  "file_size_bytes": 1303976,
+  "immutable": true
+}

@@ -1,0 +1,110 @@
+{
+  "targets": [
+    {
+      "symbol": "DAIUSDT",
+      "first_period": "2020-07",
+      "last_period": "2020-08",
+      "max_daily_volume": 117263357156.62,
+      "vol_source": "cmc_base_asset"
+    },
+    {
+      "symbol": "XMRUSDT",
+      "first_period": "2019-03",
+      "last_period": "2024-02",
+      "max_daily_volume": 28959121742.04,
+      "vol_source": "cmc_base_asset"
+    },
+    {
+      "symbol": "LRCUSDT",
+      "first_period": "2020-06",
+      "last_period": "2026-04",
+      "max_daily_volume": 1992135685.9108417,
+      "vol_source": "binance_spot_wide"
+    },
+    {
+      "symbol": "NFPUSDT",
+      "first_period": "2023-12",
+      "last_period": "2026-07",
+      "max_daily_volume": 342734697.58933,
+      "vol_source": "binance_spot_wide"
+    },
+    {
+      "symbol": "TONUSDT",
+      "first_period": "2024-08",
+      "last_period": "2026-06",
+      "max_daily_volume": 326851461.27852,
+      "vol_source": "binance_spot_wide"
+    },
+    {
+      "symbol": "HFTUSDT",
+      "first_period": "2022-11",
+      "last_period": "2026-07",
+      "max_daily_volume": 278433166.78377,
+      "vol_source": "binance_spot_wide"
+    },
+    {
+      "symbol": "VANRYUSDT",
+      "first_period": "2023-12",
+      "last_period": "2026-07",
+      "max_daily_volume": 250856520.44073,
+      "vol_source": "binance_spot_wide"
+    },
+    {
+      "symbol": "UTKUSDT",
+      "first_period": "2020-10",
+      "last_period": "2026-04",
+      "max_daily_volume": 230773413.79541,
+      "vol_source": "binance_spot_wide"
+    },
+    {
+      "symbol": "LITUSDT",
+      "first_period": "2021-02",
+      "last_period": "2025-02",
+      "max_daily_volume": 189753071.82,
+      "vol_source": "cmc_base_asset"
+    }
+  ],
+  "results": [
+    {
+      "symbol": "DAIUSDT",
+      "status": "skipped"
+    },
+    {
+      "symbol": "XMRUSDT",
+      "status": "skipped"
+    },
+    {
+      "symbol": "LRCUSDT",
+      "status": "skipped"
+    },
+    {
+      "symbol": "NFPUSDT",
+      "status": "skipped"
+    },
+    {
+      "symbol": "TONUSDT",
+      "status": "skipped"
+    },
+    {
+      "symbol": "HFTUSDT",
+      "status": "skipped"
+    },
+    {
+      "symbol": "VANRYUSDT",
+      "status": "skipped"
+    },
+    {
+      "symbol": "UTKUSDT",
+      "status": "skipped"
+    },
+    {
+      "symbol": "LITUSDT",
+      "status": "skipped"
+    }
+  ],
+  "failures": [],
+  "rank_note": {
+    "ranked_total": 9,
+    "note": "排名口径=历史最大日成交额: 主源 Binance 现货 spot_daily_volume_wide.csv (2019+, 覆盖 delisted USDT 对有限); 主源未覆盖对按 CMC 日成交额排名 (cmc_daily_volume_ranking.csv) base asset 兜底; 可排名 delisted USDT 对共 9 个, 取 top 9。"
+  }
+}

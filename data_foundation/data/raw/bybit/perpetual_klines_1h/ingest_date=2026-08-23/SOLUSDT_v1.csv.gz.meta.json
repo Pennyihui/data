@@ -1,0 +1,20 @@
+{
+  "batch_id": "SOLUSDT_v1",
+  "source_path": "D:\\Documents\\z_python_data_analy\\Quent\\workspace_0817\\Data_pipeline\\data_foundation\\_tmp\\bybit_SOLUSDT_klines_1h.csv.gz",
+  "source": {
+    "api": "https://api.bybit.com/v5/market/kline",
+    "category": "linear",
+    "symbol": "SOLUSDT",
+    "interval": "60",
+    "limit": 1000,
+    "start": 1577836800000,
+    "pagination": "start cursor walk (oldest+1h), full history",
+    "fetched_at": "2026-08-23T10:14:12.208499+00:00"
+  },
+  "ingested_at": "2026-08-23T10:14:12.210497+00:00",
+  "timestamp_unit": "ms",
+  "timezone": "UTC",
+  "checksum_sha256": "1106b233c697ce6927a022e7de457ef5b5995ba15b428e16dab162b3f7229bc0",
+  "file_size_bytes": 1205647,
+  "immutable": true
+}

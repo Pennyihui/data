@@ -345,3 +345,112 @@ Coinbase 管线完成
 == 阶段4: 链上 (近 1 天 ERC-20, 近 24h mempool) ==
 -- L0 --
 -- L1 --
+[23:18:46]   [rebuild:onchain] 失败: Unable to allocate 374. MiB for an array with shape (49060644, 1) and data type object
+[23:18:46]   [rebuild:onchain] 失败: Unable to allocate 374. MiB for an array with shape (49060644, 1) and data type object
+[23:26:55]   rebuild onchain: fail: Unable to allocate 374. MiB for an array with shape (49060644, 1) and data type object (8376s)
+[23:26:55]   rebuild onchain: fail: Unable to allocate 374. MiB for an array with shape (49060644, 1) and data type object (8376s)
+[23:26:55] [rebuild] 第 2/3 次尝试失败 (8556s): RuntimeError: L1/L2 重建部分阶段失败: onchain | 详情见日志 D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_run_20260822.log
+== L1: 标准化 ==
+  BTCUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  ETHUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  SOLUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  BNBUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  XRPUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  ADAUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  DOGEUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  AVAXUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  LINKUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  LTCUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  DOTUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  UNIUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  AAVEUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  ARBUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  POLUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  [skip] instrument 已是 PIT 快照历史, 由 run_daily metadata 源维护
+[23:28:41]   rebuild binance_l1: ok (98s)
+[23:28:41]   rebuild binance_l1: ok (98s)
+== L2: 认证 ==
+  BTCUSDT: 1h/1d/1w + 衍生品 certified
+  ETHUSDT: 1h/1d/1w + 衍生品 certified
+  SOLUSDT: 1h/1d/1w + 衍生品 certified
+  BNBUSDT: 1h/1d/1w + 衍生品 certified
+  XRPUSDT: 1h/1d/1w + 衍生品 certified
+  ADAUSDT: 1h/1d/1w + 衍生品 certified
+  DOGEUSDT: 1h/1d/1w + 衍生品 certified
+  AVAXUSDT: 1h/1d/1w + 衍生品 certified
+  LINKUSDT: 1h/1d/1w + 衍生品 certified
+  LTCUSDT: 1h/1d/1w + 衍生品 certified
+  DOTUSDT: 1h/1d/1w + 衍生品 certified
+  UNIUSDT: 1h/1d/1w + 衍生品 certified
+  AAVEUSDT: 1h/1d/1w + 衍生品 certified
+  ARBUSDT: 1h/1d/1w + 衍生品 certified
+  POLUSDT: 1h/1d/1w + 衍生品 certified
+  manifests 汇总完成
+[23:29:51]   rebuild binance_l2: ok (70s)
+[23:29:51]   rebuild binance_l2: ok (70s)
+== OKX (BTC, ETH, SOL, XRP, days=上市日至今) ==
+-- L0 --
+  okx BTC: spot/swap/funding/mark/index/OI 已摄取
+  okx ETH: spot/swap/funding/mark/index/OI 已摄取
+  okx SOL: spot/swap/funding/mark/index/OI 已摄取
+  okx XRP: spot/swap/funding/mark/index/OI 已摄取
+-- L1 --
+  okx BTC: spot/swap/funding/mark/index/OI 标准化
+  okx ETH: spot/swap/funding/mark/index/OI 标准化
+  okx SOL: spot/swap/funding/mark/index/OI 标准化
+  okx XRP: spot/swap/funding/mark/index/OI 标准化
+  okx instruments: 832 行
+-- L2 --
+  okx BTC: certified
+  okx ETH: certified
+  okx SOL: certified
+  okx XRP: certified
+-- basis --
+  basis BTC: 58593 行
+  basis ETH: 58383 行
+  basis SOL: 48921 行
+  basis XRP: 58239 行
+OKX 管线完成
+[23:30:26]   rebuild okx: ok (35s)
+[23:30:26]   rebuild okx: ok (35s)
+== Coinbase (BTC, ETH, SOL, XRP, 近 365 天) ==
+-- L1 --
+  coinbase BTC-USD: 97167 行
+  coinbase ETH-USD: 89758 行
+  coinbase SOL-USD: 45396 行
+  coinbase XRP-USD: 43882 行
+  coinbase instruments: 483 行
+-- L2 --
+  coinbase BTC-USD: certified
+  coinbase ETH-USD: certified
+  coinbase SOL-USD: certified
+  coinbase XRP-USD: certified
+Coinbase 管线完成
+[23:30:36]   rebuild coinbase: ok (10s)
+[23:30:36]   rebuild coinbase: ok (10s)
+== 阶段3: 稳定币 ==
+-- L0 --
+  稳定币 L0: 0 批次
+-- L1 --
+  supply: 9525 行 (3 币, 2015-02-25~2026-08-19)
+  flows: 6806 行 (5 指标)
+  peg: 63799 行 (2 币)
+-- L2 --
+阶段3 完成
+[23:30:57]   rebuild stablecoins: ok (21s)
+[23:30:57]   rebuild stablecoins: ok (21s)
+[23:30:57]   [rebuild:onchain] L0 已跳过 (每日 L0 由 run_onchain 完成; Arbitrum/Solana RPC 经代理卡死), 仅重建 L1/L2
+[23:30:57]   [rebuild:onchain] L0 已跳过 (每日 L0 由 run_onchain 完成; Arbitrum/Solana RPC 经代理卡死), 仅重建 L1/L2
+== 阶段4: 链上 (近 1 天 ERC-20, 近 24h mempool) ==
+-- L0 --
+-- L1 --
+[01:05:42]   [rebuild:onchain] 失败: Unable to allocate 222. MiB for an array with shape (1, 29093843) and data type object
+[01:05:42]   [rebuild:onchain] 失败: Unable to allocate 222. MiB for an array with shape (1, 29093843) and data type object
+[01:20:32]   rebuild onchain: fail: Unable to allocate 222. MiB for an array with shape (1, 29093843) and data type object (6575s)
+[01:20:32]   rebuild onchain: fail: Unable to allocate 222. MiB for an array with shape (1, 29093843) and data type object (6575s)
+[01:20:32] [rebuild] 第 3/3 次尝试失败 (6809s): RuntimeError: L1/L2 重建部分阶段失败: onchain | 详情见日志 D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_run_20260822.log
+[01:20:32] 失败告警已发送: ['rebuild']
+[01:20:32] ======================================================================
+[01:20:32] 调度完成 | 失败源: ['rebuild']
+[01:20:32] manifest: D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_manifest.json
+[01:20:32] ======================================================================
