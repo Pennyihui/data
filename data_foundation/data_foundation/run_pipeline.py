@@ -128,7 +128,7 @@ def stage_l1(assets):
             norm = normalize_klines(df, "binance", "spot", sym, "1h")
             inst = norm["instrument_id"].iloc[0]
             write_parquet(norm, "market_candle_spot_1h", "binance", "spot", inst, "1h")
-            for iv in ["1d", "1w"]:
+            for iv in ["4h", "1d", "1w"]:
                 agg = derive_aggregates(norm, iv)
                 write_parquet(agg, f"market_candle_spot_{iv}", "binance", "spot", inst, iv)
         else:
@@ -177,7 +177,7 @@ def stage_l2(assets):
     for a in assets:
         sym = f"{a}USDT"
         inst = f"{a}-USDT"
-        for iv in ["1h", "1d", "1w"]:
+        for iv in ["1h", "4h", "1d", "1w"]:
             ds = f"market_candle_spot_{iv}"
             root = os.path.join(L1_DIR, ds, "binance", "spot", inst, f"interval={iv}")
             if not os.path.isdir(root):

@@ -45,7 +45,7 @@ FAPI = "https://fapi.binance.com"
 TARGETS_CSV = "_J3_targets.csv"
 STATE_PATH = "_J3_state.json"
 REPORT_PATH = "_J3_report.json"
-DISK_GUARD_GB = 4.5
+DISK_GUARD_GB = 3.0           # 收尾轮: 并发代理已结束, 磁盘稳定, 从 4.5 调至 3.0 (留足安全余量)
 PAGE_SLEEP = 0.2            # 页间礼貌间隔 (>=0.2s, netpath 另有全局 0.12s 限速)
 SYMBOL_SLEEP = 0.3          # symbol 间额外间隔
 RETRY_429_SLEEP = 30        # 429 退避

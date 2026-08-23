@@ -93,7 +93,8 @@ def derive_aggregates(df_1h: pd.DataFrame, interval: str) -> pd.DataFrame:
     freq = DERIVED_INTERVALS[interval]
     g = df_1h.set_index("open_time_utc")
     agg = g.resample(freq).agg(rule).dropna(subset=["close"]).reset_index()
-    step = pd.Timedelta(days=1) if interval == "1d" else pd.Timedelta(days=7)
+    step = {"1d": pd.Timedelta(days=1), "4h": pd.Timedelta(hours=4),
+            "1w": pd.Timedelta(weeks=1)}[interval]
     agg["close_time_utc"] = agg["open_time_utc"] + step - pd.Timedelta(seconds=1)
     agg["bar_interval"] = interval
     agg["data_available_at"] = agg["close_time_utc"]

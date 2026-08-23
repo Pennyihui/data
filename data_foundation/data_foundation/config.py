@@ -22,9 +22,9 @@ L0_DIR = RAW_DIR
 MVP_ASSETS = ["BTC", "ETH", "SOL", "BNB", "XRP", "ADA", "DOGE",
               "AVAX", "LINK", "LTC", "DOT", "UNI", "AAVE", "ARB", "POL"]
 
-# 周期: 标准层保存 1h, 日/周由 1h 派生 (聚合规则见 l1.py)
+# 周期: 标准层保存 1h, 4h/日/周由 1h 派生 (聚合规则见 l1.py)
 INTERVALS = {"spot": ["1h"], "derivatives": ["1h"]}
-DERIVED_INTERVALS = {"1d": "1D", "1w": "W-MON"}
+DERIVED_INTERVALS = {"4h": "4h", "1d": "1D", "1w": "W-MON"}
 
 # venue 定义
 VENUES = {"binance": {"base": "https://api.binance.com",

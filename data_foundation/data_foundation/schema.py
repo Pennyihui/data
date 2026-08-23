@@ -372,9 +372,11 @@ UNIVERSE_MEMBERSHIP_COLUMNS = [
 # 数据集 -> 列定义
 DATASETS = {
     "market_candle_spot_1h": MARKET_CANDLE_COLUMNS,
+    "market_candle_spot_4h": MARKET_CANDLE_COLUMNS,
     "market_candle_spot_1d": MARKET_CANDLE_COLUMNS,
     "market_candle_spot_1w": MARKET_CANDLE_COLUMNS,
     "market_candle_perpetual_1h": MARKET_CANDLE_COLUMNS,
+    "market_candle_perpetual_4h": MARKET_CANDLE_COLUMNS,
     "instrument": INSTRUMENT_COLUMNS,
     "derivatives_funding": DERIVATIVES_FUNDING_COLUMNS,
     "derivatives_open_interest": DERIVATIVES_OI_COLUMNS,

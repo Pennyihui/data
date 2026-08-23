@@ -17,12 +17,12 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-23T20:07:08.684434+00:00",
+  "certified_at": "2026-08-23T21:07:51.022100+00:00",
   "aggregation_rules": {
     "note": "Coin Metrics 社区 GitHub 归档 (master/csv), 滞后约 3 个月 (至 2026-05-24); 近期数据由其他源覆盖; 长格式 melt 保留全部有值列; 主键 (asset, metric, date_utc)"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-23T20:07:08.684434+00:00",
+  "finalized_at": "2026-08-23T21:07:51.022100+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

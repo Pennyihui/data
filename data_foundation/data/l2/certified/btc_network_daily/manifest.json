@@ -13,12 +13,12 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-23T20:07:08.598309+00:00",
+  "certified_at": "2026-08-23T21:07:50.896709+00:00",
   "aggregation_rules": {
     "note": "blockchain.info charts sampled=false; 日频序列直接取点, market-cap 取每日最后值(收盘口径), mempool-size 取每日均值; 丢弃抓取当日不完整日值; 日频序列滞后约 6 天; 主键 (metric, date_utc)"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-23T20:07:08.598309+00:00",
+  "finalized_at": "2026-08-23T21:07:50.896709+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }
