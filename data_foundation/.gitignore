@@ -17,3 +17,9 @@ data/raw/binance/derivatives_mark_price/
 
 # Vision metrics 官方归档原始 zip (~264MB, 可重下; L1/L2 入库)
 data/raw/binance/futures_metrics/
+
+# J3 derivatives backfill raw gz (~2GB, recreatable via _J3_expand.py; L1/L2 committed)
+data/raw/binance/derivatives_funding/**/*_v3.csv.gz
+data/raw/binance/derivatives_mark_price/**/*_v3.csv.gz
+data/raw/binance/derivatives_index_price/**/*_v3.csv.gz
+data/raw/binance/perpetual_klines_1h/**/*_v3.csv.gz

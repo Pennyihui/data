@@ -38,6 +38,7 @@ SAMPLES = ["ALGOUSDT", "ZECUSDT", "SUIUSDT"]
 def main():
     targets = [s.strip() for s in open("_J3_targets.csv", encoding="utf-8")
                if s.strip() and not s.startswith("symbol")]
+    target_insts = {l1m.instrument_id(s) for s in targets}
     print(f"目标 symbol: {len(targets)}\n")
 
     print("==== 每数据集汇总 (L2 certified, 仅 J3 目标 symbol) ====")
@@ -49,14 +50,30 @@ def main():
         total = 0
         suspect = 0
         start = end = None
-        for inst_dir in sorted(os.listdir(root)):
-            inst_path = os.path.join(root, inst_dir)
-            if not os.path.isdir(inst_path):
+        seen_inst = set()
+        if mtype:
+            # market_candle: root/{market_type}/{inst}/interval=1h/data.parquet
+            mt_root = os.path.join(root, mtype)
+            cand_dirs = []
+            if os.path.isdir(mt_root):
+                for inst_dir in sorted(os.listdir(mt_root)):
+                    inst_path = os.path.join(mt_root, inst_dir)
+                    if not os.path.isdir(inst_path):
+                        continue
+                    cand_dirs.append((inst_dir, os.path.join(
+                        inst_path, "interval=1h", "data.parquet")))
+        else:
+            # derivatives: root/{inst}/data.parquet
+            cand_dirs = []
+            for inst_dir in sorted(os.listdir(root)):
+                inst_path = os.path.join(root, inst_dir)
+                if not os.path.isdir(inst_path):
+                    continue
+                cand_dirs.append((inst_dir, os.path.join(
+                    inst_path, "data.parquet")))
+        for inst_dir, cand_path in cand_dirs:
+            if inst_dir not in target_insts:
                 continue
-            if mtype:
-                cand_path = os.path.join(inst_path, "interval=1h", "data.parquet")
-            else:
-                cand_path = os.path.join(inst_path, "data.parquet")
             if not os.path.isfile(cand_path):
                 continue
             df = pq.read_table(cand_path, columns=[tc, "is_suspect"]).to_pandas()
