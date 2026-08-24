@@ -14,12 +14,12 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-23T21:10:45.052385+00:00",
+  "certified_at": "2026-08-23T21:52:06.141967+00:00",
   "aggregation_rules": {
     "note": "alternative.me Fear & Greed Index 日频; value=0..100, classification 文本; 主键 date_utc"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-23T21:10:45.052385+00:00",
+  "finalized_at": "2026-08-23T21:52:06.141967+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }

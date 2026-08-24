@@ -24,12 +24,12 @@
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-08-23T21:08:38.659940+00:00",
+  "certified_at": "2026-08-23T21:50:53.579301+00:00",
   "aggregation_rules": {
     "note": "Yahoo Finance chart 日频收盘近 5 年; series=DXY|SPX|NDX|VIX|GOLD|US10Y; US10Y=^TNX 原始值即百分比收益率(实测, 未÷10); 主键 (series, date_utc)"
   },
   "quality_rule_version": "1.0.0",
   "notes": [],
-  "finalized_at": "2026-08-23T21:08:38.659940+00:00",
+  "finalized_at": "2026-08-23T21:50:53.579301+00:00",
   "note_agg": "stats recomputed across all venues by finalize.py"
 }
