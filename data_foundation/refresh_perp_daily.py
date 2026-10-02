@@ -221,6 +221,42 @@ def fetch_and_write_raw(assets: list[str], days: int, ingest_date: str) -> int:
 # ---------------------------------------------------------------------------
 # raw -> L1 -> L2
 # ---------------------------------------------------------------------------
+def _merge_write_candle_l1(df, dataset: str, venue: str, market_type: str,
+                           inst: str, interval: str, time_col: str = "open_time_utc"):
+    """按规范路径写 L1 K线 (l1/{ds}/{venue}/{mt}/{inst}/interval={iv}/data.parquet), 合并去重。
+
+    与 write_derivatives_parquet 的区别: 那个写 l1/{ds}/{venue}/{inst}/data.parquet
+    (无 market_type/interval 层), 与 K 线族的规范读取路径 (_backfill_4h / reader) 不一致,
+    会造成同一 instrument 两份 L1。这个函数保持规范路径并做合并 (keep=last), 保护深回填。
+    """
+    import os
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+    from data_foundation.atomic import atomic_write_parquet
+
+    root = os.path.join(L1_DIR, dataset, venue, market_type, inst, f"interval={interval}")
+    os.makedirs(root, exist_ok=True)
+    target = os.path.join(root, "data.parquet")
+    d = df.copy()
+    for c in d.columns:
+        if "time" in c or c == "data_available_at":
+            d[c] = pd.to_datetime(d[c], utc=True, errors="coerce").astype("datetime64[us, UTC]")
+    if os.path.exists(target):
+        try:
+            old = pq.read_table(target).to_pandas()
+            for c in old.columns:
+                if "time" in c or c == "data_available_at":
+                    old[c] = pd.to_datetime(old[c], utc=True, errors="coerce") \
+                        .astype("datetime64[us, UTC]")
+            d = pd.concat([old[d.columns.intersection(old.columns)], d], ignore_index=True)
+            d = d.drop_duplicates(time_col, keep="last").sort_values(time_col).reset_index(drop=True)
+        except Exception:  # noqa: BLE001
+            pass  # 读失败 -> 覆盖写
+    d["date"] = pd.to_datetime(d[time_col], utc=True).dt.strftime("%Y-%m-%d")
+    atomic_write_parquet(d, target)
+    return d
+
+
 def rebuild_l1_l2(assets: list[str], derive_4h: bool = True) -> dict:
     """从 raw 合并重建这三类数据的 L1 + 认证 L2。"""
     from data_foundation.derivatives import _concat_raw
@@ -228,20 +264,20 @@ def rebuild_l1_l2(assets: list[str], derive_4h: bool = True) -> dict:
     for a in assets:
         sym = f"{a}USDT"
         inst = f"{a}-USDT"
-        # 永续 K线
+        # 永续 K线 (规范 L1 路径 + 4h 派生)
         raw = _concat_raw("binance", "perpetual_klines_1h", sym)
         if not raw.empty:
             norm = normalize_klines(raw, "binance", "perpetual", sym, "1h")
-            write_derivatives_parquet(norm, "market_candle_perpetual_1h",
-                                      "binance", inst, "open_time_utc")
+            norm = _merge_write_candle_l1(norm, "market_candle_perpetual_1h",
+                                          "binance", "perpetual", inst, "1h")
             # 认证 L2
             cert = certify_candles(norm)
             write_certified(cert, "market_candle_perpetual_1h", "binance",
                             "perpetual", inst, "1h")
             if derive_4h:
                 agg4 = derive_aggregates(norm, "4h")
-                write_derivatives_parquet(agg4, "market_candle_perpetual_4h",
-                                          "binance", inst, "open_time_utc")
+                agg4 = _merge_write_candle_l1(agg4, "market_candle_perpetual_4h",
+                                              "binance", "perpetual", inst, "4h")
                 write_certified(certify_candles(agg4), "market_candle_perpetual_4h",
                                 "binance", "perpetual", inst, "4h")
         # 标记价
