@@ -37,6 +37,25 @@ def _raw_files(venue: str, dataset: str, batch_id: str) -> list[str]:
     return out
 
 
+def _raw_files_prefix(venue: str, dataset: str, prefix: str) -> list[str]:
+    """返回所有 batch_id 以 prefix 开头的原始文件 (日频快照累积用)。
+
+    快照批次号带日期后缀 (如 solana_snapshot_v1_20261002), 因此必须按前缀枚举
+    全部批次再 concat, 否则 L1 永远只读到最早那一份, 快照不随时间累积。
+    """
+    out = []
+    for meta in list_raw_batches(venue, dataset):
+        bid = meta["batch_id"]
+        if not bid.startswith(prefix):
+            continue
+        ingest = meta["ingested_at"][:10]
+        d = os.path.join(RAW_DIR, venue, dataset, f"ingest_date={ingest}")
+        for f in sorted(os.listdir(d)):
+            if f.startswith(bid) and not f.endswith(".meta.json"):
+                out.append(os.path.join(d, f))
+    return out
+
+
 def _hex_addr(s: str) -> str:
     return "0x" + s[-40:].lower()
 
@@ -212,7 +231,9 @@ def normalize_dex_volume() -> pd.DataFrame:
 
 
 def normalize_mempool_blocks() -> pd.DataFrame:
-    for p in _raw_files("mempool", "btc_blocks", "blocks_v1"):
+    """BTC 区块 (24h 窗口) —— 累积所有日频快照批次并按 block_height 去重。"""
+    frames = []
+    for p in _raw_files_prefix("mempool", "btc_blocks", "blocks_v1"):
         with open(p, encoding="utf-8") as f:
             blocks = json.load(f)
         out = pd.DataFrame([{
@@ -226,23 +247,36 @@ def normalize_mempool_blocks() -> pd.DataFrame:
             "fee_rate_median": b.get("median_fee_rate"),
         } for b in blocks])
         out["venue_id"] = "mempool"
-        return out
-    return pd.DataFrame()
+        frames.append(out)
+    if not frames:
+        return pd.DataFrame()
+    df = pd.concat(frames, ignore_index=True)
+    df = df.drop_duplicates("block_height", keep="last").sort_values("block_height")
+    return df.reset_index(drop=True)
 
 
 def normalize_mempool_fees() -> pd.DataFrame:
-    for p in _raw_files("mempool", "btc_fees", "fees_recommended_v1"):
+    """BTC 推荐费率 —— 累积所有日频快照批次 (每天一行, 按 fetched_at 去重)。"""
+    frames = []
+    for p in _raw_files_prefix("mempool", "btc_fees", "fees_recommended"):
         with open(p, encoding="utf-8") as f:
             j = json.load(f)
         row = {"venue_id": "mempool", "fetched_at": j.get("fetched_at")}
         for k in ("fastestFee", "halfHourFee", "hourFee", "economyFee", "minimumFee"):
             row[k] = j.get(k)
-        return pd.DataFrame([row])
-    return pd.DataFrame()
+        frames.append(pd.DataFrame([row]))
+    if not frames:
+        return pd.DataFrame()
+    df = pd.concat(frames, ignore_index=True)
+    df["fetched_at"] = pd.to_datetime(df["fetched_at"], utc=True)
+    df = df.drop_duplicates("fetched_at", keep="last").sort_values("fetched_at")
+    return df.reset_index(drop=True)
 
 
 def normalize_oracle_snapshot() -> pd.DataFrame:
-    for p in _raw_files("ethereum", "oracle_snapshot", "chainlink_v1"):
+    """Chainlink 预言机 —— 累积所有日频快照批次 (每 pair 一行/天)。"""
+    frames = []
+    for p in _raw_files_prefix("ethereum", "oracle_snapshot", "chainlink_v1"):
         with open(p, encoding="utf-8") as f:
             j = json.load(f)
         rows = []
@@ -258,25 +292,34 @@ def normalize_oracle_snapshot() -> pd.DataFrame:
                 "fetched_at": pd.to_datetime(j.get("fetched_at"), utc=True),
                 "round_id": str(r["roundId"]),   # uint256 超 int64, 用字符串
             })
-        return pd.DataFrame(rows)
-    return pd.DataFrame()
+        if rows:
+            frames.append(pd.DataFrame(rows))
+    if not frames:
+        return pd.DataFrame()
+    df = pd.concat(frames, ignore_index=True)
+    df = df.drop_duplicates(["pair", "fetched_at"], keep="last").sort_values("fetched_at")
+    return df.reset_index(drop=True)
 
 
 def normalize_solana_snapshot() -> pd.DataFrame:
-    """Solana 快照原始 JSON -> solana_snapshot 标准表。"""
-    for p in _raw_files("solana", "solana_snapshot", "solana_snapshot_v1"):
+    """Solana 快照原始 JSON -> solana_snapshot 标准表 (累积所有日频快照批次)。"""
+    frames = []
+    for p in _raw_files_prefix("solana", "solana_snapshot", "solana_snapshot_v1"):
         with open(p, encoding="utf-8") as f:
             j = json.load(f)
-        row = {
+        frames.append(pd.DataFrame([{
             "venue_id": "solana",
             "slot": j.get("slot"),
             "block_height": j.get("block_height"),
             "usdc_supply": j.get("usdc_supply"),
             "tps": j.get("tps"),
             "fetched_at": pd.to_datetime(j.get("fetched_at"), utc=True),
-        }
-        return pd.DataFrame([row])
-    return pd.DataFrame()
+        }]))
+    if not frames:
+        return pd.DataFrame()
+    df = pd.concat(frames, ignore_index=True)
+    df = df.drop_duplicates("fetched_at", keep="last").sort_values("fetched_at")
+    return df.reset_index(drop=True)
 
 
 def write_onchain_parquet(df: pd.DataFrame, dataset: str, venue: str,

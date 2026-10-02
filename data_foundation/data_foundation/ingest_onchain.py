@@ -100,6 +100,11 @@ def _already(venue: str, dataset: str, batch_id: str) -> bool:
                for m in list_raw_batches(venue, dataset))
 
 
+def _today() -> str:
+    """当日 UTC 日期戳 (YYYYMMDD), 用于日频快照的批次号。"""
+    return datetime.now(timezone.utc).strftime("%Y%m%d")
+
+
 def _save(tmp_name: str, content: str, venue: str, dataset: str, batch_id: str,
           source: dict) -> str:
     tmp = os.path.join(RAW_DIR, "_tmp", tmp_name)
@@ -196,7 +201,7 @@ def ingest_arbitrum_logs(days: int = 1) -> list[str]:
 
 def ingest_solana_snapshot() -> list[str]:
     """Solana USDC 供应量/区块高度/槽位快照 (getTokenSupply 等)。"""
-    bid = "solana_snapshot_v1"
+    bid = f"solana_snapshot_v1_{_today()}"
     if _already("solana", "solana_snapshot", bid):
         return []
     slot = _rpc("getSlot", [], rpcs=SOLANA_RPCS, timeout=20)
@@ -237,17 +242,19 @@ def ingest_solana_snapshot() -> list[str]:
 
 def ingest_mempool(hours: int = 24) -> list[str]:
     written = []
-    # 推荐费率快照
-    if not _already("mempool", "btc_fees", "fees_recommended_v1"):
+    # 推荐费率快照 (日频累积: 批次号带日期)
+    fees_bid = f"fees_recommended_daily_{_today()}"
+    if not _already("mempool", "btc_fees", fees_bid):
         r = requests.get(f"{MEMPOOL}/v1/fees/recommended", timeout=25, headers=UA)
         r.raise_for_status()
         j = r.json()
         j["fetched_at"] = datetime.now(timezone.utc).isoformat()
         written.append(_save("mempool_fees.json", json.dumps(j),
-                             "mempool", "btc_fees", "fees_recommended_v1",
+                             "mempool", "btc_fees", fees_bid,
                              {"api": "mempool.space /v1/fees/recommended"}))
-    # 区块 (24h, 15块/页)
-    if not _already("mempool", "btc_blocks", "blocks_v1"):
+    # 区块 (24h, 15块/页) —— 日频累积
+    blocks_bid = f"blocks_v1_daily_{_today()}"
+    if not _already("mempool", "btc_blocks", blocks_bid):
         blocks, height = [], None
         end_ts = time.time()
         for _ in range(30):
@@ -264,7 +271,7 @@ def ingest_mempool(hours: int = 24) -> list[str]:
                 break
             time.sleep(0.3)
         written.append(_save("mempool_blocks.json", json.dumps(blocks),
-                             "mempool", "btc_blocks", "blocks_v1",
+                             "mempool", "btc_blocks", blocks_bid,
                              {"api": "mempool.space /api/v1/blocks",
                               "hours": hours}))
         print(f"  mempool blocks: {len(blocks)} 块", flush=True)
@@ -272,7 +279,8 @@ def ingest_mempool(hours: int = 24) -> list[str]:
 
 
 def ingest_dex_volume() -> list[str]:
-    if _already("defillama", "dex_volume", "dex_v1"):
+    bid = f"dex_v1_daily_{_today()}"
+    if _already("defillama", "dex_volume", bid):
         return []
     last = None
     DEX_WHITELIST = ["Uniswap", "PancakeSwap", "Raydium", "Curve",
@@ -295,7 +303,7 @@ def ingest_dex_volume() -> list[str]:
                         out.setdefault(dex, []).append(
                             [ts, dexs[dex].get("volume", 0)])
             written = [_save("dex_volume.json", json.dumps(out), "defillama",
-                             "dex_volume", "dex_v1",
+                             "dex_volume", bid,
                              {"api": "defillama /overview/dexs",
                               "whitelist": DEX_WHITELIST,
                               "fetched_at": datetime.now(timezone.utc).isoformat()})]
@@ -309,7 +317,8 @@ def ingest_dex_volume() -> list[str]:
 
 
 def ingest_chainlink() -> list[str]:
-    if _already("ethereum", "oracle_snapshot", "chainlink_v1"):
+    bid = f"chainlink_v1_daily_{_today()}"
+    if _already("ethereum", "oracle_snapshot", bid):
         return []
     out = {}
     for pair, addr in CHAINLINK.items():
@@ -324,34 +333,50 @@ def ingest_chainlink() -> list[str]:
         time.sleep(0.4)
     out["fetched_at"] = datetime.now(timezone.utc).isoformat()
     return [_save("chainlink.json", json.dumps(out), "ethereum",
-                  "oracle_snapshot", "chainlink_v1",
+                  "oracle_snapshot", bid,
                   {"api": "eth_call latestRoundData", "pairs": list(CHAINLINK)})]
 
 
-def ingest_onchain_all(days: int = 1, hours: int = 24) -> list[str]:
+def ingest_onchain_all(days: int = 1, hours: int = 24,
+                       skip_rpc: bool = False) -> list[str]:
+    """链上 L0 全量摄取。
+
+    skip_rpc=True 时跳过 Ethereum/Arbitrum ERC-20 与 Solana 快照 (它们经本机代理
+    会在 TLS 握手卡死, timeout 不生效); mempool/dex/chainlink 走普通 HTTPS 不受影响。
+    每日 ERC-20 转账窗口由 run_daily.run_onchain 独立抓取 (带日期批次号)。
+    """
     written = []
     print("  链上 L0 摄取...")
-    # 各链独立容错: 单链反复失败仅告警, 不影响其余数据 (可重跑补齐)
+    if not skip_rpc:
+        # 各链独立容错: 单链反复失败仅告警, 不影响其余数据 (可重跑补齐)
+        try:
+            written += ingest_erc20_logs(days)
+        except Exception as e:  # noqa: BLE001
+            print(f"  [warn] Ethereum ERC-20 日志摄取失败(可重跑 --stage onchain): "
+                  f"{str(e)[:100]}")
+        try:
+            written += ingest_arbitrum_logs(days)
+        except Exception as e:  # noqa: BLE001
+            print(f"  [warn] Arbitrum ERC-20 日志摄取失败(可重跑 --stage onchain): "
+                  f"{str(e)[:100]}")
+        try:
+            written += ingest_solana_snapshot()
+        except Exception as e:  # noqa: BLE001
+            print(f"  [warn] Solana 快照摄取失败(可重跑 --stage onchain): "
+                  f"{str(e)[:100]}")
+    else:
+        print("  [skip_rpc] 跳过 ERC20/Arbitrum/Solana RPC 摄取 (经代理卡死)")
     try:
-        written += ingest_erc20_logs(days)
+        written += ingest_mempool(hours)
     except Exception as e:  # noqa: BLE001
-        print(f"  [warn] Ethereum ERC-20 日志摄取失败(可重跑 --stage onchain): "
-              f"{str(e)[:100]}")
-    try:
-        written += ingest_arbitrum_logs(days)
-    except Exception as e:  # noqa: BLE001
-        print(f"  [warn] Arbitrum ERC-20 日志摄取失败(可重跑 --stage onchain): "
-              f"{str(e)[:100]}")
-    try:
-        written += ingest_solana_snapshot()
-    except Exception as e:  # noqa: BLE001
-        print(f"  [warn] Solana 快照摄取失败(可重跑 --stage onchain): "
-              f"{str(e)[:100]}")
-    written += ingest_mempool(hours)
+        print(f"  [warn] mempool 摄取失败: {str(e)[:80]}")
     try:
         written += ingest_dex_volume()
     except Exception as e:  # noqa: BLE001
         print(f"  [warn] dex 摄取失败(可重跑): {str(e)[:60]}")
-    written += ingest_chainlink()
+    try:
+        written += ingest_chainlink()
+    except Exception as e:  # noqa: BLE001
+        print(f"  [warn] chainlink 摄取失败: {str(e)[:60]}")
     print(f"  共 {len(written)} 批次")
     return written

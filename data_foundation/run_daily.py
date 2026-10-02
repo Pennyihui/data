@@ -970,23 +970,19 @@ def run_rebuild() -> dict:
 
 
 def _stage_onchain_no_l0(stage_onchain) -> None:
-    """调用 stage_onchain 但跳过其 L0 (ingest_onchain_all)。
+    """调用 stage_onchain(skip_rpc=True): 跳过经代理卡死的 RPC 抓取, 跑快照 L0 + 重建。
 
-    背景: ingest_onchain.py 被并行修改后新增 Arbitrum/Solana 抓取, 其 RPC
-    (arb1.arbitrum.io 等) 经本地代理 127.0.0.1:7897 会卡死在 TLS 握手
-    (timeout 不生效), 导致 stage_onchain 永久挂起。本调度器的链上 L0 由
-    run_onchain 源独立完成 (Ethereum USDT/USDC/DAI 每日窗口), 因此这里只
-    重建 L1/L2 (纯本地计算, 无网络)。运行时 monkey-patch, 不改动现有文件。
+    背景: ingest_onchain.py 的 Ethereum/Arbitrum ERC-20 与 Solana RPC (arb1.arbitrum.io
+    / api.mainnet-beta.solana.com) 经本地代理 127.0.0.1:7897 会卡死在 TLS 握手
+    (timeout 不生效), 导致 stage_onchain 永久挂起。每日 ERC-20 转账日志的 L0 由
+    run_onchain 源独立完成 (带日期批次号)。而 mempool/dex/chainlink 三个快照源走
+    普通 HTTPS (mempool.space / defillama / eth_call), 不会被卡死, 必须保留其 L0
+    抓取 —— 否则日频快照永远停在首次那一份 (2026-08-20/21), rebuild 只是把同一份
+    冻结的 L0 反复重新认证, 看似"成功"实则数据不更新。
     """
-    import data_foundation.ingest_onchain as _io
-    _orig = _io.ingest_onchain_all
-    _io.ingest_onchain_all = lambda days=1, hours=24: []
-    try:
-        log("  [rebuild:onchain] L0 已跳过 (每日 L0 由 run_onchain 完成; "
-            "Arbitrum/Solana RPC 经代理卡死), 仅重建 L1/L2")
-        stage_onchain()
-    finally:
-        _io.ingest_onchain_all = _orig
+    log("  [rebuild:onchain] 跳过 ERC20/Arbitrum/Solana RPC 抓取(经代理卡死), "
+        "仅跑 mempool/dex/chainlink 快照 L0 + 重建 L1/L2")
+    stage_onchain(skip_rpc=True)
 
 
 # ============================================================

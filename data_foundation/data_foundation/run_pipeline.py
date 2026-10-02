@@ -549,8 +549,12 @@ def stage_coinbase(assets=("BTC", "ETH", "SOL", "XRP"), days=365):
     print("Coinbase 管线完成")
 
 
-def stage_onchain(days=1, hours=24):
-    """阶段 4: 链上 (Ethereum+Arbitrum ERC-20 流式解码/聚合 + Solana 快照 + DEX 量 + BTC mempool + Chainlink)。"""
+def stage_onchain(days=1, hours=24, skip_rpc: bool = False):
+    """阶段 4: 链上 (Ethereum+Arbitrum ERC-20 流式解码/聚合 + Solana 快照 + DEX 量 + BTC mempool + Chainlink)。
+
+    skip_rpc=True: L0 跳过经代理会卡死的 ERC20/Arbitrum/Solana RPC 摄取, 仅跑
+    mempool/dex/chainlink 快照 (普通 HTTPS) + 本地 L1/L2 重建。
+    """
     import pandas as pd
     from .ingest_onchain import ingest_onchain_all
     from .l1_onchain import (normalize_dex_volume, normalize_mempool_blocks,
@@ -561,7 +565,7 @@ def stage_onchain(days=1, hours=24):
 
     print(f"== 阶段4: 链上 (近 {days} 天 ERC-20, 近 {hours}h mempool) ==")
     print("-- L0 --")
-    ingest_onchain_all(days=days, hours=hours)
+    ingest_onchain_all(days=days, hours=hours, skip_rpc=skip_rpc)
 
     print("-- L1 --")
     # 流式重建 (内存安全): 逐文件解码 -> 按日切分 -> 行组追加,
