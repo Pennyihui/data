@@ -281,8 +281,7 @@ def normalize_solana_snapshot() -> pd.DataFrame:
 
 def write_onchain_parquet(df: pd.DataFrame, dataset: str, venue: str,
                           time_col: str) -> str:
-    import pyarrow as pa
-    import pyarrow.parquet as pq
+    from .atomic import atomic_write_parquet
     root = os.path.join(L1_DIR, dataset, venue)
     os.makedirs(root, exist_ok=True)
     df = df.copy()
@@ -291,6 +290,6 @@ def write_onchain_parquet(df: pd.DataFrame, dataset: str, venue: str,
             df[c] = pd.to_datetime(df[c], utc=True, errors="coerce").astype("datetime64[us, UTC]")
     if time_col in df.columns:
         df["date"] = pd.to_datetime(df[time_col], utc=True).dt.strftime("%Y-%m-%d")
-    pq.write_table(pa.Table.from_pandas(df, preserve_index=False),
-                   os.path.join(root, "data.parquet"), compression="snappy")
+    # 原子写: 进程被强杀时不会留下截断的 parquet (见 atomic.py)
+    atomic_write_parquet(df, os.path.join(root, "data.parquet"))
     return root

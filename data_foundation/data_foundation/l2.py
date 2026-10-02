@@ -145,6 +145,7 @@ def certify_derivatives(df: pd.DataFrame, time_col: str,
 
 def write_certified_derivatives(df: pd.DataFrame, dataset: str, venue_id: str,
                                 instrument: str, time_col: str) -> str:
+    from .atomic import atomic_write_parquet
     root = os.path.join(CERTIFIED_DIR, dataset, venue_id, instrument)
     os.makedirs(root, exist_ok=True)
     df = df.copy()
@@ -152,8 +153,8 @@ def write_certified_derivatives(df: pd.DataFrame, dataset: str, venue_id: str,
         if "time" in c or c == "data_available_at":
             df[c] = pd.to_datetime(df[c], utc=True, errors="coerce").astype("datetime64[us, UTC]")
     df["date"] = pd.to_datetime(df[time_col], utc=True).dt.strftime("%Y-%m-%d")
-    pq.write_table(pa.Table.from_pandas(df, preserve_index=False),
-                   os.path.join(root, "data.parquet"), compression="snappy")
+    # 原子写: 进程被强杀时不会留下截断的 parquet (见 atomic.py)
+    atomic_write_parquet(df, os.path.join(root, "data.parquet"))
     return root
 
 

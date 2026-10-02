@@ -46,6 +46,7 @@ import numpy as np
 import pandas as pd
 
 from .config import CERTIFIED_DIR, L1_DIR, PROJECT_ROOT
+from .atomic import safe_read_parquet
 from .l1_onchain import write_onchain_parquet
 from .l2 import build_dataset_manifest, certify_derivatives, write_certified_derivatives
 from .schema import UNIVERSE_MEMBERSHIP_COLUMNS
@@ -417,10 +418,24 @@ def run_daily_entry(start="2020-01-01", end=None, rules: dict | None = None,
     existing = None
     max_d = None
     if os.path.exists(p):
-        existing = pd.read_parquet(p)
-        if "date_utc" in existing.columns:
+        # 损坏/截断自愈: 旧版直接 read_parquet 会在此处抛 ArrowInvalid, 导致增量
+        # 永久自锁 (每天读失败 -> 永远补不上新日期)。这里读失败就当作"无历史",
+        # 从 start 重建, 并把坏文件隔离留档。
+        existing = safe_read_parquet(p)
+        if existing is None:
+            bak = f"{p}.corrupt"
+            try:
+                if os.path.exists(bak):
+                    os.remove(bak)
+                os.replace(p, bak)
+            except OSError:
+                pass
+            if verbose:
+                print(f"  [daily] 警告: {p} 损坏, 已隔离为 {bak}, 将从 {start.date()} 重建")
+            existing = None
+        if existing is not None and "date_utc" in existing.columns:
             existing["date_utc"] = pd.to_datetime(existing["date_utc"], utc=True)
-        if len(existing):
+        if existing is not None and len(existing):
             max_d = existing["date_utc"].max().normalize()
 
     if max_d is None:

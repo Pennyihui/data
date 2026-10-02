@@ -550,34 +550,23 @@ def stage_coinbase(assets=("BTC", "ETH", "SOL", "XRP"), days=365):
 
 
 def stage_onchain(days=1, hours=24):
-    """阶段 4: 链上 (Ethereum+Arbitrum ERC-20 解码/聚合 + Solana 快照 + DEX 量 + BTC mempool + Chainlink)。"""
+    """阶段 4: 链上 (Ethereum+Arbitrum ERC-20 流式解码/聚合 + Solana 快照 + DEX 量 + BTC mempool + Chainlink)。"""
     import pandas as pd
     from .ingest_onchain import ingest_onchain_all
-    from .l1_onchain import (add_timestamps, aggregate_daily, decode_transfers,
-                             normalize_dex_volume, normalize_mempool_blocks,
+    from .l1_onchain import (normalize_dex_volume, normalize_mempool_blocks,
                              normalize_mempool_fees, normalize_oracle_snapshot,
                              normalize_solana_snapshot, write_onchain_parquet)
     from .l2 import certify_derivatives, write_certified_derivatives
+    from .onchain_stream import build_token_transfer_streaming
 
     print(f"== 阶段4: 链上 (近 {days} 天 ERC-20, 近 {hours}h mempool) ==")
     print("-- L0 --")
     ingest_onchain_all(days=days, hours=hours)
 
     print("-- L1 --")
-    tt = add_timestamps(decode_transfers())
-    per_chain = {}
-    if not tt.empty:
-        for chain in sorted(tt["chain_id"].unique()):
-            sub = tt[tt["chain_id"] == chain]
-            write_onchain_parquet(sub, "token_transfer", chain, "block_timestamp_utc")
-            print(f"  token_transfer[{chain}]: {len(sub)} 行 "
-                  f"({sub.token.nunique()} 币, "
-                  f"{sub.block_timestamp_utc.min()}~{sub.block_timestamp_utc.max()})")
-            agg = aggregate_daily(sub)
-            write_onchain_parquet(agg, "onchain_daily_aggregate", chain, "date_utc")
-            print(f"  onchain_daily_aggregate[{chain}]: {len(agg)} 行")
-            print(agg.to_string(index=False))
-            per_chain[chain] = (sub, agg)
+    # 流式重建 (内存安全): 逐文件解码 -> 按日切分 -> 行组追加,
+    # 替代旧的全量 decode_transfers() (5500 万行一次性载入会 OOM)
+    st = build_token_transfer_streaming()
     sol = normalize_solana_snapshot()
     if not sol.empty:
         write_onchain_parquet(sol, "solana_snapshot", "solana", "fetched_at")
@@ -615,14 +604,10 @@ def stage_onchain(days=1, hours=24):
         if a["coverage_end"] is None or s["coverage_end"] > a["coverage_end"]:
             a["coverage_end"] = s["coverage_end"]
 
-    # (df, dataset, venue, time_col, core_numeric_cols, key_cols) — 按链拆分
-    cert_items = []
-    for chain, (sub, agg) in per_chain.items():
-        cert_items.append((sub, "token_transfer", chain, "block_timestamp_utc",
-                           ["value_decimal"], ["tx_hash", "log_index", "token"]))
-        cert_items.append((agg, "onchain_daily_aggregate", chain, "date_utc",
-                           ["volume_token"], ["token", "date_utc"]))
-    cert_items += [
+    # (df, dataset, venue, time_col, core_numeric_cols, key_cols)
+    # 注: token_transfer / onchain_daily_aggregate 的 L1+L2 已由流式构建
+    # (build_token_transfer_streaming) 完成认证与 manifest, 此处只处理小快照
+    cert_items = [
         (sol, "solana_snapshot", "solana", "fetched_at",
          ["usdc_supply"], ["slot"]),
         (dv, "dex_volume", "defillama", "date_utc", ["volume_usd"],
