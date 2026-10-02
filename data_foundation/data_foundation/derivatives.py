@@ -45,8 +45,8 @@ def write_derivatives_parquet(df: pd.DataFrame, dataset: str, venue_id: str,
         except Exception:  # noqa: BLE001
             pass  # 读失败则退化为覆盖写
     df["date"] = pd.to_datetime(df[time_col], utc=True).dt.strftime("%Y-%m-%d")
-    pq.write_table(pa.Table.from_pandas(df, preserve_index=False),
-                   target, compression="snappy")
+    from .atomic import atomic_write_parquet
+    atomic_write_parquet(df, target)
     return root
 
 

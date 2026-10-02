@@ -51,15 +51,44 @@ fund = load_derivatives("binance", "BTC-USDT", "derivatives_funding")
 m = load_manifest("market_candle_spot_1h")                    # 认证 manifest
 ```
 
-## MVP 覆盖（当前）
+## MVP 覆盖（当前，2026-10）
 
-- 交易所：Binance spot + perpetual（USDT-M）
-- 资产：BTC ETH SOL BNB XRP ADA DOGE AVAX LINK LTC DOT UNI AAVE ARB POL（15）
-- 周期：1h（原始）、1d/1w（派生）
-- 数据：spot OHLCV（2017-08 起）、funding rate 全历史、OI（近 21 天，接口上限）、mark price、多空/主动买卖比、exchangeInfo 元数据
+- 交易所：Binance spot + perpetual（USDT-M，358 合约）、OKX、Bybit、Bitget、Coinbase
+- 研究宇宙：568 币（生命周期 ≥365 天）；现货 1h 覆盖 590 个 instrument（2015-07 起）
+- 周期：1h（原始）+ 4h/1d/1w（派生），现货与永续均有
+- 数据：spot/perp OHLCV、funding（全历史）、OI、mark/index price（永续全历史）、
+  多空比/主动买卖比、链上 token_transfer（Ethereum+Arbitrum）、稳定币、宏观、FNG、
+  BTC 链上统计、期权快照、点时 instrument/asset_master/三层 universe
+
+## 每日调度
+
+Windows 计划任务 `DataFoundation_DailyIngest` @ 02:30 → `python -X utf8 run_daily.py`。
+`run_daily.py` 注册 14 个源（binance_klines / funding / stats、okx、coinbase、stablecoins、
+onchain、metadata、sentiment_macro、tron、cross_deriv、universe、**binance_perp**、rebuild），
+逐源容错，失败写 `daily_manifest.json` 并经 webhook 告警。
+手工单源：`python -X utf8 run_daily.py --sources universe`。
+
+## 关键不变量（已修的坑，改代码前务必读）
+
+- **原子写** `data_foundation/atomic.py`：所有 L1/L2 parquet 先写 `.tmp` 再 `os.replace`。
+  进程被强杀不留截断文件——曾导致 universe 连续 17 天 `ArrowInvalid` 自锁。
+- **合并语义** `derivatives.write_derivatives_parquet`：日增量与既有 L1 concat 后按时间列
+  `keep="last"` 去重，保护 Vision 深回填历史不被日增量冲回短窗口。
+- **流式重建** `onchain_stream.py`：token_transfer（5500 万行）逐文件解码→按日切分→行组
+  追加，峰值 ~2GB；旧全量解码路径在 16GB 机器 OOM。
+- `core_numeric_cols=[]` = 不查数值列（与 `None`=全查语义区分）。
+
+## 体检工具
+
+```bash
+python -X utf8 _scan_corrupt.py    # 全库 parquet 完整性
+python -X utf8 _coverage_scan.py   # 每数据集 行数/时间范围/新鲜度/证书
+python -X utf8 _venue_scan.py      # 按 (dataset, venue) 粒度，揪"整体新但某所停更"
+```
 
 ## 已知边界
 
-- OI/多空比等历史受 Binance 接口限制（最近 ~500 小时），需自建每日快照持续积累
-- 未收盘 K 线不进入 certified（`is_closed` 标记）
-- 跨交易所（OKX/Coinbase）、稳定币、链上为后续阶段
+- 清算量(liquidation)需 Coinalyze/CoinGlass 付费 key，免费源无法回填历史
+- 期权仅有快照，历史需自行积累
+- Bitget 衍生品 API 仅返回最近 100 条
+- Bybit mark/index 未覆盖（仅 funding/OI/klines）

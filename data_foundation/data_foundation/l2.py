@@ -90,8 +90,8 @@ def write_certified(df: pd.DataFrame, dataset: str, venue_id: str, market_type: 
         if "time" in c or c == "data_available_at":
             df[c] = pd.to_datetime(df[c], utc=True, errors="coerce").astype("datetime64[us, UTC]")
     df["date"] = df["open_time_utc"].dt.strftime("%Y-%m-%d")
-    pq.write_table(pa.Table.from_pandas(df, preserve_index=False),
-                   os.path.join(root, "data.parquet"), compression="snappy")
+    from .atomic import atomic_write_parquet
+    atomic_write_parquet(df, os.path.join(root, "data.parquet"))
     stats = {
         "row_count": int(len(df)),
         "duplicate_count": int(df["open_time_utc"].duplicated().sum()),

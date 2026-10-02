@@ -1037,11 +1037,33 @@ def run_universe() -> dict:
 
 
 # ============================================================
+# 源 13: binance_perp — 永续 K线/标记价/指数价 每日增量 (修 2026-08-23 起停更)
+# ============================================================
+def run_binance_perp() -> dict:
+    """Binance 永续三件套每日刷新 (market_candle_perpetual_1h + mark + index, 含 4h 派生)。
+
+    历史: 这三类只由一次性 J3 回填生成过, nightly 无对应源, 自 2026-08-23 冻结。
+    本源写 L0 raw 日批次, 随后 rebuild 从 raw 合并重建 L1/L2 (keep=last 不冲深回填)。
+    """
+    import subprocess
+    py = sys.executable or r"E:\Anaconda3\python.exe"
+    p = os.path.join(_HERE, "refresh_perp_daily.py")
+    # 每日只补最近 3 天 (收盘确认 + 跨零点冗余); 全量回补由 refresh_perp_daily --days 手动触发
+    r = subprocess.run([py, "-X", "utf8", p, "--assets", "all", "--days", "3"],
+                       timeout=5400)
+    if r.returncode != 0:
+        raise RuntimeError(f"refresh_perp_daily exit {r.returncode}")
+    return {"batches": 1,
+            "notes": ["binance 永续 K线/mark/index 日增量 + 4h 派生 (358 合约)"]}
+
+
+# ============================================================
 # 源注册表
 # ============================================================
 ALL_SOURCES = ["binance_klines", "binance_funding", "binance_stats",
                "okx", "coinbase", "stablecoins", "onchain", "metadata",
                "sentiment_macro", "tron", "cross_deriv", "universe",
+               "binance_perp",
                "rebuild"]
 SOURCES = {
     "binance_klines": run_binance_klines,
@@ -1056,6 +1078,7 @@ SOURCES = {
     "tron": run_tron,
     "cross_deriv": run_cross_deriv,
     "universe": run_universe,
+    "binance_perp": run_binance_perp,
     "rebuild": run_rebuild,
 }
 
