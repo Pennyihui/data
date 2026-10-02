@@ -1,16 +1,117 @@
 {
-  "last_run": "2026-08-23T12:05:46.074624+00:00",
-  "date": "20260823",
+  "last_run": "2026-10-01T20:30:07.518838+00:00",
+  "date": "20261001",
   "sources": {
-    "universe": {
+    "binance_klines": {
       "status": "ok",
       "detail": "",
-      "elapsed_sec": 1.9,
+      "elapsed_sec": 16.2,
+      "batches": 15,
+      "notes": [
+        "binance 现货端点: https://api.binance.com"
+      ]
+    },
+    "binance_funding": {
+      "status": "ok",
+      "detail": "",
+      "elapsed_sec": 23.2,
+      "batches": 15,
+      "notes": []
+    },
+    "binance_stats": {
+      "status": "ok",
+      "detail": "",
+      "elapsed_sec": 61.3,
+      "batches": 75,
+      "notes": []
+    },
+    "okx": {
+      "status": "ok",
+      "detail": "",
+      "elapsed_sec": 21.9,
+      "batches": 24,
+      "notes": []
+    },
+    "coinbase": {
+      "status": "ok",
+      "detail": "",
+      "elapsed_sec": 6.7,
+      "batches": 4,
+      "notes": []
+    },
+    "stablecoins": {
+      "status": "ok",
+      "detail": "",
+      "elapsed_sec": 15.3,
+      "batches": 8,
+      "notes": []
+    },
+    "onchain": {
+      "status": "ok",
+      "detail": "",
+      "elapsed_sec": 1895.7,
+      "batches": 6,
+      "notes": [
+        "USDT: 抓取失败 https://rpc.mevblocker.io: {'jsonrpc': '2.0', 'id': 1, 'error': {'code': -32005,",
+        "USDC: 抓取失败 https://rpc.mevblocker.io: {'jsonrpc': '2.0', 'id': 1, 'error': {'code': -32005,"
+      ]
+    },
+    "metadata": {
+      "status": "failed",
+      "detail": "RuntimeError: netpath 全通道失败 (8 次尝试) https://api.binance.com/api/v3/exchangeInfo: T3_socks5h:SOCKSHTTPSConnectionPool(host='api.binance.com', port=443): Max retrie | T3_socks5h:SOCKSHTTPSConnectionPool(host='api.binance.com', port=443): Max retrie | T3_doh_pin:HTTPSConnectionPool(host='api.binance.com', port=443):",
+      "elapsed_sec": 0.0,
+      "batches": 0,
+      "notes": []
+    },
+    "sentiment_macro": {
+      "status": "ok",
+      "detail": "",
+      "elapsed_sec": 83.2,
+      "batches": 2,
+      "notes": []
+    },
+    "tron": {
+      "status": "ok",
+      "detail": "",
+      "elapsed_sec": 256.2,
       "batches": 1,
       "notes": []
+    },
+    "cross_deriv": {
+      "status": "ok",
+      "detail": "",
+      "elapsed_sec": 157.5,
+      "batches": 3,
+      "notes": [
+        "bybit funding+OI 全历史; bitget 仅最近100条(API上限)"
+      ]
+    },
+    "universe": {
+      "status": "failed",
+      "detail": "ArrowInvalid: Could not open Parquet input source '<Buffer>': Parquet magic bytes not found in footer. Either the file is corrupted or this is not a parquet file.",
+      "elapsed_sec": 0.0,
+      "batches": 0,
+      "notes": []
+    },
+    "rebuild": {
+      "status": "ok",
+      "detail": "",
+      "elapsed_sec": 3989.6,
+      "batches": 6,
+      "notes": [
+        "binance_l1=ok",
+        "binance_l2=ok",
+        "okx=ok",
+        "coinbase=ok",
+        "stablecoins=ok",
+        "onchain=ok"
+      ]
     }
   },
-  "failed": [],
+  "failed": [
+    "metadata",
+    "universe"
+  ],
   "history": [
     {
       "date": "20260821",
@@ -24,12 +125,99 @@
     },
     {
       "date": "20260823",
-      "failed": []
+      "failed": [
+        "rebuild"
+      ]
+    },
+    {
+      "date": "20260824",
+      "failed": [
+        "rebuild"
+      ]
+    },
+    {
+      "date": "20260828",
+      "failed": [
+        "rebuild"
+      ]
+    },
+    {
+      "date": "20260831",
+      "failed": [
+        "universe"
+      ]
+    },
+    {
+      "date": "20260912",
+      "failed": [
+        "universe"
+      ]
+    },
+    {
+      "date": "20260913",
+      "failed": [
+        "universe"
+      ]
+    },
+    {
+      "date": "20260917",
+      "failed": [
+        "onchain",
+        "metadata",
+        "universe"
+      ]
+    },
+    {
+      "date": "20260919",
+      "failed": [
+        "universe"
+      ]
+    },
+    {
+      "date": "20260920",
+      "failed": [
+        "binance_funding",
+        "binance_stats",
+        "universe"
+      ]
+    },
+    {
+      "date": "20260922",
+      "failed": [
+        "universe"
+      ]
+    },
+    {
+      "date": "20260924",
+      "failed": [
+        "universe"
+      ]
+    },
+    {
+      "date": "20260927",
+      "failed": [
+        "universe"
+      ]
+    },
+    {
+      "date": "20260930",
+      "failed": [
+        "binance_funding",
+        "binance_stats",
+        "universe"
+      ]
+    },
+    {
+      "date": "20261001",
+      "failed": [
+        "metadata",
+        "universe"
+      ]
     }
   ],
   "network": {
-    "current_channel": "T2_p7900",
-    "switches": 0,
+    "current_channel": "T3_socks5h",
+    "switches": 23,
     "per_transport": {
       "T0_vision": {
         "ok": 0,
@@ -40,32 +228,32 @@
         "fail": 0
       },
       "T2_p7900": {
-        "ok": 0,
-        "fail": 0
+        "ok": 226,
+        "fail": 11
       },
       "T2_p7906": {
         "ok": 0,
-        "fail": 0
+        "fail": 2
       },
       "T2_p7907": {
         "ok": 0,
-        "fail": 0
+        "fail": 2
       },
       "T2_p7904": {
-        "ok": 0,
-        "fail": 0
+        "ok": 16,
+        "fail": 19
       },
       "T2_p7902": {
         "ok": 0,
-        "fail": 0
+        "fail": 8
       },
       "T3_socks5h": {
-        "ok": 0,
-        "fail": 0
+        "ok": 209,
+        "fail": 20
       },
       "T3_doh_pin": {
         "ok": 0,
-        "fail": 0
+        "fail": 6
       }
     },
     "has_pysocks": true

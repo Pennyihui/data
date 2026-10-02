@@ -1,0 +1,417 @@
+[18:30:07] ======================================================================
+[18:30:07] 每日增量调度开始 | 日期戳=20261001 | ingest_date=2026-10-01
+[18:30:07] 源: ['binance_klines', 'binance_funding', 'binance_stats', 'okx', 'coinbase', 'stablecoins', 'onchain', 'metadata', 'sentiment_macro', 'tron', 'cross_deriv', 'universe', 'rebuild']
+[18:30:07] 代理: http://127.0.0.1:7897 | 日志: D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_run_20261001.log
+[18:31:08] 网络链路探测: T0_vision=不可用, T1_p7897=不可用, T2_p7900=457ms, T2_p7906=不可用, T2_p7907=不可用, T2_p7904=不可用, T2_p7902=不可用, T3_socks5h=不可用, T3_doh_pin=不可用
+[18:31:08] ======================================================================
+[18:31:08]   binance 现货端点选定: https://api.binance.com
+[18:31:18]   BTCUSDT: 73 根 -> BTCUSDT_daily_20261001
+[18:31:19]   ETHUSDT: 73 根 -> ETHUSDT_daily_20261001
+[18:31:19]   SOLUSDT: 73 根 -> SOLUSDT_daily_20261001
+[18:31:20]   BNBUSDT: 73 根 -> BNBUSDT_daily_20261001
+[18:31:20]   XRPUSDT: 73 根 -> XRPUSDT_daily_20261001
+[18:31:21]   ADAUSDT: 73 根 -> ADAUSDT_daily_20261001
+[18:31:21]   DOGEUSDT: 73 根 -> DOGEUSDT_daily_20261001
+[18:31:22]   AVAXUSDT: 73 根 -> AVAXUSDT_daily_20261001
+[18:31:22]   LINKUSDT: 73 根 -> LINKUSDT_daily_20261001
+[18:31:22]   LTCUSDT: 73 根 -> LTCUSDT_daily_20261001
+[18:31:23]   DOTUSDT: 73 根 -> DOTUSDT_daily_20261001
+[18:31:23]   UNIUSDT: 73 根 -> UNIUSDT_daily_20261001
+[18:31:23]   AAVEUSDT: 73 根 -> AAVEUSDT_daily_20261001
+[18:31:24]   ARBUSDT: 73 根 -> ARBUSDT_daily_20261001
+[18:31:24]   POLUSDT: 73 根 -> POLUSDT_daily_20261001
+[18:31:24] [binance_klines] OK (16s)
+[18:31:36]   BTCUSDT: 90 条资金费率 -> BTCUSDT_funding_daily_20261001
+[18:31:36]   ETHUSDT: 90 条资金费率 -> ETHUSDT_funding_daily_20261001
+[18:31:37]   SOLUSDT: 90 条资金费率 -> SOLUSDT_funding_daily_20261001
+[18:31:38]   BNBUSDT: 90 条资金费率 -> BNBUSDT_funding_daily_20261001
+[18:31:38]   XRPUSDT: 90 条资金费率 -> XRPUSDT_funding_daily_20261001
+[18:31:40]   ADAUSDT: 90 条资金费率 -> ADAUSDT_funding_daily_20261001
+[18:31:40]   DOGEUSDT: 90 条资金费率 -> DOGEUSDT_funding_daily_20261001
+[18:31:44]   AVAXUSDT: 90 条资金费率 -> AVAXUSDT_funding_daily_20261001
+[18:31:44]   LINKUSDT: 90 条资金费率 -> LINKUSDT_funding_daily_20261001
+[18:31:45]   LTCUSDT: 90 条资金费率 -> LTCUSDT_funding_daily_20261001
+[18:31:45]   DOTUSDT: 90 条资金费率 -> DOTUSDT_funding_daily_20261001
+[18:31:46]   UNIUSDT: 90 条资金费率 -> UNIUSDT_funding_daily_20261001
+[18:31:46]   AAVEUSDT: 90 条资金费率 -> AAVEUSDT_funding_daily_20261001
+[18:31:47]   ARBUSDT: 90 条资金费率 -> ARBUSDT_funding_daily_20261001
+[18:31:47]   POLUSDT: 100 条资金费率 -> POLUSDT_funding_daily_20261001
+[18:31:47] [binance_funding] OK (23s)
+[18:32:49]   binance_stats: 共 75 个批次
+[18:32:49] [binance_stats] OK (61s)
+[18:33:03]   okx BTC: spot/swap/funding/mark/index/OI 每日批次完成
+[18:33:05]   okx ETH: spot/swap/funding/mark/index/OI 每日批次完成
+[18:33:08]   okx SOL: spot/swap/funding/mark/index/OI 每日批次完成
+[18:33:11]   okx XRP: spot/swap/funding/mark/index/OI 每日批次完成
+[18:33:11] [okx] OK (22s)
+[18:33:14]   coinbase BTC-USD: 72 根 -> BTCUSD_cb_daily_20261001
+[18:33:15]   coinbase ETH-USD: 72 根 -> ETHUSD_cb_daily_20261001
+[18:33:16]   coinbase SOL-USD: 72 根 -> SOLUSD_cb_daily_20261001
+[18:33:17]   coinbase XRP-USD: 72 根 -> XRPUSD_cb_daily_20261001
+[18:33:17] [coinbase] OK (7s)
+[18:33:26]   defillama 供应量快照: [['defillama', '2026-10-01', 'USDT', '183840017418.05'], ['defillama', '2026-10-01', 'USDC', '74140487766.10'], ['defillama', '2026-10-01', 'DAI', '4783885378.50']]
+[18:33:29]   ercin stablecoin_exchange_inflow_total: 已重下载
+[18:33:29]   ercin stablecoin_exchange_netflow: 已重下载
+[18:33:30]   ercin stablecoin_exchange_outflow_total: 已重下载
+[18:33:30]   ercin stablecoin_exchange_reserve: 已重下载
+[18:33:30]   ercin stablecoin_exchange_supply_ratio: 已重下载
+[18:33:32]   peg USDCUSDT: 73 根 -> USDCUSDT_peg_daily_20261001 (ok)
+[18:33:32]   [warn] peg DAIUSDT: 近 3 天无数据, 写入空批次 (empty: 该交易对近 3 天无成交 (DAIUSDT 自 2020-08 起 Binance 现货停牌))
+[18:33:32]   peg DAIUSDT: 0 根 -> DAIUSDT_peg_daily_20261001 (empty: 该交易对近 3 天无成交 (DAIUSDT 自 2020-08 起 Binance 现货停牌))
+[18:33:33] [stablecoins] OK (15s)
+[18:33:39]   链上窗口: 2026-09-30 00:00 UTC -> 2026-10-01 00:00 UTC (block 26086570 ~ 26093738, latest=26099284)
+[18:34:17]   [warn] USDT 日志抓取失败: https://rpc.mevblocker.io: {'jsonrpc': '2.0', 'id': 1, 'error': {'code': -32005, (已跳过该币)
+[18:34:47]   [warn] USDC 日志抓取失败: https://rpc.mevblocker.io: {'jsonrpc': '2.0', 'id': 1, 'error': {'code': -32005, (已跳过该币)
+[18:35:33]   DAI: 17642 条日志 -> DAI_transfer_logs_daily_20261001
+[18:36:28] netpath 切换通道 -> T2_p7906
+[18:36:48] netpath 切换通道 -> T2_p7907
+[18:37:15] netpath 切换通道 -> T2_p7904
+[18:37:27]   mempool blocks: 165 块
+[18:40:47] netpath 切换通道 -> T2_p7902
+[18:44:29] netpath 切换通道 -> T2_p7902
+[18:49:46] netpath 切换通道 -> T2_p7902
+[18:54:30] netpath 切换通道 -> T2_p7902
+[18:57:37] netpath 切换通道 -> T2_p7902
+[19:01:59] netpath 切换通道 -> T2_p7902
+[19:05:08]   chainlink: {'ETH-USD': {'roundId': 129127208515966895546, 'answer': 270008649286, 'startedAt': 1790879318, 'updatedAt': 1790879339, 'answeredInRound': 129127208515966895546}, 'fetched_at': '2026-10-01T19:05:08.714252+00:00'}
+[19:05:08]   onchain 备注: USDT: 抓取失败 https://rpc.mevblocker.io: {'jsonrpc': '2.0', 'id': 1, 'error': {'code': -32005,; USDC: 抓取失败 https://rpc.mevblocker.io: {'jsonrpc': '2.0', 'id': 1, 'error': {'code': -32005,
+[19:05:08] [onchain] OK (1896s)
+[19:06:26] netpath 切换通道 -> T2_p7902
+[19:07:07] netpath 切换通道 -> T3_socks5h
+[19:07:33] netpath 切换通道 -> T3_doh_pin
+[19:08:54] netpath 切换通道 -> T0_vision
+[19:08:54] [metadata] 第 1/3 次尝试失败 (226s): RuntimeError: netpath 全通道失败 (8 次尝试) https://api.binance.com/api/v3/exchangeInfo: T3_socks5h:SOCKSHTTPSConnectionPool(host='api.binance.com', port=443): Max retrie | T3_socks5h:SOCKSHTTPSConnectionPool(host='api.binance.com', port=443): Max retrie | T3_doh_pin:HTTPSConnectionPool(host='api.binance.com', port=443):
+[19:10:07] netpath 切换通道 -> T2_p7902
+[19:10:48] netpath 切换通道 -> T3_socks5h
+[19:11:05] netpath 切换通道 -> T3_doh_pin
+[19:12:09] netpath 切换通道 -> T0_vision
+[19:12:09] [metadata] 第 2/3 次尝试失败 (187s): RuntimeError: netpath 全通道失败 (8 次尝试) https://api.binance.com/api/v3/exchangeInfo: T3_socks5h:SOCKSHTTPSConnectionPool(host='api.binance.com', port=443): Max retrie | T3_socks5h:SOCKSHTTPSConnectionPool(host='api.binance.com', port=443): Max retrie | T3_doh_pin:HTTPSConnectionPool(host='api.binance.com', port=443):
+[19:13:22] netpath 切换通道 -> T2_p7902
+[19:13:33] netpath 切换通道 -> T3_socks5h
+[19:14:00] netpath 切换通道 -> T3_doh_pin
+[19:15:04] netpath 切换通道 -> T0_vision
+[19:15:04] [metadata] 第 3/3 次尝试失败 (167s): RuntimeError: netpath 全通道失败 (8 次尝试) https://api.binance.com/api/v3/exchangeInfo: T3_socks5h:SOCKSHTTPSConnectionPool(host='api.binance.com', port=443): Max retrie | T3_socks5h:SOCKSHTTPSConnectionPool(host='api.binance.com', port=443): Max retrie | T3_doh_pin:HTTPSConnectionPool(host='api.binance.com', port=443):
+[19:15:33] netpath 切换通道 -> T2_p7902
+[19:16:14] netpath 切换通道 -> T3_socks5h
+[19:16:28] [sentiment_macro] OK (83s)
+[19:20:44] [tron] OK (256s)
+[19:23:21] [cross_deriv] OK (157s)
+[19:23:21] [universe] 第 1/3 次尝试失败 (0s): ArrowInvalid: Could not open Parquet input source '<Buffer>': Parquet magic bytes not found in footer. Either the file is corrupted or this is not a parquet file.
+[19:23:29] [universe] 第 2/3 次尝试失败 (0s): ArrowInvalid: Could not open Parquet input source '<Buffer>': Parquet magic bytes not found in footer. Either the file is corrupted or this is not a parquet file.
+[19:23:37] [universe] 第 3/3 次尝试失败 (0s): ArrowInvalid: Could not open Parquet input source '<Buffer>': Parquet magic bytes not found in footer. Either the file is corrupted or this is not a parquet file.
+== L1: 标准化 ==
+  BTCUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  ETHUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  SOLUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  BNBUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  XRPUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  ADAUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  DOGEUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  AVAXUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  LINKUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  LTCUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  DOTUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  UNIUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  AAVEUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  ARBUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  POLUSDT: 1h/1d/1w + funding/OI/mark/ratio 已标准化
+  [skip] instrument 已是 PIT 快照历史, 由 run_daily metadata 源维护
+[19:28:14]   rebuild binance_l1: ok (277s)
+[19:28:14]   rebuild binance_l1: ok (277s)
+== L2: 认证 ==
+  BTCUSDT: 1h/1d/1w + 衍生品 certified
+  ETHUSDT: 1h/1d/1w + 衍生品 certified
+  SOLUSDT: 1h/1d/1w + 衍生品 certified
+  BNBUSDT: 1h/1d/1w + 衍生品 certified
+  XRPUSDT: 1h/1d/1w + 衍生品 certified
+  ADAUSDT: 1h/1d/1w + 衍生品 certified
+  DOGEUSDT: 1h/1d/1w + 衍生品 certified
+  AVAXUSDT: 1h/1d/1w + 衍生品 certified
+  LINKUSDT: 1h/1d/1w + 衍生品 certified
+  LTCUSDT: 1h/1d/1w + 衍生品 certified
+  DOTUSDT: 1h/1d/1w + 衍生品 certified
+  UNIUSDT: 1h/1d/1w + 衍生品 certified
+  AAVEUSDT: 1h/1d/1w + 衍生品 certified
+  ARBUSDT: 1h/1d/1w + 衍生品 certified
+  POLUSDT: 1h/1d/1w + 衍生品 certified
+  manifests 汇总完成
+[19:30:35]   rebuild binance_l2: ok (141s)
+[19:30:35]   rebuild binance_l2: ok (141s)
+== OKX (BTC, ETH, SOL, XRP, days=上市日至今) ==
+-- L0 --
+  okx BTC: spot/swap/funding/mark/index/OI 已摄取
+  okx ETH: spot/swap/funding/mark/index/OI 已摄取
+  okx SOL: spot/swap/funding/mark/index/OI 已摄取
+  okx XRP: spot/swap/funding/mark/index/OI 已摄取
+-- L1 --
+  okx BTC: spot/swap/funding/mark/index/OI 标准化
+  okx ETH: spot/swap/funding/mark/index/OI 标准化
+  okx SOL: spot/swap/funding/mark/index/OI 标准化
+  okx XRP: spot/swap/funding/mark/index/OI 标准化
+  okx instruments: 832 行
+-- L2 --
+  okx BTC: certified
+  okx ETH: certified
+  okx SOL: certified
+  okx XRP: certified
+-- basis --
+  basis BTC: 59536 行
+  basis ETH: 59326 行
+  basis SOL: 49864 行
+  basis XRP: 59182 行
+OKX 管线完成
+[19:31:59]   rebuild okx: ok (84s)
+[19:31:59]   rebuild okx: ok (84s)
+== Coinbase (BTC, ETH, SOL, XRP, 近 365 天) ==
+-- L1 --
+  coinbase BTC-USD: 97979 行
+  coinbase ETH-USD: 90570 行
+  coinbase SOL-USD: 46208 行
+  coinbase XRP-USD: 44694 行
+  coinbase instruments: 483 行
+-- L2 --
+  coinbase BTC-USD: certified
+  coinbase ETH-USD: certified
+  coinbase SOL-USD: certified
+  coinbase XRP-USD: certified
+Coinbase 管线完成
+[19:32:19]   rebuild coinbase: ok (20s)
+[19:32:19]   rebuild coinbase: ok (20s)
+== 阶段3: 稳定币 ==
+-- L0 --
+  [warn] USDCUSDT K线抓取失败: netpath 全通道失败 (1 次尝试) https://api.binance.com/api/v3/klines:
+  稳定币 L0: 0 批次
+-- L1 --
+  supply: 9525 行 (3 币, 2015-02-25~2026-08-19)
+  flows: 7006 行 (5 指标)
+  peg: 64615 行 (2 币)
+-- L2 --
+阶段3 完成
+[19:35:09]   rebuild stablecoins: ok (170s)
+[19:35:09]   rebuild stablecoins: ok (170s)
+[19:35:09]   [rebuild:onchain] L0 已跳过 (每日 L0 由 run_onchain 完成; Arbitrum/Solana RPC 经代理卡死), 仅重建 L1/L2
+[19:35:09]   [rebuild:onchain] L0 已跳过 (每日 L0 由 run_onchain 完成; Arbitrum/Solana RPC 经代理卡死), 仅重建 L1/L2
+== 阶段4: 链上 (近 1 天 ERC-20, 近 24h mempool) ==
+-- L0 --
+-- L1 --
+[ethereum] 文件: 回填 57 个 (.gz), 遗留 34 个
+    ethereum 2026-08-01: +17678 行 (suspect=0)
+    ethereum 2026-08-02: +17577 行 (suspect=0)
+    ethereum 2026-08-03: +15810 行 (suspect=0)
+    ethereum 2026-08-04: +18431 行 (suspect=0)
+    ethereum 2026-08-05: +17631 行 (suspect=0)
+    ethereum 2026-08-06: +20114 行 (suspect=0)
+    ethereum 2026-08-07: +22156 行 (suspect=0)
+    ethereum 2026-08-08: +22796 行 (suspect=0)
+    ethereum 2026-08-09: +17891 行 (suspect=0)
+    ethereum 2026-08-10: +24288 行 (suspect=0)
+  [ethereum] 进度 10/91, 累计读取 194372 行, 13s
+    ethereum 2026-08-11: +26641 行 (suspect=0)
+    ethereum 2026-08-12: +22690 行 (suspect=0)
+    ethereum 2026-08-13: +20396 行 (suspect=0)
+    ethereum 2026-08-14: +16720 行 (suspect=0)
+    ethereum 2026-08-15: +12118 行 (suspect=0)
+    ethereum 2026-08-16: +13208 行 (suspect=0)
+    ethereum 2026-08-17: +16188 行 (suspect=0)
+    ethereum 2026-08-18: +14331 行 (suspect=0)
+    ethereum 2026-08-01: +598484 行 (suspect=0)
+    ethereum 2026-08-02: +470578 行 (suspect=0)
+  [ethereum] 进度 20/91, 累计读取 1405726 行, 66s
+    ethereum 2026-08-03: +582954 行 (suspect=0)
+    ethereum 2026-08-04: +681434 行 (suspect=0)
+    ethereum 2026-08-05: +624023 行 (suspect=0)
+    ethereum 2026-08-06: +558467 行 (suspect=0)
+    ethereum 2026-08-07: +710019 行 (suspect=0)
+    ethereum 2026-08-08: +735588 行 (suspect=0)
+    ethereum 2026-08-09: +436471 行 (suspect=0)
+    ethereum 2026-08-10: +659275 行 (suspect=0)
+    ethereum 2026-08-11: +761429 行 (suspect=0)
+    ethereum 2026-08-12: +635374 行 (suspect=0)
+  [ethereum] 进度 30/91, 累计读取 7790760 行, 350s
+    ethereum 2026-08-13: +576999 行 (suspect=0)
+    ethereum 2026-08-14: +544570 行 (suspect=0)
+    ethereum 2026-08-15: +372355 行 (suspect=0)
+    ethereum 2026-08-16: +367853 行 (suspect=0)
+    ethereum 2026-08-17: +504668 行 (suspect=0)
+    ethereum 2026-08-18: +479392 行 (suspect=0)
+    ethereum 2026-08-01: +839322 行 (suspect=0)
+    ethereum 2026-08-02: +673052 行 (suspect=0)
+    ethereum 2026-08-03: +706817 行 (suspect=0)
+    ethereum 2026-08-04: +875153 行 (suspect=0)
+  [ethereum] 进度 40/91, 累计读取 13730941 行, 635s
+    ethereum 2026-08-05: +881698 行 (suspect=0)
+    ethereum 2026-08-06: +771880 行 (suspect=0)
+    ethereum 2026-08-07: +1027535 行 (suspect=0)
+    ethereum 2026-08-08: +1243174 行 (suspect=0)
+    ethereum 2026-08-09: +648694 行 (suspect=0)
+    ethereum 2026-08-10: +894563 行 (suspect=0)
+    ethereum 2026-08-11: +1024473 行 (suspect=0)
+    ethereum 2026-08-12: +850019 行 (suspect=0)
+    ethereum 2026-08-13: +739094 行 (suspect=0)
+    ethereum 2026-08-14: +715596 行 (suspect=0)
+  [ethereum] 进度 50/91, 累计读取 22527667 行, 1120s
+    ethereum 2026-08-15: +542457 行 (suspect=0)
+    ethereum 2026-08-16: +529394 行 (suspect=0)
+    ethereum 2026-08-17: +678346 行 (suspect=0)
+    ethereum 2026-08-18: +672370 行 (suspect=0)
+    ethereum 2026-08-19: +650609 行 (suspect=0)
+    ethereum 2026-08-19: +19465 行 (suspect=0)
+    ethereum 2026-08-19: +522782 行 (suspect=0)
+    ethereum 2026-08-19: +1823 行 (suspect=0)
+    ethereum 2026-08-20: +25467 行 (suspect=0)
+    ethereum 2026-08-19: +38696 行 (suspect=0)
+    ethereum 2026-08-20: +644328 行 (suspect=0)
+    ethereum 2026-08-20: +1196 行 (suspect=0)
+    ethereum 2026-08-21: +1 行 (suspect=0)
+  [ethereum] 进度 60/91, 累计读取 26880068 行, 1380s
+    ethereum 2026-08-20: +29076 行 (suspect=0)
+    ethereum 2026-08-21: +17 行 (suspect=0)
+    ethereum 2026-08-20: +709281 行 (suspect=0)
+    ethereum 2026-08-20: +141322 行 (suspect=0)
+    ethereum 2026-08-21: +405151 行 (suspect=0)
+    ethereum 2026-08-21: +24838 行 (suspect=0)
+    ethereum 2026-08-22: +5 行 (suspect=0)
+    ethereum 2026-08-21: +640948 行 (suspect=0)
+    ethereum 2026-08-22: +78 行 (suspect=0)
+    ethereum 2026-08-21: +288463 行 (suspect=0)
+    ethereum 2026-08-22: +63 行 (suspect=0)
+    ethereum 2026-08-22: +24638 行 (suspect=0)
+    ethereum 2026-08-23: +2 行 (suspect=0)
+    ethereum 2026-08-22: +609161 行 (suspect=0)
+    ethereum 2026-08-23: +81 行 (suspect=0)
+    ethereum 2026-08-22: +702514 行 (suspect=0)
+    ethereum 2026-08-23: +23612 行 (suspect=0)
+    ethereum 2026-08-24: +8 行 (suspect=0)
+  [ethereum] 进度 70/91, 累计读取 31778657 行, 1681s
+    ethereum 2026-08-23: +609277 行 (suspect=0)
+    ethereum 2026-08-24: +147 行 (suspect=0)
+    ethereum 2026-08-23: +710360 行 (suspect=0)
+    ethereum 2026-08-27: +22168 行 (suspect=0)
+    ethereum 2026-08-28: +4 行 (suspect=0)
+    ethereum 2026-08-27: +607417 行 (suspect=0)
+    ethereum 2026-08-28: +83 行 (suspect=0)
+    ethereum 2026-08-28: +21569 行 (suspect=0)
+    ethereum 2026-08-29: +13 行 (suspect=0)
+    ethereum 2026-08-28: +620671 行 (suspect=0)
+    ethereum 2026-08-29: +119 行 (suspect=0)
+    ethereum 2026-08-28: +710301 行 (suspect=0)
+    ethereum 2026-08-30: +17437 行 (suspect=0)
+    ethereum 2026-08-31: +4 行 (suspect=0)
+    ethereum 2026-08-30: +513432 行 (suspect=0)
+    ethereum 2026-08-31: +104 行 (suspect=0)
+    ethereum 2026-08-30: +622640 行 (suspect=0)
+    ethereum 2026-08-31: +116 行 (suspect=0)
+  [ethereum] 进度 80/91, 累计读取 36234687 行, 1985s
+    ethereum 2026-09-01: +19135 行 (suspect=0)
+    ethereum 2026-09-02: +5 行 (suspect=0)
+    ethereum 2026-09-04: +22365 行 (suspect=0)
+    ethereum 2026-09-11: +19172 行 (suspect=0)
+    ethereum 2026-09-12: +13214 行 (suspect=0)
+    ethereum 2026-09-18: +21061 行 (suspect=0)
+    ethereum 2026-09-19: +1 行 (suspect=0)
+    ethereum 2026-09-19: +14360 行 (suspect=0)
+    ethereum 2026-09-20: +5 行 (suspect=0)
+    ethereum 2026-09-21: +21935 行 (suspect=0)
+    ethereum 2026-09-22: +7 行 (suspect=0)
+    ethereum 2026-09-22: +2 行 (suspect=0)
+    ethereum 2026-09-23: +15072 行 (suspect=0)
+    ethereum 2026-09-26: +13708 行 (suspect=0)
+    ethereum 2026-09-27: +5 行 (suspect=0)
+    ethereum 2026-09-29: +13695 行 (suspect=0)
+  [ethereum] 进度 90/91, 累计读取 36408432 行, 2019s
+    ethereum 2026-09-30: +17642 行 (suspect=0)
+[ethereum] 完成: 读取 36426074 行 -> 写入 35101105 行 (去重 1324969), 聚合 116 组, 2023s
+[arbitrum] 文件: 回填 54 个 (.gz), 遗留 3 个
+    arbitrum 2026-08-01: +1036 行 (suspect=0)
+    arbitrum 2026-08-02: +1256 行 (suspect=0)
+    arbitrum 2026-08-03: +1616 行 (suspect=0)
+    arbitrum 2026-08-04: +1371 行 (suspect=0)
+    arbitrum 2026-08-05: +1627 行 (suspect=0)
+    arbitrum 2026-08-06: +1428 行 (suspect=0)
+    arbitrum 2026-08-07: +1106 行 (suspect=0)
+    arbitrum 2026-08-08: +675 行 (suspect=0)
+    arbitrum 2026-08-09: +1791 行 (suspect=0)
+    arbitrum 2026-08-10: +1286 行 (suspect=0)
+  [arbitrum] 进度 10/57, 累计读取 13192 行, 2191s
+    arbitrum 2026-08-11: +3619 行 (suspect=0)
+    arbitrum 2026-08-12: +2202 行 (suspect=0)
+    arbitrum 2026-08-13: +1202 行 (suspect=0)
+    arbitrum 2026-08-14: +1134 行 (suspect=0)
+    arbitrum 2026-08-15: +533 行 (suspect=0)
+    arbitrum 2026-08-16: +696 行 (suspect=0)
+    arbitrum 2026-08-17: +1493 行 (suspect=0)
+    arbitrum 2026-08-18: +1636 行 (suspect=0)
+    arbitrum 2026-08-01: +792990 行 (suspect=0)
+    arbitrum 2026-08-02: +710947 行 (suspect=0)
+    arbitrum 2026-08-03: +1 行 (suspect=0)
+  [arbitrum] 进度 20/57, 累计读取 1529645 行, 2256s
+    arbitrum 2026-08-03: +1030046 行 (suspect=0)
+    arbitrum 2026-08-04: +983391 行 (suspect=0)
+    arbitrum 2026-08-05: +4 行 (suspect=0)
+    arbitrum 2026-08-05: +994830 行 (suspect=0)
+    arbitrum 2026-08-06: +943122 行 (suspect=0)
+    arbitrum 2026-08-07: +883938 行 (suspect=0)
+    arbitrum 2026-08-08: +2 行 (suspect=0)
+    arbitrum 2026-08-08: +596313 行 (suspect=0)
+    arbitrum 2026-08-09: +628269 行 (suspect=0)
+    arbitrum 2026-08-10: +840825 行 (suspect=0)
+    arbitrum 2026-08-11: +830406 行 (suspect=0)
+    arbitrum 2026-08-12: +796635 行 (suspect=0)
+    arbitrum 2026-08-13: +1 行 (suspect=0)
+  [arbitrum] 进度 30/57, 累计读取 10057428 行, 2628s
+    arbitrum 2026-08-13: +766030 行 (suspect=0)
+    arbitrum 2026-08-14: +821563 行 (suspect=0)
+    arbitrum 2026-08-15: +557253 行 (suspect=0)
+    arbitrum 2026-08-16: +571482 行 (suspect=0)
+    arbitrum 2026-08-17: +835198 行 (suspect=0)
+    arbitrum 2026-08-18: +1 行 (suspect=0)
+    arbitrum 2026-08-18: +805002 行 (suspect=0)
+    arbitrum 2026-08-19: +4 行 (suspect=0)
+    arbitrum 2026-08-01: +207328 行 (suspect=0)
+    arbitrum 2026-08-02: +1 行 (suspect=0)
+    arbitrum 2026-08-02: +183404 行 (suspect=0)
+    arbitrum 2026-08-03: +229007 行 (suspect=0)
+    arbitrum 2026-08-04: +303528 行 (suspect=0)
+  [arbitrum] 进度 40/57, 累计读取 15337229 行, 2876s
+    arbitrum 2026-08-05: +316334 行 (suspect=0)
+    arbitrum 2026-08-06: +246926 行 (suspect=0)
+    arbitrum 2026-08-07: +201492 行 (suspect=0)
+    arbitrum 2026-08-08: +1 行 (suspect=0)
+    arbitrum 2026-08-08: +166924 行 (suspect=0)
+    arbitrum 2026-08-09: +175337 行 (suspect=0)
+    arbitrum 2026-08-10: +175503 行 (suspect=0)
+    arbitrum 2026-08-11: +181106 行 (suspect=0)
+    arbitrum 2026-08-12: +238250 行 (suspect=0)
+    arbitrum 2026-08-13: +259813 行 (suspect=0)
+    arbitrum 2026-08-14: +229568 行 (suspect=0)
+  [arbitrum] 进度 50/57, 累计读取 17528483 行, 2989s
+    arbitrum 2026-08-15: +210834 行 (suspect=0)
+    arbitrum 2026-08-16: +176473 行 (suspect=0)
+    arbitrum 2026-08-17: +187789 行 (suspect=0)
+    arbitrum 2026-08-18: +170220 行 (suspect=0)
+    arbitrum 2026-08-20: +2588 行 (suspect=0)
+    arbitrum 2026-08-21: +4140 行 (suspect=0)
+    arbitrum 2026-08-20: +544998 行 (suspect=0)
+    arbitrum 2026-08-21: +873927 行 (suspect=0)
+    arbitrum 2026-08-20: +131854 行 (suspect=0)
+    arbitrum 2026-08-21: +209422 行 (suspect=0)
+[arbitrum] 完成: 读取 20040728 行 -> 写入 20040727 行 (去重 1), 聚合 68 组, 3124s
+[arbitrum] onchain_daily_aggregate: 68 行 (2026-08-01 ~ 2026-08-21)
+[ethereum] onchain_daily_aggregate: 116 行 (2026-08-01 ~ 2026-09-30)
+streaming build 完成: token_transfer 55141832 行, aggregate 184 行, 总耗时 52 分钟
+  solana_snapshot: [{'slot': 440691995, 'block_height': 418741637, 'usdc_supply': 8094247798.152079, 'tps': 4089.35, 'fetched_at': Timestamp('2026-08-21 13:03:50.007366+0000', tz='UTC')}]
+  dex_volume: 4568 行 (1 DEX, 2014-02-17~2026-08-20)
+  btc_blocks: 150 块
+  btc_fees: [{'venue_id': 'mempool', 'fetched_at': '2026-08-20T22:53:43.871869+00:00', 'fastestFee': 5, 'halfHourFee': 4, 'hourFee': 3, 'economyFee': 2, 'minimumFee': 1}]
+  oracle_snapshot: 1 对 [{'pair': 'ETH-USD', 'price': 2331.92616865}]
+-- L2 --
+阶段4 完成
+[20:27:32]   rebuild onchain: ok (3143s)
+[20:27:32]   rebuild onchain: ok (3143s)
+[20:30:07]   [rebuild] finalize: 40 个数据集 manifest 已全局汇总
+[20:30:07] [rebuild] OK (3990s)
+[20:30:07] 失败告警已发送: ['metadata', 'universe']
+[20:30:07] ======================================================================
+[20:30:07] 调度完成 | 失败源: ['metadata', 'universe']
+[20:30:07] manifest: D:\Documents\z_python_data_analy\Quent\workspace_0817\Data_pipeline\data_foundation\data\daily_manifest.json
+[20:30:07] ======================================================================
