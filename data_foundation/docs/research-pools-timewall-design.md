@@ -305,14 +305,14 @@ Agent 传 `as_of="2026-10-01"`，若在池1里，返回的最大日期仍是池1
 
 | 阶段 | 内容 | 数据改造 | 状态 |
 |---|---|---|---|
-| **P0** | **回填 universe_membership 到 2017-07**（池1 提前到 2018-01 的前置） | 数据侧：`stage_snapshot(start="2017-07-01")` 全量重跑并认证 | ✅ **已完成 2026-10-04**：830,605 行 / 3352 日（2017-08-01 ~ 2026-10-04），原 803,404 行 |
-| **P1** | `PoolRegistry` + `reader.py` 加 `as_of = min(as_of, pool.end)` 钳制 | 零改造，用现有 data_available_at / universe | 进行中 |
-| **P2** | `factor_registry`（数据集 → availability_start）+ 查询自动屏蔽 | 零改造 | 待办 |
-| **P3** | OOS 只追加账本 + Agent 盲/人审通道 + eval_count | 新增账本文件 | 待办 |
-| **P4** | 封装 MCP Server，池作用域硬钳制；人审通道物理分离 | 零数据改造 | 待办 |
-| **P5** | 数据回填：链上历史（另立专项）、revision_lag 审计、listing_universe 定期刷新 | 数据侧 | 待办 |
+| **P0** | **回填 universe_membership 到 2017-07**（池1 提前到 2018-01 的前置） | 数据侧：`stage_snapshot(start="2017-07-01")` 全量重跑并认证 | ✅ **已完成 2026-10-04**：830,605 行 / 3352 日（2017-08-01 ~ 2026-10-04） |
+| **P1** | `PoolRegistry` + `reader.py` 双向钳制 `as_of ∈ [start, end]` | 零改造 | ✅ **已完成**：`pool_registry.py`，20 项端到端验证全通过 |
+| **P2** | 因子可用性登记 + 污染源硬屏蔽 | 零改造 | ✅ **已完成**：`FACTOR_AVAILABILITY` + `REVISION_CONTAMINATED` + `NO_PIT_COLUMN`，默认因子集净化为 7 个 |
+| **P3** | OOS 只追加账本 + Agent 盲/人审通道 + eval_count | 新增账本文件 | ✅ **已完成**：`oos_ledger.py`，代码级角色门禁（Agent 身份 PermissionError） |
+| **P4** | MCP Server（池作用域硬钳制；人审通道物理分离） | 零数据改造 | ✅ **已完成**：`mcp_server.py` 10 个工具，人审通道不在 Agent 工具集暴露 |
+| **P5** | 链上历史回填（另立专项）、listing_universe 定期刷新 | 数据侧 | ⏸ 链上因子暂不管（决策4）；listing_universe 刷新待排期 |
 
-**建议顺序：P0（回填，解锁 2018 起点）与 P1（钳制，代码量小）并行先做**，再按 P2→P3→P4 推进。
+**P0~P4 全部落地**。剩余：P5 数据侧补齐（链上历史为独立专项）。
 
 ---
 
