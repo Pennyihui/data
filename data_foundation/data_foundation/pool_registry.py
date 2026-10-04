@@ -77,7 +77,7 @@ FACTOR_AVAILABILITY = {
     "universe_membership": "2017-08-01",   # P0 已回填
 }
 
-# 默认因子集 (主研究线, 含衍生品)
+# 默认因子集 (主研究线, 含衍生品; 已剔除修订污染源)
 DEFAULT_FACTOR_SET = [
     "market_candle_spot_1h",
     "market_candle_perpetual_1h",
@@ -86,9 +86,10 @@ DEFAULT_FACTOR_SET = [
     "derivatives_index_price",
     "derivatives_open_interest",
     "derivatives_ratio_glsr",
-    "macro_daily",
-    "sentiment_fng",
-    "stablecoin_supply",
+    # 注意: macro_daily / stablecoin_supply 已移出默认集 ——
+    #   macro_daily  = revision_contaminated (泄露路径 #6)
+    #   stablecoin_supply = 缺 data_available_at, 无法 PIT
+    # 若要用宏观, 先做"仅保留近期窗口"或改为每日快照自积累 (见文档 6.1)
 ]
 
 
@@ -96,6 +97,30 @@ def _u(s: str) -> pd.Timestamp:
     """字符串/时间戳 -> UTC 归一化日"""
     t = pd.Timestamp(s)
     return (t.tz_localize("UTC") if t.tzinfo is None else t.tz_convert("UTC")).normalize()
+
+
+# ---------------------------------------------------------------------------
+# 修订污染源 (泄露路径 #6, 2026-10-04 审计 _audit_revision_leak.py 结果)
+# ---------------------------------------------------------------------------
+# 这些数据集的历史是"事后抓的全量数据", data_available_at 指向数年之后,
+# 内容可能已被上游修正 —— 用它们回测历史 = 用了事后才知道的信息。
+# 审计证据 (lag = data_available_at - 事件时间, 单位天):
+#   cm_asset_daily    lag 中位 2110d, 早期 4110d, 近期 1585d (漂移 +2525d)
+#   macro_daily       lag 中位 3937d, 早期 5917d, 近期 1945d (漂移 +3972d)
+#   btc_network_daily lag 中位 3069d, 早期 4756d, 近期 1614d (漂移 +3142d)
+# 对比: 核心价格因子 (spot 1h / funding / mark) lag <= 0.04d, PIT 干净。
+REVISION_CONTAMINATED = {
+    "macro_daily",
+    "cm_asset_daily",
+    "btc_network_daily",
+}
+
+# 无 data_available_at 列 -> 无法做 PIT 过滤, 等同不可用于历史回测
+NO_PIT_COLUMN = {
+    "stablecoin_supply",
+    "stablecoin_flows",
+    "dex_volume",
+}
 
 
 @dataclass(frozen=True)
@@ -199,6 +224,18 @@ def factor_available(dataset: str, as_of=None) -> bool:
 
 def clamp_factor_as_of(dataset: str, as_of=None):
     """返回因子在 as_of 是否可用; 不可用时抛错 (显式而非静默返回空)。"""
+    if dataset in REVISION_CONTAMINATED:
+        raise ValueError(
+            f"因子 {dataset!r} 已被标记为 revision_contaminated: 其历史为事后抓取的全量"
+            f"数据, data_available_at 指向数年之后, 回测历史会引入修订泄漏"
+            f"(泄露路径 #6, 见 _audit_revision_leak.py)。请改用近期窗口, 或从现在起"
+            f"每日快照自积累。"
+        )
+    if dataset in NO_PIT_COLUMN:
+        raise ValueError(
+            f"因子 {dataset!r} 缺少 data_available_at 列, 无法做 PIT 过滤, "
+            f"不可用于点时回测。"
+        )
     if not factor_available(dataset, as_of):
         start = FACTOR_AVAILABILITY.get(dataset, "?")
         raise ValueError(

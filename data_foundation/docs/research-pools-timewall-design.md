@@ -181,9 +181,26 @@
 | 3 | 序列相关（特征窗口跨池边界） | ⚠️ **需 embargo** |
 | 4 | 幸存者偏差（只用活着的币） | ✅ 已防：listing_universe 含已下架 |
 | 5 | 宇宙前视（用今天的宇宙名单回测历史） | ✅ 已防：universe_membership 逐日 PIT |
-| 6 | 修订泄漏（用事后修订数据回测历史） | ⚠️ **需核查**：CMC 市值、宏观的 data_available_at 是否真实反映当时可见时间 |
+| 6 | 修订泄漏（用事后修订数据回测历史） | 🔴 **已审计，发现 3 个污染源**（见下） |
 
-**第 6 条是重点排查项**：需审计 `cm_asset_daily`、`macro_daily`、`stablecoin_supply` 的历史数据是否为当时快照、还是事后回填修订。
+### 6.1 修订泄漏审计结果（2026-10-04 执行 `_audit_revision_leak.py`）
+
+判据：`lag = data_available_at - 事件时间`。lag 稳定 = 当期快照抓取（合法）；lag 随历史深度增大 = 事后抓全量历史并可能已修正（污染）。
+
+| 数据集 | 区间 | lag 中位 | lag 早期 | lag 近期 | 漂移 | 判定 |
+|---|---|---|---|---|---|---|
+| **cm_asset_daily** | 2009~2026 | 2110d | 4110d | 1585d | +2525d | 🔴 污染 |
+| **macro_daily** | 2005~2026 | 3937d | 5917d | 1945d | +3972d | 🔴 污染 |
+| **btc_network_daily** | 2009~2026 | 3069d | 4756d | 1614d | +3142d | 🔴 污染 |
+| sentiment_fng | 2018~2026 | 0.81d | — | 0.81d | 0 | ✅ 安全 |
+| stablecoin_peg | 2018~2026 | 0.04d | 0.04d | 0.04d | 0 | ✅ 安全 |
+| stablecoin_supply / flows / dex_volume | — | — | — | — | — | ⚫ 无 `data_available_at` 列，无法 PIT |
+| **spot 1h / funding / mark**（核心价格） | — | 0.00~0.04d | — | — | 0 | ✅ 安全 |
+
+**结论与处置**：
+1. **核心交易因子（价格、资金费率、OI、mark/index、多空比）PIT 干净**，lag ≤ 1 小时收盘确认 —— 这是研究池的主力，可放心使用。
+2. **宏观 (macro_daily)、cm_asset_daily、btc_network_daily 为事后回填的历史**，用它们回测历史等于用了"事后才知道的信息"。**处置：这三个数据集在历史池（池1/反馈）中标记为 `revision_contaminated`，默认屏蔽**；若要使用，须先做"仅保留 lag ≤ 阈值"的近期窗口（如只回看近 2 年），或从现在起每日快照自积累（届时 PIT 才成立）。
+3. **stablecoin_supply / flows / dex_volume 缺 `data_available_at`**，无法做 PIT 过滤，同样在池中屏蔽，直至补齐该列。
 
 ---
 
