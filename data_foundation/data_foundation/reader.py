@@ -20,6 +20,12 @@ import pyarrow.parquet as pq
 from .config import CERTIFIED_DIR
 
 
+def _as_utc(ts) -> pd.Timestamp:
+    """任意 str / naive / tz-aware 时间戳 -> UTC aware (不重复传 tz= 造成冲突)。"""
+    t = pd.Timestamp(ts)
+    return t.tz_localize("UTC") if t.tzinfo is None else t.tz_convert("UTC")
+
+
 def _dataset_root(dataset: str, venue: str, instrument: str, interval: str | None) -> str:
     parts = [CERTIFIED_DIR, dataset, venue, "spot", instrument]
     if interval:
@@ -29,9 +35,20 @@ def _dataset_root(dataset: str, venue: str, instrument: str, interval: str | Non
 
 def load_candles(venue: str, instrument: str, interval: str = "1h",
                  as_of=None, cols: list[str] | None = None,
-                 market_type: str = "spot") -> pd.DataFrame:
-    """读取 certified market_candle。as_of 做 PIT 过滤 (data_available_at <= as_of)。"""
+                 market_type: str = "spot", scope=None) -> pd.DataFrame:
+    """读取 certified market_candle。as_of 做 PIT 过滤 (data_available_at <= as_of)。
+
+    scope: 可选的 PoolScope (见 pool_registry.py)。传入后 as_of 被硬钳制到该池
+    终点 —— 时间墙在 API 层强制, Agent 无法越界读取池外数据。
+    """
+    from .pool_registry import factor_available
     ds = f"market_candle_{market_type}_{interval}"
+    lower = None
+    if scope is not None:
+        as_of = scope.clamp(as_of)
+        lower = scope.pool.start_ts      # 池内取数: 下界 = 池起点
+    if not factor_available(ds, as_of):
+        raise ValueError(f"因子 {ds!r} 在 {as_of} 不可用 (因子屏蔽, 见 pool_registry.FACTOR_AVAILABILITY)")
     root = os.path.join(CERTIFIED_DIR, ds, venue, market_type, instrument,
                         f"interval={interval}")
     if not os.path.isdir(root):
@@ -42,14 +59,27 @@ def load_candles(venue: str, instrument: str, interval: str = "1h",
             df[c] = pd.to_datetime(df[c], utc=True)
     df = df.sort_values("open_time_utc").reset_index(drop=True)
     if as_of is not None:
-        df = df[df["data_available_at"] <= pd.Timestamp(as_of, tz="UTC")]
+        df = df[df["data_available_at"] <= _as_utc(as_of)]
+    if lower is not None:
+        # 池内取数: 剔除池起点之前的历史 (避免拿池外更早的数据)
+        df = df[df["open_time_utc"] >= lower]
     if cols:
         df = df[[c for c in cols if c in df.columns]]
     return df
 
 
-def load_derivatives(venue: str, instrument: str, dataset: str) -> pd.DataFrame:
-    """读取 certified 衍生品数据集 (funding / open_interest / mark_price / ratio)。"""
+def load_derivatives(venue: str, instrument: str, dataset: str,
+                     as_of=None, scope=None) -> pd.DataFrame:
+    """读取 certified 衍生品数据集 (funding / open_interest / mark_price / ratio)。
+
+    scope: 可选 PoolScope; 传入后 as_of 被钳制到该池终点 + 因子屏蔽生效。
+    """
+    from .pool_registry import clamp_factor_as_of
+    lower = None
+    if scope is not None:
+        as_of = scope.clamp(as_of)
+        lower = scope.pool.start_ts
+    clamp_factor_as_of(dataset, as_of)
     root = os.path.join(CERTIFIED_DIR, dataset, venue, instrument)
     if not os.path.isdir(root):
         raise FileNotFoundError(root)
@@ -57,7 +87,13 @@ def load_derivatives(venue: str, instrument: str, dataset: str) -> pd.DataFrame:
     for c in df.columns:
         if "time" in c or c == "data_available_at":
             df[c] = pd.to_datetime(df[c], utc=True)
-    return df.sort_values(df.columns[0]).reset_index(drop=True)
+    tcol = df.columns[0]
+    df = df.sort_values(tcol).reset_index(drop=True)
+    if as_of is not None and "data_available_at" in df.columns:
+        df = df[df["data_available_at"] <= _as_utc(as_of)]
+    if lower is not None:
+        df = df[df[tcol] >= lower]
+    return df
 
 
 def load_instruments(venue_id: str | None = None, market_type: str | None = None,
@@ -92,7 +128,7 @@ def load_instruments(venue_id: str | None = None, market_type: str | None = None
     if market_type:
         df = df[df["market_type"] == market_type]
     if as_of is not None:
-        df = df[df["data_available_at"] <= pd.Timestamp(as_of, tz="UTC")]
+        df = df[df["data_available_at"] <= _as_utc(as_of)]
     # Binance 现货/永续 symbol 字符串相同, 去重键必须含 market_type
     df = df.sort_values("data_available_at").drop_duplicates(
         subset=["venue_id", "symbol", "market_type"], keep="last").reset_index(drop=True)
@@ -101,18 +137,23 @@ def load_instruments(venue_id: str | None = None, market_type: str | None = None
 
 
 def load_universe(as_of=None, layer: str = "tradeable",
-                  base_asset: str | None = None) -> pd.DataFrame:
+                  base_asset: str | None = None, scope=None) -> pd.DataFrame:
     """读取 certified universe_membership (三层交易宇宙) 成员快照。
 
     layer ∈ {"research", "backtest", "tradeable"}: 返回通过该层的成员行
     (schema 全部列, 外加 certified 附加列 is_suspect/quality_reason/date)。
     as_of: str | Timestamp, 归一化为 UTC 日过滤 date_utc; None = 全部日期。
     base_asset: 可选, 精确过滤统一基础资产 (如 "BTC")。
+    scope: 可选 PoolScope; 传入后 as_of 被钳制到该池终点 (宇宙门控)。
     """
     from .schema import UNIVERSE_MEMBERSHIP_COLUMNS
     valid = ("research", "backtest", "tradeable")
     if layer not in valid:
         raise ValueError(f"layer 必须是 {valid} 之一, 收到: {layer!r}")
+    if scope is not None and as_of is None:
+        as_of = scope.end          # 默认取池末日做门控
+    if scope is not None:
+        as_of = scope.clamp(as_of)
     root = os.path.join(CERTIFIED_DIR, "universe_membership", "builder", "all")
     if not os.path.isdir(root):
         raise FileNotFoundError(root)
@@ -123,7 +164,7 @@ def load_universe(as_of=None, layer: str = "tradeable",
             df[c] = pd.to_datetime(df[c], utc=True)
     df = df[df[f"layer_{layer}"].fillna(False)]
     if as_of is not None:
-        day = pd.Timestamp(as_of, tz="UTC").normalize()
+        day = _as_utc(as_of).normalize()
         hi = day + pd.Timedelta(days=1)
         df = df[(df["date_utc"] >= day) & (df["date_utc"] < hi)]
     if base_asset is not None:

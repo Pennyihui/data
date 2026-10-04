@@ -587,16 +587,16 @@
     "ZROUSDT_universe_v3",
     "ZRXUSDT_universe_v3"
   ],
-  "coverage_start": "2020-01-01 00:00:00+00:00",
-  "coverage_end": "2026-10-02 00:00:00+00:00",
-  "row_count": 803404,
+  "coverage_start": "2017-08-01 00:00:00+00:00",
+  "coverage_end": "2026-10-04 00:00:00+00:00",
+  "row_count": 830605,
   "duplicate_count": 0,
   "gap_count": 0,
   "suspect_count": 0,
   "timestamp_unit": "us",
   "timezone": "UTC",
   "certification_status": "certified",
-  "certified_at": "2026-10-02T15:29:52.604077+00:00",
+  "certified_at": "2026-10-04T09:30:52.218375+00:00",
   "aggregation_rules": {
     "rules": {
       "quote": "USDT",
@@ -618,5 +618,7 @@
     "note": "research 成员 = as_of 当日 PIT 真实存在的 symbol (仅存成员行, 非成员无行); 2026-08 扩容: K 线覆盖 CMC 流动性门槛币种 (历史日成交额>=1M USD) (子代理 J, expand_v2 REST 分页 + delisted_v2 Vision 归档 + LUNAUSDT 手动补), tradeable/backtest 层基于真实 K 线流动性证据; 仍无 K 线的 research 成员 avg_volume_30d_usd=NaN -> certified 仅查主键唯一与时间边界 (core_numeric_cols=[]), NaN 为合法状态不标 suspect"
   },
   "quality_rule_version": "1.0.0",
-  "notes": []
+  "notes": [],
+  "finalized_at": "2026-10-04T09:30:52.218375+00:00",
+  "note_agg": "stats recomputed across all venues by finalize.py"
 }
