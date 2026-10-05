@@ -147,6 +147,21 @@ def _node_lookback(node: dsl.Node, family_fields: set[str]) -> tuple[int, str]:
                 else:
                     win = int(dsl._default_arg(fname, idx))
                 reason = fname
+            elif fname == "pp_savgol":
+                win = int(node.args[1]) if len(node.args) > 1 \
+                    and isinstance(node.args[1], int) else 7
+                reason = fname
+            elif fname == "pp_boxcox":
+                # by='ts' 时窗口参数在第 3 个位置; by='time'(默认) 不需回看
+                args = node.args[1:]
+                by = next((a for a in args if isinstance(a, str)), "time")
+                if by in ("ts", "trailing", "window"):
+                    win = next((int(a) for a in args
+                                if isinstance(a, int)), 20)
+                    reason = fname
+                else:
+                    win = 1
+                    reason = fname
             elif fname == "pp_ema":
                 return child_max, "pp_ema(unbounded)"
             else:

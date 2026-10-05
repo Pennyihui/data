@@ -206,6 +206,12 @@ def _roll_op(x: pd.Series, window: int, min_periods: int, method: str, **kw) -> 
     return _finish(getattr(r, method)(**kw), x, g)
 
 
+def _roll_apply(x: pd.Series, window: int, min_periods: int, func) -> pd.Series:
+    """逐窗 Python 回调 (慢, 只在没有向量化等价写法时用, 如窗口内拟合 λ)。"""
+    r, g = _roll(x, window, min_periods)
+    return _finish(r.apply(func, raw=True), x, g)
+
+
 def _shift(x: pd.Series, k: int) -> pd.Series:
     """按 instrument 内的滞后位移 (k>=0, 由 _lag 保证)。"""
     if k == 0:
@@ -568,15 +574,202 @@ def cs_rel(x, ref, name=None) -> pd.Series:
     """
     x = _as_series(x, "x")
     ref = _pair(x, ref)[1]
-    tkey = x.index.get_level_values(_time_level(x))
-    if not tkey.is_unique:
-        # x 本身是每个资产一行 (正常), 这里只要求 ref 侧可按 time 取值
-        pass
     ref_by_time = ref.groupby(_time_codes(ref), sort=False).first()
     vals = ref_by_time.reindex(_time_codes(x))
     out = x / pd.Series(vals.to_numpy(), index=x.index) - 1.0
     out = pd.Series(np.asarray(out, dtype=float), index=x.index)
     return out.where(np.isfinite(out)).rename(name or x.name)
+
+
+# ===========================================================================
+# 无状态预处理算子 (2026-10-05 补)
+# 设计原则: 参数只来自**当期截面**或**trailing 窗口** —— 不需要从训练集里
+# "记住"任何数字, 因此服务端拿新数据能原样重算 (无状态)。需要拟合参数的
+# 变换 (全局标准化器/PCA) 不属于这里, 属模型研究协议, 必须随模型携带。
+# ===========================================================================
+def cs_residual(x, ref, name=None) -> pd.Series:
+    """截面中性化: 对暴露量做逐期 OLS, 返回**残差**。
+
+        x_i = a_t + b_t * ref_i + e_i   ->   e_i
+
+    这是量化里最标准的预处理之一 (把信号里能被规模/波动解释的部分剔掉)。
+    逐期独立拟合 => 无状态: 参数 (a_t, b_t) 只依赖当期截面, 不跨期记忆。
+
+    退化保护: 当期 ref 方差为 0 (全同值) 时退化为**去均值** (等价于只拟合截距),
+    而不是产出 inf/NaN —— 这种情况在资产很少或标签集中时真的会出现。
+    """
+    x = _as_series(x, "x")
+    ref = _pair(x, ref)[1]
+    g = _cs_groupby(x)
+    mx = g.transform("mean")
+    my = _cs_groupby(ref).transform("mean")
+    xc = x - mx
+    yc = ref - my
+    sxx = _cs_groupby(yc).transform(lambda s: (s * s).sum())
+    sxy = _cs_groupby(xc * yc).transform("sum")
+    beta = (sxy / sxx.where(sxx > 0))
+    resid = xc - beta.fillna(0.0) * yc
+    return resid.where(np.isfinite(np.asarray(resid, dtype=float))).rename(
+        name or x.name)
+
+
+def cs_rank_normal(x, name=None) -> pd.Series:
+    """截面排名的**高斯化** (inverse-normal transform / Gaussianize)。
+
+    先把截面排名归一化到 (0,1), 再过标准正态分位函数:
+        z_i = Phi^{-1}( rank_i / (n+1) )
+
+    为什么量化常用它: 排名天然抗离群且单调, 但均匀分布对线性模型不友好;
+    高斯化后既保留排名的稳健性, 又给出近似正态的输入 —— 这是"rank 口径"
+    与"z-score 口径"之间的第三种选择, 由检验裁决谁有效 (决策 8)。
+    逐期计算 => 无状态。
+    """
+    x = _as_series(x)
+    g = _cs_groupby(x)
+    r = g.rank(pct=False)                     # 1..n 的秩
+    n = g.transform("size").astype(float)
+    p = (r / (n + 1.0)).clip(1e-6, 1 - 1e-6)  # 开区间, 避免 Phi^{-1}(0/1) = ±inf
+    try:
+        from scipy.special import ndtri     # 标准正态分位函数
+    except ImportError as exc:               # pragma: no cover
+        raise ImportError("cs_rank_normal 需要 scipy (pip install scipy)") from exc
+    arr = ndtri(np.asarray(p, dtype=float))
+    out = pd.Series(arr, index=x.index)
+    return out.where(np.isfinite(arr)).rename(name or x.name)
+
+
+def cs_winsorize_mad(x, n_mad: float = 5.0, name=None) -> pd.Series:
+    """截面 MAD 去极值: 截断到 中位数 ± n_mad * (1.4826 * MAD)。
+
+    与 cs_winsorize (均值 ± n_std) 的区别: 均值与标准差本身会被离群值带偏,
+    MAD 不会 —— 加密数据插针多、分布肥尾, 稳健口径往往更合用。
+    MAD = median(|x - median(x)|) 是"正态下的标准差一致性估计" (×1.4826)。
+    逐期计算 => 无状态。
+    """
+    x = _as_series(x)
+    n_mad = abs(float(n_mad))
+    g = _cs_groupby(x)
+    med = g.transform("median")
+    mad = g.transform(lambda s: (s - s.median()).abs().median()) * 1.4826
+    scale = mad.where(mad > 0)
+    lo = med - n_mad * scale
+    hi = med + n_mad * scale
+    return x.clip(lo, hi).rename(name or x.name)
+
+
+def pp_soft_threshold(x, k: float = 1.0, name=None) -> pd.Series:
+    """软阈值 (去噪/稀疏化): sign(x) * max(|x| - k, 0)。
+
+    小于 k 的信号被压到 0, 大于 k 的被整体收缩 —— 小信号多为噪声, 直接置零
+    比留着更稳 (稀疏编码/小波去噪里的标准算子)。k 是**显式给定**的阈值,
+    不自动拟合 (拟合阈值 = 引入自由参数)。
+    """
+    x = _as_series(x)
+    k = abs(float(k))
+    out = np.sign(x) * (np.abs(x) - k).clip(lower=0.0)
+    return pd.Series(np.asarray(out, dtype=float), index=x.index).rename(
+        name or x.name)
+
+
+def pp_savgol(x, window: int = 7, polyorder: int = 2, name=None) -> pd.Series:
+    """Savitzky-Golay 平滑的**trailing 版** (只用过去 window 根 bar)。
+
+    对每根 bar, 用其往前 window 个点拟合 polyorder 阶多项式, 取**最新点**的
+    拟合值。设计文档 3.3 列了 pp_savgol, 但标准实现是**居中窗口** (用未来数据);
+    这里改成只回看, 保住引擎的核心不变量 (未来不变性)。
+
+    实现: SG 在端点处的权重是固定的 (A 的伪逆最后一行), 所以本质是一个 FIR
+    滤波器 —— 用 w 次 shift 累加, 不走 rolling.apply 的逐窗回调。要求完整窗口。
+    """
+    x = _as_series(x)
+    w = _win(window, "window")
+    p = int(polyorder)
+    if p < 0 or p >= w:
+        raise ValueError(f"polyorder 必须 0 <= p < window, 收到 p={p}, w={w}")
+    A = np.vander(np.arange(w, dtype=float), p + 1, increasing=True)
+    coef = A[-1] @ np.linalg.pinv(A)          # 端点处的等权 FIR 系数
+    weights = coef[::-1]                      # weights[k] 配滞后 k 根
+    return _weighted_trail_sum(x, w, weights).rename(name or x.name)
+
+
+def pp_boxcox(x, lmbda: float | None = None, by: str = "time",
+              window: int | None = None, name=None) -> pd.Series:
+    """Box-Cox 幂变换, **参数按 PIT 安全的范围确定** (无状态)。
+
+        y = (x^l - 1) / l   (l != 0);  y = ln(x)  (l = 0)
+
+    用途: 把右偏(肥尾)分布拉近正态, 是 pp_log 的推广 (对数只是 l→0 的特例)。
+    lmbda 的三种给法:
+      * 显式给 lmbda        -> 纯点态变换
+      * by="time" (默认)    -> **逐期截面**用剖面似然拟合 l (当期可得, 无状态)
+      * by="ts", window=W   -> trailing 窗口拟合 (更贵, 按 instrument 回看)
+    **不允许**用整段历史拟合 (那是前视) —— 传其它 by 直接报错。
+
+    要求 x > 0 (Box-Cox 的定义域); 非正值 -> NaN, 不静默平移。
+    """
+    x = _as_series(x)
+    xpos = x.where(x > 0)
+    if lmbda is not None:
+        lam = float(lmbda)
+        out = _boxcox_apply(xpos, lam)
+        return out.rename(name or x.name)
+    if by == "time":
+        g = _cs_groupby(xpos)
+        lam = g.transform(lambda s: _fit_boxcox_lambda(s))
+        out = _boxcox_mixed(xpos, lam)
+    elif by in ("ts", "trailing", "window"):
+        w = _win(window, "window") if window is not None else None
+        if w is None:
+            raise ValueError("by='ts' 必须给 window")
+        lam = _roll_apply(xpos, w, w, _fit_boxcox_lambda)
+        out = _boxcox_mixed(xpos, lam)
+    else:
+        raise ValueError(
+            f"by={by!r} 不被允许 —— 只接受 'time'(同刻截面) 或 'ts'(trailing "
+            f"窗口); 用整段历史拟合 lambda 会引入未来信息 (PIT 铁律 2)")
+    return out.where(np.isfinite(np.asarray(out, dtype=float))).rename(
+        name or x.name)
+
+
+def _boxcox_apply(x: pd.Series, lam: float) -> pd.Series:
+    if abs(lam) < 1e-12:
+        v = np.log(np.asarray(x, dtype=float))
+    else:
+        v = (np.power(np.asarray(x, dtype=float), lam) - 1.0) / lam
+    return pd.Series(v, index=x.index)
+
+
+def _boxcox_mixed(x: pd.Series, lam: pd.Series) -> pd.Series:
+    """按行使用不同的 lambda (截面/窗口拟合出来的)。"""
+    arr = np.asarray(x, dtype=float)
+    l = np.asarray(lam, dtype=float)
+    with np.errstate(divide="ignore", invalid="ignore", over="ignore"):
+        v = np.where(np.abs(l) < 1e-12, np.log(arr),
+                     (np.power(np.maximum(arr, 1e-300), l) - 1.0)
+                     / np.where(np.abs(l) < 1e-12, 1.0, l))
+    return pd.Series(v, index=x.index)
+
+
+def _fit_boxcox_lambda(s: pd.Series) -> float:
+    """剖面似然在固定网格上选 lambda (numpy 实现, 不依赖 scipy)。"""
+    v = np.asarray(s, dtype=float)
+    v = v[~np.isnan(v)]
+    v = v[v > 0]
+    n = v.size
+    if n < 3:
+        return 1.0
+    grid = np.arange(-1.0, 2.01, 0.1)
+    logv = np.log(v)
+    best, best_ll = 1.0, -np.inf
+    for lam in grid:
+        if abs(lam) < 1e-12:
+            z = logv
+        else:
+            z = (np.power(v, lam) - 1.0) / lam
+        ll = (lam - 1.0) * logv.sum() - 0.5 * n * np.log(np.var(z) + 1e-300)
+        if ll > best_ll:
+            best_ll, best = ll, float(lam)
+    return best
 
 
 def cs_rank(x, name=None) -> pd.Series:
@@ -1019,7 +1212,7 @@ _TS_NAMES = [
     "ts_skew", "ts_kurt", "ts_ewma", "ts_decay_linear", "ts_corr",
 ]
 _CS_NAMES = ["cs_rank", "cs_zscore", "cs_winsorize", "cs_normalize", "cs_scale",
-             "cs_rel"]
+             "cs_rel", "cs_residual", "cs_rank_normal", "cs_winsorize_mad"]
 _GROUP_NAMES = ["group_rank", "group_zscore", "group_neutralize", "group_mean",
                 "group_std", "group_size"]
 _PP_NAMES = [
@@ -1027,6 +1220,8 @@ _PP_NAMES = [
     "pp_diff", "pp_pct_change", "pp_frac_diff", "pp_ema",
     "pp_zscore", "pp_minmax", "pp_robust", "pp_quantile_bucket", "pp_detrend",
     "pp_is_missing", "pp_is_outlier",
+    # 2026-10-05 补: 无状态预处理 (参数只来自当期截面或 trailing 窗口)
+    "pp_soft_threshold", "pp_savgol", "pp_boxcox",
 ]
 
 TS_OPERATORS: dict[str, OperatorSpec] = {

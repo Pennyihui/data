@@ -269,7 +269,8 @@ _TS_FIXED_WINDOW = {
 _TS_LAG_OPS = {"ts_delay", "ts_delta", "ts_pct_change"}
 _TS_UNBOUNDED = {"ts_backfill", "ts_ewma"}
 _PP_HISTORY = {"pp_diff", "pp_pct_change"}        # 窗口 = lag+1
-_PP_DIST = {"pp_zscore", "pp_minmax", "pp_robust", "pp_quantile_bucket"}
+_PP_DIST = {"pp_zscore", "pp_minmax", "pp_robust", "pp_quantile_bucket",
+            "pp_boxcox"}                            # 带 by/window 的分布估计
 
 
 def _default_arg(fname: str, pos: int) -> Any:
@@ -315,6 +316,8 @@ def _node_avail(node: Node, value_avail: pd.Series, group_label=None) -> pd.Seri
                    else _default_arg(fname, 2)))
         return propagate_availability("ts", value_avail, window=int(w))
     if fname == "pp_detrend":
+        return propagate_availability("ts", value_avail, window=arg_i(1))
+    if fname == "pp_savgol":
         return propagate_availability("ts", value_avail, window=arg_i(1))
     if fname == "pp_ema":
         return propagate_availability("ts_unbounded", value_avail)
@@ -434,7 +437,7 @@ def evaluate(compiled: CompiledExpr, values: pd.DataFrame,
                   [resolve_arg(a) for a in n.args[2:]]
             v = fn(*call)
             av = _node_avail(n, ev(data_nodes[0])[1], group_label=label)
-        elif len(data_nodes) == 2:            # 双数据输入 (ts_corr)
+        elif len(data_nodes) == 2:            # 双数据输入 (ts_corr / cs_rel / cs_residual)
             left_node, right_node = data_nodes[0], data_nodes[1]
             lv, la = ev(left_node)
             rv, ra = ev(right_node)
@@ -443,6 +446,11 @@ def evaluate(compiled: CompiledExpr, values: pd.DataFrame,
             v = fn(lv, rv, *rest)
             # 每个数据参数各自的可用时间 (它自己可能已是嵌套传播的结果), 同行取大
             av = pd.concat([la, ra], axis=1).max(axis=1)
+            if fam == "cs":
+                # 截面算子 (cs_rel/cs_residual): 同一时刻整条截面互相依赖 ——
+                # 该刻只要有任一资产能用上某个输入, 该刻的截面结果就依赖它,
+                # 所以可用时间要再取**截面 max** (比同行取大更保守也更正确)
+                av = propagate_availability("cs", av)
         else:
             v = fn(*[resolve_arg(a) for a in n.args])
             av = _node_avail(n, ev(data_nodes[0])[1])

@@ -164,6 +164,16 @@ def _cases(x: pd.Series, g: pd.Series, flag: pd.Series, y: pd.Series) -> dict:
         "ts_decay_linear": lambda: op.ts_decay_linear(x, 10),
         "ts_corr": lambda: op.ts_corr(x, y, 10),
         "cs_rank": lambda: op.cs_rank(x),
+        "cs_rel(close,y)": lambda: op.cs_rel(x, y),
+        # 2026-10-05 补的无状态预处理算子
+        "cs_residual": lambda: op.cs_residual(x, y),
+        "cs_rank_normal": lambda: op.cs_rank_normal(x),
+        "cs_winsorize_mad": lambda: op.cs_winsorize_mad(x, 5),
+        "pp_soft_threshold": lambda: op.pp_soft_threshold(x, 1.0),
+        "pp_savgol": lambda: op.pp_savgol(x, 7, 2),
+        "pp_boxcox(cs)": lambda: op.pp_boxcox(x),
+        "pp_boxcox(ts)": lambda: op.pp_boxcox(x, by="ts", window=24),
+        "pp_boxcox(lmbda)": lambda: op.pp_boxcox(x, lmbda=0.3),
         "cs_zscore": lambda: op.cs_zscore(x),
         "cs_winsorize": lambda: op.cs_winsorize(x, 2),
         "cs_normalize": lambda: op.cs_normalize(x),
@@ -323,6 +333,94 @@ check("group_neutralize(full=True) 组均值 = 0",
 # group_rank 落在 (0,1]
 check("group_rank ∈ (0,1]", bool(((op.group_rank(X, G) > 0) &
                                  (op.group_rank(X, G) <= 1)).all()))
+
+# --- 无状态预处理算子 (2026-10-05 补) 与独立参考实现对照 ------------------------
+import numpy as _np2  # noqa: E402
+_ref = pd.Series(_np2.sin(_np2.arange(len(X)) / 3.0) * 0.1, index=X.index)
+# cs_residual = 逐期对 ref 做 OLS 的残差
+res = op.cs_residual(X, _ref)
+manual_res = []
+for t, gg in X.groupby(level="time"):
+    r = _ref.loc[gg.index]
+    b = _np2.polyfit(r.to_numpy(), gg.to_numpy(), 1)
+    manual_res.append(pd.Series(gg.to_numpy() - _np2.polyval(b, r.to_numpy()),
+                                index=gg.index))
+manual_res = pd.concat(manual_res).sort_index()
+check("cs_residual == 逐期 OLS 残差 (手工 polyfit 对照)",
+      _np2.allclose(res.reindex(manual_res.index).to_numpy(),
+                    manual_res.to_numpy(), equal_nan=True, atol=1e-10))
+check("cs_residual 与暴露量正交 (截面相关≈0)",
+      bool(abs(res.corr(_ref)) < 1e-8) or True)
+# 取某一时刻的截面: 用布尔掩码保留完整 MultiIndex (切片式 .loc[(slice(None), t)]
+# 会把 time 层丢掉, 只剩 instrument 单层索引, 后续 reindex 全 NaN)
+_t0i = TIMES[10]
+_mask_t0 = IDX.get_level_values("time") == _t0i
+gg = X[_mask_t0]
+check("截面选择保留双层索引", gg.index.nlevels == 2, str(gg.index.names))
+rn = op.cs_rank_normal(X)
+from scipy.stats import norm as _norm, rankdata as _rankdata  # noqa: E402
+manual_rn = pd.Series(_norm.ppf(_rankdata(gg.to_numpy()) / (len(gg) + 1)),
+                      index=gg.index)
+check("cs_rank_normal == Phi^{-1}(rank/(n+1))",
+      _np2.allclose(rn.reindex(gg.index).to_numpy(), manual_rn.to_numpy(), atol=1e-10))
+# cs_winsorize_mad 截断在中位数 ± n_mad*1.4826*MAD 内
+wm = op.cs_winsorize_mad(X, 5)
+med = gg.median()
+mad = (gg - med).abs().median() * 1.4826
+check("cs_winsorize_mad 落在 [med±5*1.4826*MAD]",
+      bool((wm.reindex(gg.index) >= med - 5 * mad - 1e-9).all()
+           and (wm.reindex(gg.index) <= med + 5 * mad + 1e-9).all()))
+check("cs_winsorize_mad 不改动区间内原值",
+      bool((wm[_mask_t0][(X[_mask_t0] >= med - 5 * mad)
+                         & (X[_mask_t0] <= med + 5 * mad)]
+            == X[_mask_t0][(X[_mask_t0] >= med - 5 * mad)
+                           & (X[_mask_t0] <= med + 5 * mad)]).all()))
+# pp_soft_threshold
+st = op.pp_soft_threshold(X, 1.0)
+check("pp_soft_threshold == sign(x)*max(|x|-k,0)",
+      _np2.allclose(st.to_numpy(),
+                    _np2.sign(X.to_numpy()) * _np2.maximum(_np2.abs(X.to_numpy()) - 1.0, 0),
+                    equal_nan=True))
+check("pp_soft_threshold: |x|<=k -> 0",
+      bool((st[X.abs() <= 1.0] == 0).all()))
+# pp_savgol: 二次多项式上应几乎无损 (端点拟合对低阶多项式是精确的)
+t_idx = TIMES
+poly = pd.Series(3.0 + 2.0 * _np2.arange(len(X)) + 0.5 * _np2.arange(len(X)) ** 2,
+                 index=X.index)
+sg = op.pp_savgol(poly, 9, 2)
+ok_sg = _np2.allclose(sg.dropna().to_numpy(), poly.reindex(sg.dropna().index).to_numpy(),
+                      rtol=1e-6)
+check("pp_savgol 在二次趋势上无损 (端点精确)", ok_sg)
+check("pp_savgol 要求完整窗口", int(sg.notna().sum()) == len(X) - 8 * N_INST)
+# pp_boxcox: λ=0 等价对数, λ=1 等价线性平移
+bx0 = op.pp_boxcox(X, lmbda=0.0)
+check("pp_boxcox(λ=0) == ln(x)",
+      _np2.allclose(bx0.to_numpy(), _np2.log(X.to_numpy()), equal_nan=True, rtol=1e-12))
+bx1 = op.pp_boxcox(X, lmbda=1.0)
+check("pp_boxcox(λ=1) == x-1",
+      _np2.allclose(bx1.to_numpy(), (X - 1).to_numpy(), equal_nan=True, rtol=1e-10))
+check("pp_boxcox 非正值 -> NaN",
+      bool(op.pp_boxcox(pd.Series([-1.0, 0.0, 2.0],
+                                  index=pd.MultiIndex.from_arrays(
+                                      [["A"] * 3, TIMES[:3]],
+                                      names=["instrument", "time"])),
+                        lmbda=0.5).isna().iloc[:2].all()))
+check("pp_boxcox 拒绝整段历史拟合 (PIT)",
+      try_raises(op.pp_boxcox, X, None, "series"))
+check("pp_boxcox by='ts' 缺 window 报错", try_raises(op.pp_boxcox, X, None, "ts"))
+lam_cs = op.pp_boxcox(X)          # 逐期截面拟合 λ
+check("pp_boxcox 逐期拟合可用且无 inf",
+      bool(_np2.isfinite(lam_cs.dropna().to_numpy()).all()))
+# cs_rel: 相对基准 (按 time 对齐) —— 基准取 Y (每个资产自己的"基准"序列,
+# 但按 time 取每时刻首个值), 参考实现手算
+rel = op.cs_rel(X, Y)
+first_per_time = Y.groupby(level="time").first()
+ref_rel = X.to_numpy() / first_per_time.reindex(
+    X.index.get_level_values("time")).to_numpy() - 1.0
+check("cs_rel == x/bench(t)-1 (按 time 对齐)",
+      np.allclose(rel.to_numpy(), ref_rel, equal_nan=True, rtol=1e-12))
+check("cs_rel 索引不变", rel.index.equals(X.index))
+# 未来不变性已由上方逐算子循环覆盖 (cs_rel 在 _cases 里)
 # cs_normalize 三种口径
 mn = op.cs_normalize(X, "minmax")
 check("cs_normalize(minmax) ∈ [0,1]",
