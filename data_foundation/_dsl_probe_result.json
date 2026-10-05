@@ -1,0 +1,34 @@
+{
+  "expr_codegen_version": "0.16.6",
+  "codegen_seconds": 2.371,
+  "readable_calls": [
+    "    g[_a_0_] = ts_zscore(pp_log(g[close]), 24)",
+    "    g[_b_1_] = ts_rank(g[funding_rate], 24)",
+    "    g[F1] = group_rank(g[_a_0_], g[sector])",
+    "    g[F3] = g[_a_0_] + g[_b_1_]",
+    "    g[F2] = cs_rank(g[_b_1_])"
+  ],
+  "cse_reuse_count": 4,
+  "stage_pipeline": [
+    "df = df.sort_values(by=[_ASSET_, _DATE_]).reset_index(drop=True)",
+    "df = df.groupby(by=[_ASSET_], group_keys=False).apply(func_0_ts__base_asset)",
+    "df = _filter_last(df, ge_date_idx)",
+    "df = func_1_cl(df).drop(columns=[\"_a_0_\"])",
+    "df = df.groupby(by=[_DATE_], group_keys=False).apply(func_1_cs__time).drop(columns=[\"_b_1_\"])",
+    "df = df.drop(columns=list(filter(lambda x: x.startswith(\"_\"), df.columns)))"
+  ],
+  "group_ops_in_code": [
+    "g[F1] = group_rank(g[_a_0_], g[sector])"
+  ],
+  "multindex_exec_ok": false,
+  "multindex_exec_error": "KeyError: 'base_asset'",
+  "flat_exec_ok": false,
+  "flat_exec_error": "NameError: name 'ts_zscore' is not defined",
+  "perf_2M_rows_seconds": {
+    "ts_zscore(24)": 2.12,
+    "ts_rank(24)": 5.34,
+    "cs_rank": 2.01,
+    "group_rank(sector)": 1.91
+  },
+  "perf_note": "单算子耗时; 一个特征 3-6 个算子 -> 2M 行约 11s; 1967 万行按线性外推约 10 倍 -> 单特征分钟级, 全库 50-100 特征小时级 (一次性计算, 决策 3 不落盘缓存)"
+}
