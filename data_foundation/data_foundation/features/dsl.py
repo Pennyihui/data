@@ -242,10 +242,8 @@ def compile_expr(expr: str, known_fields: set[str] | None = None) -> CompiledExp
     root = build(tree.body)
     if root.kind == "const":
         raise ExprError("表达式不能只是常量")
-    if root.kind == "field":
-        raise ExprError(
-            f"表达式只是单个字段 {root.code!r} —— 请对它做一个变换 (否则它就是"
-            f"原始数据, 不是特征)")
+    # 单字段表达式 = "raw 水平" 变体, 是合法特征 (设计文档 1.4 多口径: raw/zscore/
+    # rank 都要有, 检验去决定哪个有效), 不再拒绝。
     return CompiledExpr(expr=expr.strip(), root=root,
                         fields=tuple(dict.fromkeys(field_names)),
                         operators=tuple(op_names))
@@ -373,6 +371,13 @@ def evaluate(compiled: CompiledExpr, values: pd.DataFrame,
 
     def ev(n: Node) -> tuple[pd.Series, pd.Series]:
         if n.nid in cache:
+            return cache[n.nid]
+        if n.kind == "const":
+            # 字面量没有"可用时间" (NaT); 与数据同式运算时同行取大即自动跳过
+            v = pd.Series(n.args[0], index=values.index)
+            av = pd.Series(pd.NaT, index=values.index,
+                           dtype="datetime64[ns, UTC]")
+            cache[n.nid] = (v, av)
             return cache[n.nid]
         if n.kind == "field":
             if n.code not in values.columns:
