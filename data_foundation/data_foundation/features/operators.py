@@ -382,9 +382,10 @@ def ts_rank(x, window: int = 20, min_periods: int | None = None, name=None) -> p
         for k in range(1, w):
             prev = _shift(x, k).to_numpy(dtype=float)
             acc += (vals > prev) + 0.5 * (vals == prev)
-    pct = (acc + 1.0) / n_valid
-    out = pd.Series(pct, index=x.index)
-    return out.where((n_valid > 0) & ~np.isnan(vals)).rename(name or x.name)
+    pct = pd.Series(np.nan, index=x.index, dtype=float)
+    ok = n_valid > 0
+    pct[ok] = (acc[ok] + 1.0) / n_valid[ok]
+    return pct.where(~np.isnan(vals)).rename(name or x.name)
 
 
 def ts_zscore(x, window: int = 20, min_periods: int | None = None, ddof: int = 0,
@@ -554,6 +555,28 @@ def ts_corr(x, y, window: int = 20, min_periods: int | None = None, name=None) -
 # ===========================================================================
 def _cs_groupby(x: pd.Series):
     return x.groupby(_time_codes(x), sort=False)
+
+
+def cs_rel(x, ref, name=None) -> pd.Series:
+    """相对基准的收益: x[t] / ref[t] - 1, 按 **time 对齐** (加密最常用的截面特征:
+    相对 BTC / 相对板块基准的强弱)。
+
+    ref 需是同一面板里的另一列 (通常是基准资产的 close); 若某时刻 ref 有多个值,
+    取该时刻的首个 (基准侧本就只有一条)。ref 缺失 -> NaN (不做任何填充)。
+
+    PIT: 只用同一时刻的值 (不含未来); 可用时间 = 两个输入可用时间的同行最大值。
+    """
+    x = _as_series(x, "x")
+    ref = _pair(x, ref)[1]
+    tkey = x.index.get_level_values(_time_level(x))
+    if not tkey.is_unique:
+        # x 本身是每个资产一行 (正常), 这里只要求 ref 侧可按 time 取值
+        pass
+    ref_by_time = ref.groupby(_time_codes(ref), sort=False).first()
+    vals = ref_by_time.reindex(_time_codes(x))
+    out = x / pd.Series(vals.to_numpy(), index=x.index) - 1.0
+    out = pd.Series(np.asarray(out, dtype=float), index=x.index)
+    return out.where(np.isfinite(out)).rename(name or x.name)
 
 
 def cs_rank(x, name=None) -> pd.Series:
@@ -995,7 +1018,8 @@ _TS_NAMES = [
     "ts_median", "ts_quantile", "ts_delta", "ts_pct_change", "ts_rank", "ts_zscore",
     "ts_skew", "ts_kurt", "ts_ewma", "ts_decay_linear", "ts_corr",
 ]
-_CS_NAMES = ["cs_rank", "cs_zscore", "cs_winsorize", "cs_normalize", "cs_scale"]
+_CS_NAMES = ["cs_rank", "cs_zscore", "cs_winsorize", "cs_normalize", "cs_scale",
+             "cs_rel"]
 _GROUP_NAMES = ["group_rank", "group_zscore", "group_neutralize", "group_mean",
                 "group_std", "group_size"]
 _PP_NAMES = [

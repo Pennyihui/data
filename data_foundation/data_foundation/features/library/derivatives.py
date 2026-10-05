@@ -56,3 +56,62 @@ feature(name="taker_imbalance_24h", expr="ts_mean(taker_ratio, 24)",
 feature(name="tlsr_pos_zscore", expr="ts_zscore(tlsr_pos, 168)",
         category="derivatives", desc="大户持仓比的 168 期 z 分数",
         tags=("sentiment",))
+
+# --- Carry 多口径扩展 (研究警示: level 有效而 z-score 可能失效, 都要有) --------
+feature(name="funding_cum_7d", expr="ts_sum(funding_rate, 21)",
+        category="derivatives", desc="7 天累计资金费 (carry 累积收益代理)",
+        tags=("carry", "raw"))
+feature(name="funding_cs_rank", expr="cs_rank(funding_rate)",
+        category="derivatives", desc="资金费率横截面排名 (当前拥挤度)",
+        tags=("carry", "cross_section"))
+feature(name="funding_vol", expr="ts_std(funding_rate, 90)",
+        category="derivatives", desc="资金费率波动 (融资情绪不稳定度)",
+        tags=("carry", "risk"))
+feature(name="funding_mean_weighted", expr="ts_decay_linear(funding_rate, 21)",
+        category="derivatives", desc="线性衰减加权平均资金费 (近期更重)",
+        tags=("carry",))
+
+# --- OI 更多口径 ---------------------------------------------------------------
+feature(name="oi_mean_7d", expr="ts_mean(oi_notional, 168)",
+        category="derivatives", desc="7 天平均 OI (持仓基准)", tags=("oi", "raw"))
+feature(name="oi_vol", expr="ts_std(pp_pct_change(oi_notional, 1), 168)",
+        category="derivatives", desc="OI 变化率的波动 (杠杆进出剧烈度)",
+        tags=("oi", "risk"))
+feature(name="oi_to_vol",
+        expr="ts_mean(oi_notional, 168) / (ts_mean(volume_quote, 168) * 168)",
+        category="derivatives", desc="OI/成交量 杠杆密度 (拥挤度代理)",
+        tags=("oi", "crowding"))
+
+# --- 情绪更多口径 ---------------------------------------------------------------
+feature(name="glsr_change_24h", expr="pp_pct_change(glsr, 24)",
+        category="derivatives", desc="多空比 24h 变化 (情绪转向)", tags=("sentiment",))
+feature(name="taker_imbalance_zscore", expr="ts_zscore(taker_ratio, 168)",
+        category="derivatives", desc="主动买卖比的 168 期 z 分数 (买压强度)",
+        tags=("flow",))
+feature(name="sentiment_composite",
+        expr="ts_zscore(glsr, 168) + ts_zscore(taker_ratio, 168)",
+        category="derivatives", desc="情绪复合: 多空比 + 主动买压 z 分数之和",
+        tags=("sentiment", "composite"))
+
+# --- 标记价/指数价扩展 ----------------------------------------------------------
+feature(name="mark_premium_zscore", expr="ts_zscore(mark_premium, 168)",
+        category="derivatives", desc="标记价溢价的 168 期 z 分数", tags=("mark",))
+feature(name="mark_price_dev_cs", expr="cs_rank(mark_price_dev)",
+        category="derivatives", desc="标记价偏离的横截面排名 (异常标的)",
+        tags=("mark", "cross_section"))
+
+# --- 补齐未用字段 (订单流/永续量能/大户) ----------------------------------------
+feature(name="taker_buy_share", expr="taker_buy_volume_quote / volume_quote",
+        category="derivatives", desc="现货主动买入额占比 (买压强度 0-1)",
+        tags=("flow",))
+feature(name="taker_buy_share_zscore", expr="ts_zscore(taker_buy_volume_quote / volume_quote, 168)",
+        category="derivatives", desc="主动买占比的 168 期 z 分数", tags=("flow",))
+feature(name="tlsr_acct_zscore", expr="ts_zscore(tlsr_acct, 168)",
+        category="derivatives", desc="大户多空账户比的 168 期 z 分数", tags=("sentiment",))
+feature(name="oi_contracts_zscore", expr="ts_zscore(oi_contracts, 168)",
+        category="derivatives", desc="未平仓合约张数的 168 期 z 分数", tags=("oi",))
+feature(name="perp_vol", expr="ts_std(pp_pct_change(p_close, 1), 24)",
+        category="derivatives", desc="永续 24h 波动率 (合约市场波动)", tags=("volatility",))
+feature(name="perp_basis_vol", expr="ts_std(basis_raw, 24)",
+        category="derivatives", desc="基差的 24h 波动 (永续定价不稳定)",
+        tags=("basis", "risk"))

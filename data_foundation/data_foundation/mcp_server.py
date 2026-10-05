@@ -34,6 +34,7 @@ from .reader import load_candles, load_derivatives, load_universe
 
 # 会话状态: Agent 启动时绑定一个池, 之后所有查询都在该池内
 _SCOPE: PoolScope | None = None
+_FEATURE_ENGINE = None          # 惰性创建 (特征线 F4/F7)
 
 
 # ---------------------------------------------------------------------------
@@ -168,6 +169,75 @@ def tool_oos_status(evaluation_id: str) -> dict:
 # ---------------------------------------------------------------------------
 # MCP 工具清单
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# 特征库 (F7): list / describe / compute / catalog —— 全部受时间墙约束
+# ---------------------------------------------------------------------------
+def _feature_module():
+    """惰性导入特征模块 (MCP 启动不拖特征库)。"""
+    from .features import engine, lineage, registry          # noqa: PLC0415
+    return engine, lineage, registry
+
+
+def tool_list_features(category: str | None = None) -> dict:
+    """列出特征库中的特征 (名字/类别/表达式/版本)。全可见, 无池约束。"""
+    _, _, registry = _feature_module()
+    registry.load_library()
+    specs = registry.list_features(category=category)
+    return {"n_features": len(specs),
+            "categories": sorted({s.category for s in specs}),
+            "features": [{"name": s.name, "category": s.category,
+                          "expr": s.expr, "version": s.version,
+                          "desc": s.desc} for s in specs]}
+
+
+def tool_describe_feature(name: str) -> dict:
+    """查特征定义 + 血缘 (表达式链/深度/预热/影响面)。全可见。"""
+    engine, lineage_mod, registry = _feature_module()
+    registry.load_library()
+    graph = lineage_mod.build_graph([name])
+    d = lineage_mod.describe_node(name, graph)
+    d["lookback_hours"] = (registry.get_feature(name).lookback.hours.total_seconds()
+                           / 3600 if registry.get_feature(name).lookback else 0)
+    d["available_rule"] = ("data_available_at = 所用输入可用时间的最大值 "
+                           "(逐算子按取数窗口传播, 引擎自动推导)")
+    return d
+
+
+def tool_compute_features(names: list[str], start: str | None = None,
+                          end: str | None = None, as_of=None,
+                          assets: list[str] | None = None) -> dict:
+    """批量计算特征。**as_of/窗口被钳制到会话绑定的池内** (时间墙在引擎层强制);
+    返回汇总 (值面板不下发, 只给统计 —— 数据量大时让 Agent 用摘要工作)。"""
+    s = _require_scope()
+    engine_mod, _, registry = _feature_module()
+    registry.load_library()
+    eng = engine_mod.FeatureEngine(
+        s, start=start, end=end, as_of=as_of, assets=assets)
+    bundle = eng.compute(list(names))
+    stats = {}
+    for c in bundle.values.columns:
+        v = bundle.values[c].dropna()
+        stats[c] = {"n": int(len(v)),
+                    "avail_max": str(bundle.avail[c].dropna().max()),
+                    "mean": float(v.mean()) if len(v) else None,
+                    "std": float(v.std()) if len(v) > 1 else None}
+    return {"pool": s.pool_id,
+            "effective_window": [str(bundle.panel.start.date()),
+                                 str(bundle.panel.end.date())],
+            "as_of": str(bundle.panel.as_of),
+            "n_rows": int(bundle.values.shape[0]),
+            "features": stats,
+            "lineage": {n: bundle.results[n].lineage() for n in bundle.specs}}
+
+
+def tool_feature_catalog() -> dict:
+    """特征库体检: 类别分布/算子依赖/深度/去重/规模上限 (决策 7)。"""
+    _, _, registry = _feature_module()
+    registry.load_library()
+    from .features import catalog                            # noqa: PLC0415
+    return catalog.coverage_report() | catalog.index_stats()
+
+
 TOOLS = [
     {"name": "list_pools", "fn": tool_list_pools,
      "desc": "列出研究池及边界"},
@@ -189,6 +259,14 @@ TOOLS = [
      "desc": "送模型进OOS (拿不到分数)"},
     {"name": "oos_status", "fn": tool_oos_status,
      "desc": "查OOS状态 (无分数)"},
+    {"name": "list_features", "fn": tool_list_features,
+     "desc": "列出特征库特征 (F7)"},
+    {"name": "describe_feature", "fn": tool_describe_feature,
+     "desc": "查特征定义+血缘+预热 (F7)"},
+    {"name": "compute_features", "fn": tool_compute_features,
+     "desc": "批量算特征 (窗口钳制到本池, PIT 自检) (F7)"},
+    {"name": "feature_catalog", "fn": tool_feature_catalog,
+     "desc": "特征库体检 (类别/算子/深度/去重) (F7)"},
 ]
 
 if __name__ == "__main__":
@@ -229,5 +307,32 @@ if __name__ == "__main__":
     print("\n[6] factor_available(macro_daily) — 修订污染源")
     print("   ", tool_factor_available("macro_daily")["contaminated"],
           "(contaminated=True -> 默认屏蔽)")
+
+    # 特征库 (F7)
+    print("\n[7] list_features")
+    lf = tool_list_features()
+    print(f"    {lf['n_features']} 个特征, 类别: {lf['categories']}")
+
+    print("\n[8] describe_feature('mom_zscore_24h')")
+    d = tool_describe_feature("mom_zscore_24h")
+    print(f"    expr={d['expr']} | depth={d['depth']} | lineage={d['lineage']}")
+
+    print("\n[9] compute_features (池1 BTC/ETH 2022-01, as_of 钳制)")
+    r = tool_compute_features(
+        ["mom_zscore_24h", "funding_zscore_30d", "basis_raw"],
+        start="2022-01-01", end="2022-01-31", assets=["BTC", "ETH"])
+    print(f"    pool={r['pool']} window={r['effective_window']} rows={r['n_rows']}")
+    for k, v in r["features"].items():
+        print(f"    {k:<22} n={v['n']:<5} avail_max={str(v['avail_max'])[:10]}")
+
+    print("\n[10] compute_features 越池 (end=2026, 应被截到 2023-12-31)")
+    r2 = tool_compute_features(["mom_zscore_24h"], start="2023-11-01",
+                               end="2026-01-01", assets=["BTC"])
+    print(f"    effective_window={r2['effective_window']}")
+
+    print("\n[11] feature_catalog")
+    cat = tool_feature_catalog()
+    print(f"    n={cat['n_features']} max_depth={cat['max_depth']} "
+          f"dups={cat['duplicates']} soft_cap={cat['soft_cap']}")
 
     print("\n自检完成 —— 墙在工具层生效。")

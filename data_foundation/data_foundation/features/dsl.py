@@ -350,6 +350,21 @@ def evaluate(compiled: CompiledExpr, values: pd.DataFrame,
     cache: dict[str, tuple[pd.Series, pd.Series]] = {}
     used_inputs: dict[str, pd.Series] = {}
 
+    # ---- 交集网格: 特征只在**它全部输入都有数据**的行上计算 ----------------
+    # 面板是多字段联合网格 (1h K 线 + 8h 资金费率 + …), 各字段采样频率不同。
+    # 若在联合网格上直接算, 8h 字段的行之间夹着 7 个空行: ts_decay_linear(
+    # funding_rate, 21) 会因"窗口里有空行"而全空, ts_rank(funding_rate, 90)
+    # 的"90"也会变成 90 小时(=~11 次结算)而非 90 次结算 —— 窗口语义全错。
+    # 标准做法 (qlib 等面板引擎): 特征按自身输入的交集网格计算, 再对齐回面板。
+    full_index = values.index
+    leaf_fields = [f for f in dict.fromkeys(compiled.fields) if f in values.columns]
+    if leaf_fields:
+        mask = values[leaf_fields].notna().all(axis=1)
+        values = values.loc[mask]
+        avail = avail.loc[mask]
+    else:
+        values = values.iloc[0:0]              # 无输入 -> 空算 (下面会报无血缘)
+
     def resolve_group(node_arg) -> pd.Series:
         if isinstance(node_arg, Node) and node_arg.kind == "field":
             name = node_arg.code
@@ -428,6 +443,12 @@ def evaluate(compiled: CompiledExpr, values: pd.DataFrame,
         return cache[n.nid]
 
     v_out, av_out = ev(compiled.root)
+    # 引擎不变量: **无可用时间处不产生值**。面板是多字段联合网格 (如只有
+    # funding 的时刻没有 close 行), 若某特征在该刻的输入整体不可用, 算子仍会
+    # 照常输出一个数 (cs_rank 会给出 1.0 之类), 那等于凭空造值 —— 置 NaN。
+    # 注意不能用"输入该行是否缺失"来判: 窗口算子在该行输入缺失时用更早的 bar
+    # 出值是合法的, 其可用时间由窗口传播给出 (非 NaT)。
+    v_out = v_out.where(av_out.notna())
     if used_inputs:
         in_max = pd.DataFrame(used_inputs).max(axis=1)
     else:
@@ -436,6 +457,11 @@ def evaluate(compiled: CompiledExpr, values: pd.DataFrame,
     in_max.name = "input_max_available_at"
     if check:
         assert_no_leakage(av_out, used_inputs, name=name, feature_values=v_out)
+    # 对齐回完整面板索引 (交集网格之外没有值 -> NaN)
+    if not v_out.index.equals(full_index):
+        v_out = v_out.reindex(full_index)
+        av_out = av_out.reindex(full_index)
+        in_max = in_max.reindex(full_index)
     return FeatureResult(name=name, values=v_out, avail=av_out,
                          input_avail=in_max, expr=compiled.expr,
                          compiled=compiled)

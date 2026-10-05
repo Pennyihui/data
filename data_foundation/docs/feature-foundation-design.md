@@ -2,7 +2,7 @@
 
 | 项目 | 内容 |
 |---|---|
-| 文档版本 | v0.5（F1-F3 已落地；DSL 选型实测后引擎定案） |
+| 文档版本 | v0.6（特征线 F1-F7 全部落地并验收） |
 | 日期 | 2026-10-05 |
 | 状态 | **可实施**（决策 1-10 已定；F3 选型已验证，见 12.3） |
 | 前置 | `crypto-data-foundation-research.md`（数据底座）、`research-pools-timewall-design.md`（时间墙） |
@@ -592,10 +592,10 @@ from data_foundation.pool_registry import PoolScope
 | **F1** | 算子库（三族 `ts_/cs_/group_` + 预处理 `pp_`） | 无 | ✅ 完成（46 算子 / 153 测试） |
 | **F2** | 字段层 + **PIT 引擎**（reader 取数、`data_available_at` 自动推导、PoolScope 继承、泄漏自检） | 数据底座 | ✅ 完成（34 字段 / 51 测试） |
 | **F3** | **DSL 选型验证**（expr_codegen：`group_*` 支持 + 1,967 万行性能） | 无（可并行） | ✅ 完成（见 12.3 / 66 测试） |
-| **F4** | **特征库**（注册表 + library/ 按来源组织 + catalog 多路索引 + 去重） | F1+F2+F3 | 进行中 |
-| **F5** | **血缘系统**（DAG 直接父节点 + 审计 + 版本管理，深度≤5） | F4 | 待实现 |
-| **F6** | **首批 50–100 个特征填充特征库**（按来源：price/derivatives/liquidity/quality） | F4 | 待实现 |
-| **F7** | MCP 工具扩展（`list_features` / `describe_feature` / `compute_features`） | F4 | 待实现 |
+| **F4** | **特征库**（注册表 + library/ 按来源组织 + catalog 多路索引 + 去重） | F1+F2+F3 | ✅ 完成（80 特征 / 32 测试） |
+| **F5** | **血缘系统**（DAG 直接父节点 + 审计 + 版本管理，深度≤5） | F4 | ✅ 完成（lineage.py，trace/impact/audit） |
+| **F6** | **首批 50–100 个特征填充特征库**（按来源：price/derivatives/liquidity/quality/cross_asset） | F4 | ✅ 完成（80 个，全池1实算，无空特征） |
+| **F7** | MCP 工具扩展（`list_features` / `describe_feature` / `compute_features` / `feature_catalog`） | F4 | ✅ 完成（墙在工具层验证） |
 
 **特征线的交付物**：可 PIT 计算、带血缘、受时间墙约束的特征库 + 计算引擎 + MCP 工具。
 **特征线的验收**：能对池1（OOF）批量算出 50+ 特征，`assert_no_leakage` 全通过，血缘完整可查。
@@ -709,3 +709,4 @@ from data_foundation.pool_registry import PoolScope
 | v0.3 | 2026-10-04 | **全部开放问题拍板关闭**：DSL 选型定为 expr_codegen（决策6）、特征库上限 500/1000（决策7）、多口径受控展开（决策8）、血缘 DAG+深度5（决策9）、因子入库多指标联合+分池递减（决策10）。第 14 节清空待评审项，文档进入可实施状态 |
 | v0.4 | 2026-10-05 | **落地路线改为双线**：特征线（F1–F7，先行）+ 因子线（G1–G4，后置）；因子线启动条件 = 特征线 F4 + 模型协议提供标签；FeatureSpec 预留因子线所需字段 |
 | v0.5 | 2026-10-05 | **F1-F3 已落地**。F3 选型实测后定案表达式引擎：expr_codegen 验证通（可读代码 + CSE + group_* 支持），但其执行模型与本项目面板算子模型互斥，引擎改用 **标准库 ast 白名单求值**（决策 1/6 修订，见 12.3 与第 13 节）。落地路线状态列更新（F1/F2/F3 完成）。 |
+| v0.6 | 2026-10-05 | **特征线 F1-F7 全部落地**。F4 特征库（80 特征，5 类别，去重/体检/升版）；F5 血缘系统（DAG 直接父节点 + trace/impact/audit，depth≤5）；F6 全量特征池1 实算验收（交集网格语义）；F7 MCP 4 工具（墙在工具层验证）。引擎两项关键语义定案：①特征在**其全部输入的交集网格**上计算再对齐回面板（修 8h 资金费率在 1h 面板上的窗口错位）；②**无可用时间处不产生值**（修联合网格幽灵行）。测试合计 ~350 项。 |

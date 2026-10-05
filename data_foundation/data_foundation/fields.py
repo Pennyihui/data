@@ -327,6 +327,12 @@ def load_panel(scope: PoolScope, fields: Iterable[str],
     avail = pd.DataFrame({k: pd.concat(v).sort_index()
                           for k, v in avail_parts.items()})
     avail = avail.reindex(values.index)     # 外连接对齐; 缺行 = NaT (泄漏自检会拦)
+    # 质量位 (is_gap/is_suspect) 转 float64: 外连接引入 NaN 时 bool 列会被 pandas
+    # 升成 object dtype, 进而让 pp_is_outlier 之类的算子收到混合类型序列;
+    # 质量位作为特征本就是 1.0/0.0, 存 float 语义一致。
+    for f in fspecs:
+        if f.quality_flag and f.name in values.columns:
+            values[f.name] = values[f.name].astype(float)
     return Panel(values=values, avail=avail, scope=scope, as_of=as_of,
                  start=start, end=end, warmup=warmup,
                  provenance=provenance, excluded=excluded)
@@ -462,8 +468,14 @@ def assert_no_leakage(feature_avail: pd.Series, input_avails: dict[str, pd.Serie
       1. 特征值**非 NaN** 的行必须有可用时间 (值是 NaN 的行没有计算结果,
          无 PIT 要求 —— 例如别的字段带来的联合网格行)。
       2. 特征可用时间 >= 各输入可用时间的按行最大值 (输入某行无数据 = NaT,
-         跳过该输入; 全部输入都无数据的行, 特征值必须是 NaN)。
-      3. 违反即抛 AssertionError —— 引擎的最后闸门, 不许关掉。
+         跳过该输入)。
+      3. 全部输入的可用时间**整体**为空 => 直接报错 (计算路径绕过了 PIT 引擎)。
+      4. 违反即抛 AssertionError —— 引擎的最后闸门, 不许关掉。
+
+    注 (为什么没有"逐行 ghost"规则): 窗口算子在该行输入缺失时仍可能有值
+    (它用窗口里更早的 bar), 例如 ts_mean(is_gap, 24) 在缺 bar 的行依然出值 ——
+    这种情况是合法的, 其可用时间已由规则 1/2 保证保守; 只有"全无输入可用
+    时间"才是真的绕过引擎。
 
     返回输入的按行最大可用时间 (供血缘/审计记录)。
     """
@@ -482,12 +494,17 @@ def assert_no_leakage(feature_avail: pd.Series, input_avails: dict[str, pd.Serie
     in_max = wide.max(axis=1)          # skipna: 某输入该行无数据则跳过
     in_max.name = "input_max_available_at"
 
+    # 规则 3: 所有输入的可用时间整体为空
+    if bool(wide.isna().all().all()):
+        raise AssertionError(
+            f"泄漏自检失败 ({name}): 全部输入的 data_available_at 都是 NaT —— "
+            f"计算路径可能绕过了 PIT 引擎 (没有任何输入的可用时间)")
+
     if feature_values is None:
         has_value = feature_avail.notna()
     else:
-        has_value = feature_values.notna() & feature_avail.notna() | \
-            (feature_values.notna() & feature_avail.isna())
-        # 有值但无可用时间 -> 规则 1 违规
+        has_value = feature_values.notna() | feature_avail.notna()
+        # 规则 1: 有值但无可用时间
         n_no_avail = int((feature_values.notna() & feature_avail.isna()).sum())
         if n_no_avail:
             raise AssertionError(
@@ -502,15 +519,6 @@ def assert_no_leakage(feature_avail: pd.Series, input_avails: dict[str, pd.Serie
             f"泄漏自检失败 ({name}): {n} 行特征的 data_available_at 早于输入最大"
             f"可用时间 (最大缺口 {gap}); 特征可用时间必须 = 输入可用时间的最大值"
             f" (设计文档 7.1)")
-
-    if feature_values is not None:
-        all_missing = in_max.isna()
-        leaky_rows = all_missing & feature_values.notna()
-        if bool(leaky_rows.any()):
-            raise AssertionError(
-                f"泄漏自检失败 ({name}): {int(leaky_rows.sum())} 行所有输入都没有"
-                f"数据 (data_available_at = NaT), 但特征却有值 —— 计算路径可能"
-                f"绕过了 PIT 引擎")
     return in_max
 
 

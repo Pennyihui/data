@@ -1,9 +1,40 @@
 # 会话交接文档 (Session Handoff)
 
-> 交接时间: 2026-10-05
+> 交接时间: 2026-10-05 (晚, 特征线完成后更新)
 > 交出会话: `session-50ee7933-95b0-48f7-b7a3-1e5234c552b5`
 > 日志地址: `C:\Users\Evan\.dsh\sessions\--D-Documents-z_python_data_analy-Quent-workspace_0817--\session-50ee7933-95b0-48f7-b7a3-1e5234c552b5.jsonl`
 > 接手会话: 请读本文件后继续工作，不要重复已完成的部分
+
+---
+
+## ★ 特征线 F1-F7 完成状态 (2026-10-05 晚, 全部落地并推送)
+
+| 阶段 | 内容 | 交付物 | 测试 |
+|---|---|---|---|
+| F1 | 算子库 | `features/operators.py` — 49 算子 (ts 18 / cs 6 / group 6 / pp 17) + 四族注册表 + 表达式 lint + PIT 静态审计 | `_test_operators.py` 157 (未来不变性 49/49×2 面板) |
+| F2 | 字段层+PIT 引擎 | `fields.py` — 34 字段注册表 + `load_panel`(时间墙/宇宙门控/主交易所) + 可用时间传播 (int64ns 精确) + `assert_no_leakage` | `_test_fields.py` 52 (真实数据) |
+| F3 | DSL 选型验证+引擎 | `_dsl_probe.py`(expr_codegen 实测) + `features/dsl.py`(ast 白名单求值+CSE+血缘+PIT 传播) | `_test_dsl.py` 66 |
+| F4 | 特征库 | `features/{specs,registry,catalog,engine}.py` + `library/{price,derivatives,liquidity,quality,cross_asset}.py` | `_test_library.py` 32 |
+| F5 | 血缘系统 | `features/lineage.py` — DAG 直接父节点 / trace / impact / audit (depth≤5) | (并入 library 测试) |
+| F6 | 首批特征 | **80 个** (price 30 / derivatives 32 / liquidity 6 / quality 6 / cross_asset 6), 全部池1 实算, 无空特征, 无重复, depth≤4 | (同上) |
+| F7 | MCP 工具 | `mcp_server.py` +4 工具: list_features / describe_feature / compute_features / feature_catalog | `_test_mcp_features.py` 13 |
+
+**测试合计 ~350 项全过**; 提交: 5a600280 (F1+F2) → a383fc0e (F3) → 94330362 (F4) → (F5-F7)。
+
+### 后续会话必须知道的四个关键定案 (都在代码注释/设计文档 v0.6 里)
+1. **引擎是标准库 ast 白名单求值**, 不是 expr_codegen —— 后者执行模型与面板算子互斥
+   (实测 `_dsl_probe.py`: 喂 MultiIndex 面板 KeyError, 喂平表 NameError), 但其"可读代码
+   + CSE"的审计价值真实, 保留为可选审计后端。
+2. **特征在其全部输入的交集网格上计算**, 再对齐回联合面板 —— 否则 8h 资金费率在
+   1h 面板上的窗口语义全错 (ts_decay_linear(funding,21) 会全空)。
+3. **无可用时间处不产生值** (dsl.evaluate 的 v_out.where(av_out.notna())) —— 联合网格
+   的幽灵行 (只有 funding 没有 close 的时刻) 不许凭空出值。
+4. PIT 传播窗口必须与算子取数窗口严格一致 (`dsl._node_avail`); ts_rank 用 shift 累加
+   实现 (rolling.apply 慢 60 倍); rolling.skew/kurt 用窗口和展开 (pandas 的跨窗累积
+   算法不满足未来不变性)。
+
+### 因子线 (G1-G4) 的启动条件已满足一半
+特征线 F4 ✅; 还差**模型协议提供标签**。G1 骨架可直接开工。
 
 ---
 
