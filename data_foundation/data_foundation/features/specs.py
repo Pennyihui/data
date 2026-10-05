@@ -57,12 +57,17 @@ class FeatureSpec:
     # -- 编译 ---------------------------------------------------------------
     def compile(self, known_fields: set[str], known_features: set[str],
                 known_groups: set[str] | None = None):
-        """编译表达式 (注册时或计算时); 失败抛 dsl.ExprError。"""
-        c = dsl.compile_expr(self.expr, known_fields | known_features)
+        """编译表达式 (注册时或计算时); 失败抛 dsl.ExprError。
+
+        known_groups: 可用的分组维度名 (market_cap_tier 等) —— 它们既不是字段
+        也不是特征, 但在表达式里合法, 所以必须并进白名单。
+        """
+        kg = set(known_groups or ())
+        c = dsl.compile_expr(self.expr, known_fields | known_features | kg)
         self.fields = tuple(f for f in c.fields
                             if f in known_fields and f not in known_features)
         self.features = tuple(f for f in c.fields if f in known_features)
-        self.groups = tuple(g for g in c.fields if g in (known_groups or set()))
+        self.groups = tuple(g for g in c.fields if g in kg)
         self.operators = c.operators
         self.depth = c.depth()
         self.lookback = compute_lookback(c)

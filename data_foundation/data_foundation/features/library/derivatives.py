@@ -115,3 +115,39 @@ feature(name="perp_vol", expr="ts_std(pp_pct_change(p_close, 1), 24)",
 feature(name="perp_basis_vol", expr="ts_std(basis_raw, 24)",
         category="derivatives", desc="基差的 24h 波动 (永续定价不稳定)",
         tags=("basis", "risk"))
+# (现货主动买入占比 = taker_buy_volume_quote/volume_quote 已在 liquidity.py 以
+#  taker_buy_share 登记, 这里不重复)
+
+# --- 用上次未使用的衍生品字段 --------------------------------------------------
+# 注: `basis` (认证 basis_1h 数据集) **只有 OKX 4 个标的**, 而主交易所规则通常
+# 选中 binance —— 依赖它的特征在默认宇宙里根本取不到数。基差统一用自算口径
+# (basis_raw = 永续/现货-1), 它覆盖全宇宙且定义透明。故不登记 basis 字段特征。
+# 注: funding_mark_price (资金费结算时标记价) 在 binance 资金费数据里整列为空
+# (只有 OKX 等所填), 默认宇宙取不到 —— 标记价口径统一用 derivatives_mark_price
+# 数据集的 mark_* 列 (覆盖全宇宙)。
+feature(name="mark_range_24h",
+        expr="ts_mean((mark_high - mark_low) / mark_close, 24)",
+        category="derivatives", desc="标记价 24h 平均振幅 (抗插针口径的波动)",
+        tags=("mark", "volatility"))
+feature(name="mark_spot_range_ratio",
+        expr="ts_mean((mark_high - mark_low) / mark_close, 24) / ts_mean((high - low) / close, 24)",
+        category="derivatives", desc="标记价振幅/现货振幅 (插针相对强度)",
+        tags=("mark", "cross_market"))
+feature(name="mark_open_gap", expr="mark_open / ts_delay(mark_close, 1) - 1",
+        category="derivatives", desc="标记价跳空 (隔根价格缝隙)",
+        tags=("mark", "intrabar"))
+feature(name="index_mark_basis",
+        expr="ts_mean(mark_close / index_close - 1, 24)",
+        category="derivatives", desc="标记价/指数价 24h 平均溢价 (交易所定价偏离)",
+        tags=("mark", "index"))
+feature(name="index_open_gap", expr="index_open / ts_delay(index_close, 1) - 1",
+        category="derivatives", desc="指数价跳空", tags=("index",))
+feature(name="index_vol_24h", expr="ts_std(pp_pct_change(index_close, 1), 24)",
+        category="derivatives", desc="指数价 24h 波动 (跨所综合口径的波动)",
+        tags=("index", "volatility"))
+feature(name="oi_contracts_change", expr="pp_pct_change(oi_contracts, 24)",
+        category="derivatives", desc="未平仓合约张数 24h 变化 (与名义值口径区分)",
+        tags=("oi",))
+feature(name="oi_notional_per_contract", expr="oi_notional / oi_contracts",
+        category="derivatives", desc="每张合约的名义值 (≈合约面值×价格, 异常检测)",
+        tags=("oi", "quality"))

@@ -28,6 +28,5 @@ feature(name="cs_quality_rank", expr="cs_rank(is_gap)",
         category="cross_asset", desc="缺口位的横截面排名 (数据质量相对; 用 is_gap "
         "而非 pp_is_missing(close) —— 后者在只有 funding 的联合网格行上无意义)",
         tags=("cross_section", "quality"))
-feature(name="momentum_dispersion", expr="ts_std(cs_rank(ret_24h), 24)",
-        category="cross_asset", desc="截面动量分散度 (市场分化程度, regime 代理)",
-        tags=("regime",))
+# (截面动量离散度 ts_std(cs_rank(ret_24h),24) 属市场状态量, 已在 regime.py 以
+#  mkt_dispersion_24h 登记 —— 不重复)

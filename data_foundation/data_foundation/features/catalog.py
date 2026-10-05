@@ -94,10 +94,15 @@ def _lit(a) -> str:
 
 
 def find_duplicates() -> list[tuple[str, ...]]:
-    """返回重复组 (同一规范化表达式/血缘链的两个以上特征名)。"""
+    """返回重复组 (同一规范化表达式/血缘链的两个以上特征名)。
+
+    编译失败的特征 (表达式非法) 无法比较结构, 跳过 —— 它们由 validate_all 报错。
+    """
     registry.validate_all()
     buckets: dict[str, list[str]] = defaultdict(list)
     for s in registry.list_features():
+        if s._compiled is None:
+            continue
         buckets[canonical_key(s)].append(s.name)
     return [tuple(sorted(names)) for names in buckets.values() if len(names) > 1]
 

@@ -24,8 +24,9 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from .config import CERTIFIED_DIR, L1_DIR, RAW_DIR
-from .l1_onchain import CHAIN_ERC20, _read_raw_json, block_timestamps, \
+from .l1_onchain import CHAIN_ERC20, block_timestamps, \
     write_onchain_parquet
+from .streaming_json import iter_json_array as _iter_json_array
 from .l2 import (build_dataset_manifest, certify_derivatives,
                  write_certified_derivatives)
 
@@ -40,6 +41,9 @@ L1_SCHEMA = pa.schema([
     ("date", pa.string())])
 CERT_SCHEMA = pa.schema(list(L1_SCHEMA) + [
     ("is_suspect", pa.bool_()), ("quality_reason", pa.string())])
+
+#: 每个解码块的行数 (内存/吞吐折中: 20 万行 ≈ 100MB 量级, 兼顾 C 层批量与释放)
+BLOCK_ROWS = 200_000
 
 
 def _log(msg: str) -> None:
@@ -56,55 +60,94 @@ def _anchors(chain: str):
     return bx, by
 
 
-def _decode_file(path: str, chain: str, tok: str, dec: int, bx, by) -> pd.DataFrame:
-    logs = _read_raw_json(path)
-    if not logs:
-        return None
-    n = len(logs)
-    blk = np.empty(n, dtype=np.int64)
-    tx = [None] * n
-    li = np.empty(n, dtype=np.int64)
-    frm = [None] * n
-    to = [None] * n
-    vr = [None] * n
-    vd = np.empty(n, dtype=np.float64)
-    mint = np.empty(n, dtype=bool)
-    burn = np.empty(n, dtype=bool)
-    for i, l in enumerate(logs):
-        blk[i] = int(l["blockNumber"], 16)
-        tx[i] = l["transactionHash"]
-        li[i] = int(l["logIndex"], 16)
-        frm[i] = "0x" + l["topics"][1][-40:]
-        to[i] = "0x" + l["topics"][2][-40:]
-        vr[i] = l["data"]
-        try:
-            vd[i] = int(l["data"][:66], 16) / (10 ** dec)
-        except ValueError:
-            vd[i] = float("nan")
-        mint[i] = l["topics"][1] == "0x" + "0" * 64
-        burn[i] = l["topics"][2] == "0x" + "0" * 64
-    # 插值后取整到微秒 (避免 float->ns 精度垃圾导致 us 转换失败)
-    ts_us = np.round(np.interp(blk.astype(float), bx, by) * 1e6).astype("int64")
-    ts = pd.to_datetime(ts_us, unit="us", utc=True)
-    df = pd.DataFrame({
-        "token": tok, "block_number": blk, "tx_hash": tx, "log_index": li,
-        "from_address": frm, "to_address": to, "value_raw": vr,
-        "value_decimal": vd, "is_mint": mint, "is_burn": burn,
-        "chain_id": chain, "block_timestamp_utc": ts})
-    del logs
+def _make_block(tok, chain, blk, li, tx, frm, to, vr, vd, mint, burn):
+    """把累积的列装成一个块 DataFrame。"""
+    return pd.DataFrame({
+        "token": tok,
+        "block_number": np.asarray(blk, dtype=np.int64),
+        "tx_hash": np.asarray(tx, dtype=object),
+        "log_index": np.asarray(li, dtype=np.int64),
+        "from_address": np.asarray(frm, dtype=object),
+        "to_address": np.asarray(to, dtype=object),
+        "value_raw": np.asarray(vr, dtype=object),
+        "value_decimal": np.asarray(vd, dtype=np.float64),
+        "is_mint": np.asarray(mint, dtype=bool),
+        "is_burn": np.asarray(burn, dtype=bool),
+        "chain_id": chain})
+
+
+def _add_ts(df, bx, by):
+    """按区块高度插值出 UTC 时间戳 (取整到微秒, 避免 float->ns 精度垃圾)。"""
+    ts_us = np.round(np.interp(df["block_number"].to_numpy(dtype=float),
+                               bx, by) * 1e6).astype("int64")
+    df["block_timestamp_utc"] = pd.to_datetime(ts_us, unit="us", utc=True)
     return df
 
 
+def _iter_decoded(path, chain, tok, dec, bx, by, block_rows=200000):
+    """流式解码一个原始日志文件, 每 block_rows 条产出一个已带时间戳的块。
+
+    内存: 任何时刻只有一个原始 log 对象 + 一个块 DataFrame。整文件
+    json.load 实测 +1047MB (524MB 文件), 本路径 +1MB。
+    """
+    blk, li, vd = [], [], []
+    tx, frm, to, vr = [], [], [], []
+    mint, burn = [], []
+    for l in _iter_json_array(path):
+        blk.append(int(l["blockNumber"], 16))
+        li.append(int(l["logIndex"], 16))
+        tx.append(l["transactionHash"])
+        frm.append("0x" + l["topics"][1][-40:])
+        to.append("0x" + l["topics"][2][-40:])
+        vr.append(l["data"])
+        try:
+            vd.append(int(l["data"][:66], 16) / (10 ** dec))
+        except ValueError:
+            vd.append(float("nan"))
+        mint.append(l["topics"][1] == "0x" + "0" * 64)
+        burn.append(l["topics"][2] == "0x" + "0" * 64)
+        if len(blk) >= block_rows:
+            yield _add_ts(_make_block(tok, chain, blk, li, tx, frm, to, vr,
+                                      vd, mint, burn), bx, by)
+            blk, li, vd = [], [], []
+            tx, frm, to, vr = [], [], [], []
+            mint, burn = [], []
+    if blk:
+        yield _add_ts(_make_block(tok, chain, blk, li, tx, frm, to, vr,
+                                  vd, mint, burn), bx, by)
+
+
+
+def _dedup_keys(g: pd.DataFrame) -> np.ndarray:
+    """把 (tx_hash, log_index) 压成 int64 键, 供去重集合存储。
+
+    内存: 元组 (~72B + 两个 str 引用) -> int64 (8B), 同一批 3178 万行的
+    去重集合从 ~3GB 降到 ~250MB。tx_hash 是 32 位十六进制 (128bit), 存进
+    int64 会截断, 故先做 64bit 散列 (blake2b digest_size=8, 跨进程稳定,
+    碰撞概率对 3 千万量级可忽略: ~2.6e-5)。散列值同时用于批内去重。
+    """
+    import hashlib
+    tx = g["tx_hash"].to_numpy()
+    li = g["log_index"].to_numpy(dtype=np.int64)
+    keys = np.empty(len(g), dtype=np.int64)
+    for i, (t, l) in enumerate(zip(tx.tolist(), li.tolist())):
+        h = hashlib.blake2b(f"{t}:{l}".encode(), digest_size=8).digest()
+        keys[i] = int.from_bytes(h, "big", signed=True)
+    return keys
+
+
 def _process_day(day_df, day, chain, writers, agg_rows, seen_by_tok):
-    """持久化流式去重 -> 聚合增量 -> 写行组。返回写入行数。"""
+    """持久化流式去重 -> 聚合增量 -> 写行组。返回写入行数。
+
+    seen_by_tok[tok] 是已见 (tx_hash, log_index) 的 int64 散列集合 (内存友好)。
+    """
     new_parts = []
     for tok, g in day_df.groupby("token", sort=False):
         s = seen_by_tok.setdefault(tok, set())
-        keys = list(zip(g["tx_hash"], g["log_index"].astype(int),
-                        strict=False))
-        mask = np.array([k not in s for k in keys], dtype=bool)
-        s.update(k for k, keep in zip(keys, mask.tolist(),
-                                      strict=False) if keep)
+        keys = _dedup_keys(g)
+        mask = np.fromiter((k not in s for k in keys.tolist()),
+                           dtype=bool, count=len(keys))
+        s.update(keys[mask].tolist())
         if mask.any():
             new_parts.append(g[mask])
     new_df = pd.concat(new_parts, ignore_index=True) if new_parts else None
@@ -186,15 +229,17 @@ def build_token_transfer_streaming() -> dict:
             for i, fp in enumerate(backfill + legacy):
                 tok = next(t for t in cfgc["tokens"]
                            if os.path.basename(fp).startswith(t))
-                df = _decode_file(fp, chain, tok, decimals[tok], bx, by)
-                if df is None or df.empty:
-                    continue
-                for day, sub in df.groupby(df["block_timestamp_utc"].dt.floor("D")):
-                    n = _process_day(sub.copy(), day, chain, writers, agg_rows,
-                                     seen_by_day.setdefault(day, {}))
-                    written_rows += n
-                chain_rows += len(df)
-                del df
+                # 逐块解码: 单块 block_rows 条, 块处理完立刻释放
+                for blk in _iter_decoded(fp, chain, tok, decimals[tok],
+                                         bx, by, block_rows=BLOCK_ROWS):
+                    n_file = len(blk)
+                    for day, sub in blk.groupby(
+                            blk["block_timestamp_utc"].dt.floor("D")):
+                        written_rows += _process_day(
+                            sub, day, chain, writers, agg_rows,
+                            seen_by_day.setdefault(day, {}))
+                    chain_rows += n_file
+                    del blk, sub
                 gc.collect()
                 if (i + 1) % 10 == 0:
                     _log(f"  [{chain}] 进度 {i+1}/{len(backfill)+len(legacy)}, "

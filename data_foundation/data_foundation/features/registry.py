@@ -108,15 +108,19 @@ def get_feature(name: str) -> FeatureSpec:
 
 
 def validate_all(strict: bool = False) -> dict[str, str]:
-    """编译校验全部特征 (表达式字段/算子/依赖是否存在)。
+    """编译校验全部特征 (表达式字段/算子/依赖/分组维度是否存在)。
 
     返回 {name: ''} 表示全部通过; strict=True 时把错误合并抛出。
     """
+    from .groups import GROUP_DIMENSIONS
     known_fields = set(FIELD_REGISTRY)
     errors: dict[str, str] = {}
     for name, spec in _FEATURES.items():
         try:
-            spec.compile(known_fields, set(_FEATURES) - {name})
+            # 分组维度算进"已知标签": 表达式里的 sector/market_cap_tier 等
+            # 既不属字段也不属特征, 需要单独声明可用性
+            spec.compile(known_fields, set(_FEATURES) - {name},
+                         known_groups=set(GROUP_DIMENSIONS))
             errors[name] = ""
         except dsl.ExprError as exc:
             errors[name] = str(exc)
@@ -130,6 +134,7 @@ def validate_all(strict: bool = False) -> dict[str, str]:
 
 _LIBRARY_MODULES = (
     "price", "derivatives", "liquidity", "quality", "cross_asset", "onchain",
+    "intrabar", "regime", "group_features", "robust",
 )
 
 

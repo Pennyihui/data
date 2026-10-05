@@ -31,6 +31,7 @@ import ast
 from dataclasses import dataclass, field as dc_field
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 from . import operators as op
@@ -412,7 +413,13 @@ def evaluate(compiled: CompiledExpr, values: pd.DataFrame,
             rv, ra = ev(n.args[1])
             fn = {"+": lambda a, b: a + b, "-": lambda a, b: a - b,
                   "*": lambda a, b: a * b, "/": lambda a, b: a / b}[n.binop]
-            v = fn(lv, rv)
+            with np.errstate(divide="ignore", invalid="ignore"):
+                v = fn(lv, rv)
+            if n.binop == "/":
+                # 除零 = 未定义, 不是无穷: 结果置 NaN (与算子层 ts_pct_change /
+                # pp_pct_change 的处理一致)。否则 inf 会静默流进特征库, 到了
+                # 检验/建模阶段才以更难查的形式爆出来。
+                v = v.where(np.isfinite(np.asarray(v, dtype=float)))
             av = pd.concat([la, ra], axis=1).max(axis=1)     # 点态: 同行取大
             cache[n.nid] = (v, av)
             return cache[n.nid]
@@ -449,6 +456,15 @@ def evaluate(compiled: CompiledExpr, values: pd.DataFrame,
     # 注意不能用"输入该行是否缺失"来判: 窗口算子在该行输入缺失时用更早的 bar
     # 出值是合法的, 其可用时间由窗口传播给出 (非 NaT)。
     v_out = v_out.where(av_out.notna())
+    # 出口不允许 inf: 无穷大不是"很大的数", 而是算错了的信号 (除零/溢出)。
+    # NaN 是正常的"没有值", 但 inf 会悄悄流进检验与建模, 所以这里直接拦下。
+    with np.errstate(invalid="ignore"):
+        arr = np.asarray(v_out, dtype=float)
+        n_inf = int(np.isinf(arr).sum())
+    if n_inf:
+        raise ExprError(
+            f"{name}: 表达式算出 {n_inf} 个 inf —— 检查除零 (除数可能为 0) "
+            f"或数值溢出; 表达式: {compiled.expr}")
     if used_inputs:
         in_max = pd.DataFrame(used_inputs).max(axis=1)
     else:

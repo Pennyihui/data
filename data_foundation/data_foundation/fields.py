@@ -348,10 +348,16 @@ def _read_field(ds: str, venue: str, symbol: str, spec: FieldSpec,
     """
     if ds.startswith("market_candle"):
         interval = ds.rsplit("_", 1)[1]
-        df = reader.load_candles(venue, symbol, interval, as_of=as_of,
-                                 market_type=spec.market_type)
+        try:
+            df = reader.load_candles(venue, symbol, interval, as_of=as_of,
+                                     market_type=spec.market_type)
+        except FileNotFoundError:
+            return None                     # 该 (数据集, 交易所, 资产) 无数据
     else:
-        df = reader.load_derivatives(venue, symbol, ds, as_of=as_of)
+        try:
+            df = reader.load_derivatives(venue, symbol, ds, as_of=as_of)
+        except FileNotFoundError:
+            return None
     for c in (spec.column, spec.time_column, "data_available_at"):
         if c not in df.columns:
             raise KeyError(f"数据集 {ds} 缺列 {c!r} (PIT 引擎要求三列齐全)")

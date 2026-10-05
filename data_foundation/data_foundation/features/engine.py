@@ -24,14 +24,14 @@ import pandas as pd
 
 from ..fields import FIELD_REGISTRY, Panel, load_panel
 from ..pool_registry import PoolScope
-from . import dsl, registry
+from . import dsl, groups as groups_mod, registry
 from .specs import FeatureSpec
 
 __all__ = ["FeatureEngine", "FeatureBundle", "GROUP_DIMENSIONS"]
 
-#: 分组维度 (设计文档 3.2; 板块接 CoinGecko categories, 不手工维护)
-GROUP_DIMENSIONS = ("sector", "market_cap", "venue", "chain", "quote",
-                    "listing_age")
+#: 分组维度 (设计文档 3.2; 由 features/groups.py 从 PIT 宇宙快照构造,
+#: 不需要手工维护 —— 决策 2)
+GROUP_DIMENSIONS = groups_mod.GROUP_DIMENSIONS
 
 
 @dataclass
@@ -138,19 +138,43 @@ class FeatureEngine:
         values = panel.values
         avail = panel.avail
 
-        known = set(values.columns) | set(self.groups) | set(GROUP_DIMENSIONS)
+        # 分组维度: 表达式用到哪些维度就自动构造哪些 (PIT 逐日标签), 调用方
+        # 还可以用 self.groups 覆盖/补充 (例如外部数据源的板块分类)
+        used_dims = {g for s in wanted.values() for g in s.groups}
+        dims_needed = sorted(used_dims - set(self.groups))
+        groups = dict(self.groups)
+        if dims_needed:
+            groups.update(groups_mod.load_groups(self.scope, dims_needed,
+                                                 values.index))
+
+        known = set(values.columns) | set(groups) | set(GROUP_DIMENSIONS)
         results: dict[str, dsl.FeatureResult] = {}
         specs: dict[str, FeatureSpec] = {}
         out_v: dict[str, pd.Series] = {}
         out_a: dict[str, pd.Series] = {}
+        # 中间结果攒起来批量 concat 进面板: 逐个 insert 会让 DataFrame 碎片化
+        # (167 列时 pandas 直接告警)。但特征可以引用特征, 所以**下游有依赖时**
+        # 必须先把挂起的列并进去 —— 于是只在"下一站有依赖"那一刻 flush。
+        pend_v: dict[str, pd.Series] = {}
+        pend_a: dict[str, pd.Series] = {}
+
+        def flush():
+            nonlocal values, avail
+            if pend_v:
+                values = pd.concat([values, pd.DataFrame(pend_v)], axis=1)
+                avail = pd.concat([avail, pd.DataFrame(pend_a)], axis=1)
+                pend_v.clear()
+                pend_a.clear()
+
         for n in order:
             spec = wanted[n]
+            if spec.features:                     # 下游引用特征 -> 先并入
+                flush()
             c = dsl.compile_expr(spec.expr, known)
-            res = dsl.evaluate(c, values, avail, groups=self.groups, name=n,
+            res = dsl.evaluate(c, values, avail, groups=groups, name=n,
                                group_cols=set(GROUP_DIMENSIONS), check=check)
-            # 中间特征写入面板, 供下游特征引用 (同时是 CSE 的跨特征版本)
-            values[n] = res.values
-            avail[n] = res.avail
+            pend_v[n] = res.values
+            pend_a[n] = res.avail
             known.add(n)
             results[n] = res
             specs[n] = spec
