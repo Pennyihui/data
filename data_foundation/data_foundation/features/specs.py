@@ -20,6 +20,15 @@ __all__ = ["FeatureSpec", "Lookback", "BAR_HOURS"]
 
 BAR_HOURS = 1          # 面板基础粒度 = 1h bar
 
+#: 低频字段: 表达式里的"窗口/bar 数"是**该周期自己的 bar**, 折算成 1h 面板
+#: 需要的行数要乘以它的周期长度 (月线第 3 根 = 3 个月 ≈ 2208 行 1h, 不是 3 行)。
+#: 不折算会导致预热不足 -> 月线特征空值 (实测 ret_3m 在 3 个月窗口里取不到)。
+_FIELD_BAR_HOURS: dict = {
+    "c4_": 4, "pc4_": 4,          # 4h K线
+    "cd_": 24, "cw_": 168,         # 日线 / 周线
+    "cm_": 730, "pcm_": 730,       # 月线 (按 30.4 天/月 近似)
+}
+
 
 @dataclass(frozen=True)
 class Lookback:
@@ -175,6 +184,22 @@ def _node_lookback(node: dsl.Node, family_fields: set[str]) -> tuple[int, str]:
 
 
 def compute_lookback(c: dsl.CompiledExpr) -> Lookback:
-    """整个表达式的预热长度 = 各分支最大值。"""
+    """整个表达式的预热长度 = 各分支最大值。
+
+    低频字段 (日线/周线/月线): 表达式里的窗口数是**该周期自己的 bar 数**,
+    但面板是 1h 网格, 所以需要额外预热"若干个低频周期"才能让窗口填满。折算
+    用**下限**而非精确倍数: 低频字段的历史本来就从更早开始, 多读几周就够;
+    按精确倍数 (月线 ×730) 会把预热撑到一年, 面板加载从秒级掉到分钟级。
+    """
     bars, reason = _node_lookback(c.root, set())
+    max_period = 1
+    for f in c.fields:
+        for pref, hours in _FIELD_BAR_HOURS.items():
+            if f.startswith(pref) and hours > max_period:
+                max_period = hours
+                reason = f"{f}({hours}h/条)"
+    if max_period > 1:
+        # 至少多读 3 个该周期 (封顶 90 天, 够任何合理窗口填满又不拖慢)
+        extra = min(max_period * 3, 24 * 90)
+        bars = max(bars, extra)
     return Lookback(bars=max(bars, 1), reason=reason)
