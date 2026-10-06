@@ -29,7 +29,7 @@ import pyarrow.parquet as pq
 from .config import CERTIFIED_DIR, QUALITY_RULE_VERSION
 from .manifest import certify_manifest, empty_manifest, write_manifest
 
-PERIOD = {"1h": "h", "1d": "D", "1w": "W-MON"}
+PERIOD = {"1h": "h", "4h": "4h", "1d": "D", "1w": "W-MON", "1M": "MS"}
 
 
 def certify_candles(df: pd.DataFrame) -> pd.DataFrame:
@@ -59,11 +59,20 @@ def certify_candles(df: pd.DataFrame) -> pd.DataFrame:
     # 规则 4: open_time 唯一 (主键)
     dup = df["open_time_utc"].duplicated(keep=False)
     mark(dup, "open_time_duplicated")
-    # 规则 5: 周期边界 (1h 对齐到整点, 1d 到 00:00)
-    if df["bar_interval"].iloc[0] == "1h":
+    # 规则 5: 周期边界 (1h 对齐整点, 1d 对齐 00:00, 4h 对齐 0/4/8/...点,
+    #          1w 对齐周一, 1M 对齐每月 1 号)
+    bi = df["bar_interval"].iloc[0]
+    if bi == "1h":
         mark(df["open_time_utc"].dt.minute != 0, "bar_not_aligned")
-    elif df["bar_interval"].iloc[0] == "1d":
-        mark(df["open_time_utc"].dt.time != pd.Timestamp("00:00:00").time(), "bar_not_aligned")
+    elif bi == "1d":
+        mark(df["open_time_utc"].dt.time != pd.Timestamp("00:00:00").time(),
+             "bar_not_aligned")
+    elif bi == "4h":
+        mark(df["open_time_utc"].dt.hour % 4 != 0, "bar_not_aligned")
+    elif bi == "1w":
+        mark(df["open_time_utc"].dt.dayofweek != 0, "bar_not_aligned")
+    elif bi == "1M":
+        mark(df["open_time_utc"].dt.day != 1, "bar_not_aligned")
     # 规则 6: 未超过可用时间
     now = pd.Timestamp.now(tz="UTC")
     mark(df["close_time_utc"] > now + pd.Timedelta(hours=1), "close_in_future")

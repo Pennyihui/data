@@ -32,12 +32,14 @@
 """
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field as dc_field
 from typing import Iterable
 
 import numpy as np
 import pandas as pd
 
+from .config import CERTIFIED_DIR
 from .pool_registry import PoolScope, factor_available
 from . import reader
 from .features.operators import (
@@ -81,6 +83,8 @@ class FieldSpec:
             return "price"
         if self.dataset.startswith(("derivatives", "basis")):
             return "derivatives"
+        if self.dataset.startswith("sentiment"):
+            return "sentiment"
         return self.dataset
 
 
@@ -124,7 +128,38 @@ _FIELDS: list[FieldSpec] = [
     FieldSpec("tlsr_pos", "derivatives_ratio_tlsr_pos", "long_short_ratio", "timestamp_utc", "perpetual", "大户多空持仓比"),
     FieldSpec("taker_ratio", "derivatives_ratio_taker", "long_short_ratio", "timestamp_utc", "perpetual", "主动买卖比 (taker)"),
     FieldSpec("basis", "basis_1h", "basis", _CANDLE_TIME, "perpetual", "基差 (永续/现货-1, 派生)"),
+    # -- 多周期 K 线 (2026-10-05 接入; 覆盖率与 1h 同级: spot 590 / perp 377 标的,
+    #    由数据底座从 1h 聚合派生, 聚合规则在 l1.derive_aggregates) --
+    # 用途: 日/周级别的动量与波动率是另一套时间尺度, 1h 特征看不到
+    FieldSpec("c4_open", "market_candle_spot_4h", "open", _CANDLE_TIME, "spot", "现货4h开盘价"),
+    FieldSpec("c4_high", "market_candle_spot_4h", "high", _CANDLE_TIME, "spot", "现货4h最高价"),
+    FieldSpec("c4_low", "market_candle_spot_4h", "low", _CANDLE_TIME, "spot", "现货4h最低价"),
+    FieldSpec("c4_close", "market_candle_spot_4h", "close", _CANDLE_TIME, "spot", "现货4h收盘价"),
+    FieldSpec("c4_volume_quote", "market_candle_spot_4h", "volume_quote", _CANDLE_TIME, "spot", "现货4h成交额"),
+    FieldSpec("c4_trade_count", "market_candle_spot_4h", "trade_count", _CANDLE_TIME, "spot", "现货4h成交笔数"),
+    FieldSpec("pc4_open", "market_candle_perpetual_4h", "open", _CANDLE_TIME, "perpetual", "永续4h开盘价"),
+    FieldSpec("pc4_high", "market_candle_perpetual_4h", "high", _CANDLE_TIME, "perpetual", "永续4h最高价"),
+    FieldSpec("pc4_low", "market_candle_perpetual_4h", "low", _CANDLE_TIME, "perpetual", "永续4h最低价"),
+    FieldSpec("pc4_close", "market_candle_perpetual_4h", "close", _CANDLE_TIME, "perpetual", "永续4h收盘价"),
+    FieldSpec("pc4_volume_quote", "market_candle_perpetual_4h", "volume_quote", _CANDLE_TIME, "perpetual", "永续4h成交额"),
+    FieldSpec("cd_open", "market_candle_spot_1d", "open", _CANDLE_TIME, "spot", "现货日线开盘价"),
+    FieldSpec("cd_high", "market_candle_spot_1d", "high", _CANDLE_TIME, "spot", "现货日线最高价"),
+    FieldSpec("cd_low", "market_candle_spot_1d", "low", _CANDLE_TIME, "spot", "现货日线最低价"),
+    FieldSpec("cd_close", "market_candle_spot_1d", "close", _CANDLE_TIME, "spot", "现货日线收盘价"),
+    FieldSpec("cd_volume_quote", "market_candle_spot_1d", "volume_quote", _CANDLE_TIME, "spot", "现货日线成交额"),
+    FieldSpec("cw_close", "market_candle_spot_1w", "close", _CANDLE_TIME, "spot", "现货周线收盘价"),
+    FieldSpec("cm_open", "market_candle_spot_1M", "open", _CANDLE_TIME, "spot", "现货月线开盘价"),
+    FieldSpec("cm_high", "market_candle_spot_1M", "high", _CANDLE_TIME, "spot", "现货月线最高价"),
+    FieldSpec("cm_low", "market_candle_spot_1M", "low", _CANDLE_TIME, "spot", "现货月线最低价"),
+    FieldSpec("cm_close", "market_candle_spot_1M", "close", _CANDLE_TIME, "spot", "现货月线收盘价"),
+    FieldSpec("pcm_close", "market_candle_perpetual_1M", "close", _CANDLE_TIME, "perpetual", "永续月线收盘价"),
+    # -- 情绪 (全局日频序列; 覆盖 2018-02 至今 3159 天, PIT 干净) ----------------
+    FieldSpec("fng_value", "sentiment_fng", "value", "date_utc", "global", "恐惧贪婪指数 (0-100, 日频全局)"),
 ]
+
+#: 全局序列字段 (不是"每个资产一条", 而是整个市场的单条时间序列) —— 加载后
+#: 按时间广播给面板里的每个资产。目前只有 fng。
+GLOBAL_FIELDS = {"fng_value"}
 
 FIELD_REGISTRY: dict[str, FieldSpec] = {f.name: f for f in _FIELDS}
 
@@ -282,7 +317,9 @@ def load_panel(scope: PoolScope, fields: Iterable[str],
 
     # 按 (market_type, dataset) 分组装载; 每个资产只读一次 parquet
     primary_cache: dict[str, pd.DataFrame] = {}
-    for f in fspecs:
+    global_specs = [f for f in fspecs if f.name in GLOBAL_FIELDS]
+    asset_specs = [f for f in fspecs if f.name not in GLOBAL_FIELDS]
+    for f in asset_specs:
         if f.market_type not in primary_cache:
             primary_cache[f.market_type] = _primary_venue(uni, f.market_type)
             if primary_cache[f.market_type].empty and "spot" not in primary_cache:
@@ -333,9 +370,68 @@ def load_panel(scope: PoolScope, fields: Iterable[str],
     for f in fspecs:
         if f.quality_flag and f.name in values.columns:
             values[f.name] = values[f.name].astype(float)
+    # 全局序列字段 (fng 等): 整个市场一条时间序列, 按时间广播给每个资产
+    for f in global_specs:
+        gdf = _read_global_field(f, as_of, lo, end)
+        if gdf is None or gdf.empty:
+            excluded.append((f.name, "*", "global", "窗口内无数据"))
+            continue
+        v, a = _broadcast_global(gdf, values.index, f.name)
+        values[f.name] = v
+        avail[f.name] = a
+        provenance[(f.name, "*")] = ("global", f.dataset)
     return Panel(values=values, avail=avail, scope=scope, as_of=as_of,
                  start=start, end=end, warmup=warmup,
                  provenance=provenance, excluded=excluded)
+
+
+def _read_global_field(spec: FieldSpec, as_of: pd.Timestamp,
+                       lo: pd.Timestamp, hi: pd.Timestamp):
+    """读全局序列字段 (sentiment_fng 这类"整个市场一条"的数据)。
+
+    路径约定: certified/<ds>/<source>/all/data.parquet (不按交易所/标的分区)。
+    """
+    root = os.path.join(CERTIFIED_DIR, spec.dataset)
+    files = []
+    for dirpath, _, names in os.walk(root):
+        for n in names:
+            if n.endswith(".parquet"):
+                files.append(os.path.join(dirpath, n))
+    if not files:
+        return None
+    import pyarrow.parquet as pq
+    frames = [pq.read_table(p).to_pandas() for p in files]
+    df = pd.concat(frames, ignore_index=True)
+    for c in df.columns:
+        if "time" in c or c == "data_available_at" or c.endswith("_utc"):
+            df[c] = pd.to_datetime(df[c], utc=True, errors="coerce")
+    for c in (spec.column, spec.time_column, "data_available_at"):
+        if c not in df.columns:
+            raise KeyError(f"数据集 {spec.dataset} 缺列 {c!r}")
+    out = df[[spec.time_column, spec.column, "data_available_at"]].copy()
+    out.columns = ["time", "value", "data_available_at"]
+    out = out.dropna(subset=["value"]).sort_values("time").drop_duplicates("time")
+    # 事件时间对齐到字段网格 (日频 -> 1h), PIT 可用时间保持原值
+    out["time"] = out["time"].dt.floor(spec.grid)
+    out = out[(out["time"] >= lo) & (out["time"] <= hi)]
+    # **PIT 过滤必须做**: 全局字段同样受 as_of 约束 —— fng 当日的值次日才
+    # 定稿 (avail = date+1d), 不滤的话窗口最后一天会用上"次日才可知"的值
+    out = out[out["data_available_at"] <= as_of]
+    return out.reset_index(drop=True)
+
+
+def _broadcast_global(df: pd.DataFrame, index: pd.MultiIndex,
+                      name: str) -> tuple[pd.Series, pd.Series]:
+    """把全局序列按 time 广播给面板里的每个资产 (fng 属于全市场, 不是某币的)。"""
+    ser = pd.Series(df["value"].to_numpy(), index=pd.DatetimeIndex(df["time"]))
+    av = pd.Series(df["data_available_at"].to_numpy(),
+                   index=pd.DatetimeIndex(df["time"]))
+    times = index.get_level_values("time")
+    vals = ser.reindex(times).to_numpy()
+    avs = av.reindex(times).to_numpy()
+    v = pd.Series(vals, index=index, name=name)
+    a = pd.Series(avs, index=index, name=name)
+    return v, a
 
 
 def _read_field(ds: str, venue: str, symbol: str, spec: FieldSpec,

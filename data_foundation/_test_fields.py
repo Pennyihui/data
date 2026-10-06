@@ -56,7 +56,7 @@ contaminated = [n for n, f in F.FIELD_REGISTRY.items()
 check("注册表不含修订污染/无PIT列数据集的字段", not contaminated, str(contaminated))
 check("未知字段报错", try_raises(F.get_field, "不存在"))
 fams = {f["family"] for f in F.list_fields()}
-check("family 分类合理", fams == {"price", "derivatives"}, str(fams))
+check("family 分类合理", fams == {"price", "derivatives", "sentiment"}, str(fams))
 
 # --- 2. 时间墙 -------------------------------------------------------------
 print("\n2) 时间墙 (API 层强制)")
@@ -198,8 +198,22 @@ vals = pd.Series(np.arange(len(a1), dtype=float), index=a1.index)
 both_nat = {"x": a1.copy(), "y": a2.copy()}
 both_nat["x"].loc[mid] = pd.NaT
 both_nat["y"].loc[mid] = pd.NaT
-check("同排两输入皆 NaT 而特征有值 -> ghost 报错",
-      try_raises(F.assert_no_leakage, two_feat, both_nat, "ghost_mid", vals))
+# 同一行两输入皆缺失但特征有值 -> **合法** (窗口算子用窗口里更早的 bar),
+# 只要传播出的可用时间仍保守; 只有"全部输入整体无时间"才是绕过引擎。
+vals = pd.Series(np.arange(len(a1), dtype=float), index=a1.index)
+both_nat = {"x": a1.copy(), "y": a2.copy()}
+both_nat["x"].loc[mid] = pd.NaT
+both_nat["y"].loc[mid] = pd.NaT
+try:
+    F.assert_no_leakage(two_feat, both_nat, "window_ok", vals)
+    ok_win, det_win = True, "窗口内更早数据可用 -> 允许"
+except AssertionError as exc:
+    ok_win, det_win = False, str(exc)[:120]
+check("同排两输入皆 NaT 但窗口内有值 -> 允许 (窗口语义)", ok_win, det_win)
+# 全部输入的可用时间整体为空 -> 必须报错 (真的绕过了引擎)
+empty = {"x": pd.Series(pd.NaT, index=a1.index, dtype="datetime64[ns, UTC]")}
+check("全部输入无可用时间 -> 泄漏自检报错",
+      try_raises(F.assert_no_leakage, two_feat, empty, "no_time", vals))
 # 全输入无数据但特征有值 -> 必须报错
 all_nat = pd.Series(pd.NaT, index=avail_close.index, dtype="datetime64[ns, UTC]")
 check("全输入 NaT 而特征有值 -> 泄漏自检报错",

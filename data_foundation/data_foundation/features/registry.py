@@ -134,7 +134,7 @@ def validate_all(strict: bool = False) -> dict[str, str]:
 
 _LIBRARY_MODULES = (
     "price", "derivatives", "liquidity", "quality", "cross_asset", "onchain",
-    "intrabar", "regime", "group_features", "robust", "neutral",
+    "intrabar", "regime", "group_features", "robust", "neutral", "sentiment",
 )
 
 

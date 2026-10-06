@@ -86,16 +86,27 @@ def normalize_klines(df: pd.DataFrame, venue_id: str, market_type: str,
 
 
 def derive_aggregates(df_1h: pd.DataFrame, interval: str) -> pd.DataFrame:
-    """1h -> 1d/1w: open=first, high=max, low=min, close=last, 量求和, 其余末值。"""
+    """1h -> 4h/1d/1w/1M: open=first, high=max, low=min, close=last, 量求和, 其余末值。
+
+    close_time 语义: 固定周期 (4h/1d/1w) = open + step - 1s (与源约定一致);
+    1M 周期长度不固定, 用**月内最后一根 1h 的真实 close_time** —— 它同时就是
+    data_available_at, 所以月线的 PIT 可用时间是精确的 (不含近似)。
+    """
     rule = {"open": "first", "high": "max", "low": "min", "close": "last",
+            "close_time_utc": "last",
             "volume_base": "sum", "volume_quote": "sum", "trade_count": "sum",
             "taker_buy_volume_base": "sum", "taker_buy_volume_quote": "sum"}
     freq = DERIVED_INTERVALS[interval]
     g = df_1h.set_index("open_time_utc")
     agg = g.resample(freq).agg(rule).dropna(subset=["close"]).reset_index()
-    step = {"1d": pd.Timedelta(days=1), "4h": pd.Timedelta(hours=4),
-            "1w": pd.Timedelta(weeks=1)}[interval]
-    agg["close_time_utc"] = agg["open_time_utc"] + step - pd.Timedelta(seconds=1)
+    if interval != "1M":
+        # 固定周期: close_time = open + step - 1s (与源约定一致)
+        step = {"1d": pd.Timedelta(days=1), "4h": pd.Timedelta(hours=4),
+                "1w": pd.Timedelta(weeks=1)}[interval]
+        agg["close_time_utc"] = agg["open_time_utc"] + step - pd.Timedelta(seconds=1)
+    # 1M: close_time 已在 rule 里取"月内最后一根 1h 的真实 close_time" ——
+    # 不能单独 resample 再对齐, 否则中间停牌的月份会产生长度错位 (实测 9 个
+    # 中途退市/停牌的标的全在这里炸掉)
     agg["bar_interval"] = interval
     agg["data_available_at"] = agg["close_time_utc"]
     agg["is_gap"] = False
