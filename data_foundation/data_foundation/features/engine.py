@@ -25,9 +25,13 @@ import pandas as pd
 from ..fields import FIELD_REGISTRY, Panel, load_panel
 from ..pool_registry import PoolScope
 from . import dsl, groups as groups_mod, registry
+from .cache import FeatureCache
 from .specs import FeatureSpec
 
 __all__ = ["FeatureEngine", "FeatureBundle", "GROUP_DIMENSIONS"]
+
+#: 全库稳定预热 (进程内缓存一次)
+_STABLE_WARMUP: str | None = None
 
 #: 分组维度 (设计文档 3.2; 由 features/groups.py 从 PIT 宇宙快照构造,
 #: 不需要手工维护 —— 决策 2)
@@ -62,21 +66,42 @@ class FeatureEngine:
     def __init__(self, scope: PoolScope | str = "oof", *,
                  start=None, end=None, as_of=None, assets=None,
                  warmup: str | pd.Timedelta | None = None,
-                 layer: str | None = None, groups: dict | None = None):
+                 layer: str | None = None, groups: dict | None = None,
+                 cache: str | bool = "auto", cache_root: str | None = None):
         self.scope = scope if isinstance(scope, PoolScope) else PoolScope(
             scope, layer=layer or "research")
         self.start, self.end, self.as_of = start, end, as_of
-        self.assets = assets
-        self.warmup = warmup
+        self.assets = list(assets) if assets is not None else None
+        # 预热: 默认取**全库最大 lookback** 而不是"本次请求的最大" —— 后者会让
+        # 同一特征在不同请求组合下得到不同的 warmup, 进而缓存键不同、命中率归零,
+        # 而且同一窗口起点的特征值会因历史多少而不同 (不可复现)。取全库最大值
+        # 让预热与请求无关: 稳定 + 可复现, 代价是多读一点历史。
+        self.warmup = warmup if warmup is not None else self._stable_warmup()
         self.groups = dict(groups or {})
         self._panel: Panel | None = None
         registry.load_library()
+        # 落盘缓存 (决策 3): cache='auto' 读+写, 'read' 只读, 'write' 只写,
+        # 'off'/False 关闭。缓存键含 特征版本 + 输入数据指纹 + 池 + 窗口,
+        # 上游数据一重建指纹即变 -> 旧缓存自动失效 (防"用过期数据做研究")。
+        self._cache_mode = ("off" if cache is False else
+                            "auto" if cache is True else str(cache))
+        self.cache = FeatureCache(root=cache_root,
+                                  enabled=self._cache_mode != "off")
 
     # -- 面板 (按需装载, 含自动预热) --------------------------------------
+    @staticmethod
+    def _stable_warmup() -> str:
+        """全库最大预热 (小时) —— 进程内算一次并缓存, 保证同一引擎生命周期内稳定。"""
+        global _STABLE_WARMUP
+        if _STABLE_WARMUP is None:
+            registry.validate_all(strict=False)
+            bars = max((s.lookback.bars if s.lookback else 0)
+                       for s in registry.list_features())
+            _STABLE_WARMUP = f"{int(bars)}h"
+        return _STABLE_WARMUP
+
     def panel(self, field_names, warmup_bars: int = 0) -> Panel:
-        wm = self.warmup
-        if wm is None and warmup_bars:
-            wm = f"{warmup_bars}h"
+        wm = self.warmup or self._stable_warmup()
         return load_panel(self.scope, field_names, assets=self.assets,
                           start=self.start, end=self.end, as_of=self.as_of,
                           warmup=wm if wm is not None else "0h")
@@ -170,9 +195,32 @@ class FeatureEngine:
             spec = wanted[n]
             if spec.features:                     # 下游引用特征 -> 先并入
                 flush()
-            c = dsl.compile_expr(spec.expr, known)
-            res = dsl.evaluate(c, values, avail, groups=groups, name=n,
-                               group_cols=set(GROUP_DIMENSIONS), check=check)
+            # 缓存查询 (auto/read 模式)。命中则直接复用值+可用时间, 不重算。
+            ck = None
+            hit = None
+            if self._cache_mode in ("auto", "read"):
+                ck = self.cache.make_key(spec, panel, self.scope,
+                                         assets=self.assets)
+                hit = self.cache.lookup(ck)
+            if hit is not None:
+                cv, ca, _meta = hit
+                cv = cv.reindex(values.index)
+                ca = ca.reindex(values.index)
+                # 缓存命中也要走一遍泄漏自检: 缓存文件可能来自旧的引擎版本,
+                # 这里的自检保证它与当前引擎的 PIT 规则一致
+                if check:
+                    from ..fields import assert_no_leakage
+                    assert_no_leakage(ca, {n: ca}, name=n + "(cached)",
+                                       feature_values=cv)
+                res = dsl.FeatureResult(name=n, values=cv, avail=ca,
+                                        input_avail=ca, expr=spec.expr,
+                                        compiled=spec.compiled)
+            else:
+                c = dsl.compile_expr(spec.expr, known)
+                res = dsl.evaluate(c, values, avail, groups=groups, name=n,
+                                   group_cols=set(GROUP_DIMENSIONS), check=check)
+                if self._cache_mode in ("auto", "write"):
+                    self.cache.store(ck, res.values, res.avail)
             pend_v[n] = res.values
             pend_a[n] = res.avail
             known.add(n)

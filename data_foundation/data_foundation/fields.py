@@ -76,6 +76,7 @@ class FieldSpec:
     desc: str = ""
     quality_flag: bool = False   # is_gap / is_suspect 这类布尔质量位
     grid: str = "1h"       # 事件时间对齐网格 (funding 8h 结算带毫秒抖动, 地板到小时)
+    avail_lag: str | None = None   # data_available_at 为空时的发布滞后规则 (如 "1D")
 
     @property
     def family(self) -> str:
@@ -153,8 +154,11 @@ _FIELDS: list[FieldSpec] = [
     FieldSpec("cm_low", "market_candle_spot_1M", "low", _CANDLE_TIME, "spot", "现货月线最低价"),
     FieldSpec("cm_close", "market_candle_spot_1M", "close", _CANDLE_TIME, "spot", "现货月线收盘价"),
     FieldSpec("pcm_close", "market_candle_perpetual_1M", "close", _CANDLE_TIME, "perpetual", "永续月线收盘价"),
-    # -- 情绪 (全局日频序列; 覆盖 2018-02 至今 3159 天, PIT 干净) ----------------
-    FieldSpec("fng_value", "sentiment_fng", "value", "date_utc", "global", "恐惧贪婪指数 (0-100, 日频全局)"),
+    # -- 情绪 (全局日频序列; 覆盖 2018-02 至今 3159 天) ----------------------
+    # avail_lag="1D": fng 认证表的 data_available_at 长期为空 (日更重拉会覆盖),
+    # 按官方发布语义"当日值次日定稿"在读取侧推导, 规则稳定且保守。
+    FieldSpec("fng_value", "sentiment_fng", "value", "date_utc", "global",
+              "恐惧贪婪指数 (0-100, 日频全局)", grid="1D", avail_lag="1D"),
 ]
 
 #: 全局序列字段 (不是"每个资产一条", 而是整个市场的单条时间序列) —— 加载后
@@ -363,6 +367,15 @@ def load_panel(scope: PoolScope, fields: Iterable[str],
                            for k, v in values_parts.items()})
     avail = pd.DataFrame({k: pd.concat(v).sort_index()
                           for k, v in avail_parts.items()})
+    # **稀疏字段保列**: 某字段在整个窗口内没有 bar (如月线: open_time 是每月1号,
+    # 不足一个月的窗口自然取不到) 时, 仍要保留一个全空的列 —— 否则引擎会把它
+    # 当成"未知字段"而报错, 而语义上它就是"这个窗口没有月线bar", 特征取空值即可。
+    if not values.empty:
+        for f in asset_specs:
+            if f.name not in values.columns:
+                values[f.name] = np.nan
+                avail[f.name] = pd.NaT
+                excluded.append((f.name, "*", "*", "窗口内无 bar (保留空列)"))
     avail = avail.reindex(values.index)     # 外连接对齐; 缺行 = NaT (泄漏自检会拦)
     # 质量位 (is_gap/is_suspect) 转 float64: 外连接引入 NaN 时 bool 列会被 pandas
     # 升成 object dtype, 进而让 pp_is_outlier 之类的算子收到混合类型序列;
@@ -411,6 +424,17 @@ def _read_global_field(spec: FieldSpec, as_of: pd.Timestamp,
     out = df[[spec.time_column, spec.column, "data_available_at"]].copy()
     out.columns = ["time", "value", "data_available_at"]
     out = out.dropna(subset=["value"]).sort_values("time").drop_duplicates("time")
+    # **data_available_at 为空时按数据集的发布语义推导**, 而不是直接丢弃:
+    # sentiment_fng 的认证表里这一列长期是 NaT (每次日更重拉都会被覆盖回 NaT,
+    # 实测修补脚本 _fix_fng_pit.py 跑完后下一次回填就又没了), 所以规则必须
+    # 住在读取侧才稳定。规则来自 alternative.me 官方说明 "Yesterday's value
+    # is final" —— 当日值次日才定稿, 故 avail = 事件日 + 1 天 (保守且符合实际)。
+    # 已有非空 avail 的行一律以文件里的为准 (不覆盖上游的显式声明)。
+    missing_av = out["data_available_at"].isna()
+    if bool(missing_av.any()) and spec.avail_lag is not None:
+        out.loc[missing_av, "data_available_at"] = (
+            out.loc[missing_av, "time"]
+            + pd.Timedelta(spec.avail_lag))
     # 事件时间对齐到字段网格 (日频 -> 1h), PIT 可用时间保持原值
     out["time"] = out["time"].dt.floor(spec.grid)
     out = out[(out["time"] >= lo) & (out["time"] <= hi)]
@@ -596,11 +620,26 @@ def assert_no_leakage(feature_avail: pd.Series, input_avails: dict[str, pd.Serie
     in_max = wide.max(axis=1)          # skipna: 某输入该行无数据则跳过
     in_max.name = "input_max_available_at"
 
-    # 规则 3: 所有输入的可用时间整体为空
+    # **无值即无 PIT 声明**: 特征全为空时 (如窗口内没有月线 bar), 不存在
+    # "值早于可用时间"的泄漏可言, 规则 3 的"绕过引擎"指控也不该误报。
+    if feature_values is not None and int(feature_values.notna().sum()) == 0:
+        return in_max
+
+    # 规则 3: 所有输入的可用时间整体为空 => 报错, 但**排除合法稀疏**
+    # 稀疏输入 (如月线 open_time 是月初, 窗口开头几天本来就没有月线 bar) 的
+    # 部分行 avail 为空是正常的; 只有"输入列整体没有任何可用时间"(可能是计算
+    # 路径真的绕过了引擎) 才报。判断: 任一输入有 avail 非空即视为稀疏合法。
     if bool(wide.isna().all().all()):
-        raise AssertionError(
-            f"泄漏自检失败 ({name}): 全部输入的 data_available_at 都是 NaT —— "
-            f"计算路径可能绕过了 PIT 引擎 (没有任何输入的可用时间)")
+        # 逐个看: 如果有任一输入曾出现过非空 avail, 说明是稀疏而非绕过
+        any_input_has_avail = False
+        for nm, avser in cols.items():
+            if bool(avser.notna().any()):
+                any_input_has_avail = True
+                break
+        if not any_input_has_avail:
+            raise AssertionError(
+                f"泄漏自检失败 ({name}): 全部输入的 data_available_at 都是 NaT —— "
+                f"计算路径可能绕过了 PIT 引擎 (没有任何输入的可用时间)")
 
     if feature_values is None:
         has_value = feature_avail.notna()

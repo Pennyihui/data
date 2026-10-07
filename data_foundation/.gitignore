@@ -23,3 +23,6 @@ data/raw/binance/derivatives_funding/**/*_v3.csv.gz
 data/raw/binance/derivatives_mark_price/**/*_v3.csv.gz
 data/raw/binance/derivatives_index_price/**/*_v3.csv.gz
 data/raw/binance/perpetual_klines_1h/**/*_v3.csv.gz
+
+# 特征落盘缓存 (本地派生, 可由特征定义重算 —— 设计文档决策3)
+data/derived/
