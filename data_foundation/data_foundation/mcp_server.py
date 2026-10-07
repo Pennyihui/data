@@ -25,6 +25,7 @@ from __future__ import annotations
 import json
 import sys
 
+import numpy as np
 import pandas as pd
 
 from .pool_registry import (FACTOR_AVAILABILITY, NO_PIT_COLUMN,
@@ -370,6 +371,465 @@ def tool_significance_check(period_returns: list[float], n_trials: int = 1,
                                 periods_per_year=periods_per_year)
 
 
+# ---------------------------------------------------------------------------
+# 研究链算子 (2026-10-07): 价格面板 -> 标签 -> 样本 -> 训练 -> 回测 -> 评价
+#
+# 这一组把 labels/ training/ evaluation/ 三个包挂成**服务工具**。设计文档:
+#   docs/label-system-design.md           (标签/切分)
+#   docs/supervised-learning-protocol-design.md (训练/注册/信号)
+#   docs/evaluation-protocol-design.md    (三层指标)
+#
+# 池纪律沿用既有不变式:
+#   * 标签是未来函数 -> **视同原始数据**, valid/oos 一律拒 (原则5)
+#   * 训练只发生在 oof -> valid/oos 的 build/train 直接 PermissionError
+#   * valid/oos 的评价由**服务端** evaluate_submission 执行, Agent 只提交
+# ---------------------------------------------------------------------------
+_LABEL_CACHE: dict = {}          # label_name -> LabelResult (会话内缓存)
+_SAMPLES_CACHE: dict = {}        # run_id -> {fold_id: {"train","test"}}
+_SCORES_CACHE: dict = {}         # run_id -> 预测分数面板 (回测/评价用)
+_RESULTS_CACHE: dict = {}        # run_id -> BacktestResult
+
+
+def _require_dev_pool(what: str) -> PoolScope:
+    """训练/标签类操作只允许在开发池 (valid/oos 由服务端做)。"""
+    s = _require_scope()
+    if s.pool_id != "oof":
+        raise PermissionError(
+            f"{what} 只在开发池 (oof) 可做; 当前会话绑定的是 {s.pool_id}。"
+            f"反馈池/OOS 必须走『提交 -> 内部服务评 -> (限次数/永不)取结果』通道。")
+    return s
+
+
+def _panel_engine(s: PoolScope, start=None, end=None, assets=None):
+    """建特征引擎并**先装载特征库** (底座 bug: FeatureEngine.__init__ 里
+    _stable_warmup() 先于 load_library(), 新进程会 ValueError)。这里是绕过,
+    不是修改底座 —— 底座要不要修由人决定。"""
+    engine_mod, _, registry = _feature_module()
+    registry.load_library()
+    return engine_mod.FeatureEngine(s, start=start, end=end, assets=assets)
+
+
+def tool_load_price_panel(start: str | None = None, end: str | None = None,
+                          assets: list[str] | None = None,
+                          interval: str = "1d") -> dict:
+    """载入**价格面板** (标签的输入): 认证层 OHLCV, MultiIndex(asset, time)。
+
+    与 compute_features 的区别: 那个返回**特征**面板, 这个返回**原始价格**
+    面板 —— 标签 (未来收益) 必须从价格算, 它不是特征。
+    interval 目前支持 1d (标签决策格)。返回面板统计 + 缓存句柄。
+    """
+    s = _require_scope()
+    assert_can_read_data(s.pool_id, "原始数据 (价格面板)")
+    field_map = {"1d": ("cd_open", "cd_high", "cd_low", "cd_close",
+                        "cd_volume_quote"),
+                 "1h": ("open", "high", "low", "close", "volume_quote")}
+    if interval not in field_map:
+        raise ValueError(f"interval 目前支持 {sorted(field_map)}")
+    names = list(field_map[interval])
+    eng = _panel_engine(s, start=start, end=end, assets=assets)
+    panel = eng.panel(names)
+    v = panel.values.dropna(how="all")
+    if v.empty:
+        raise ValueError("价格面板为空 —— 检查窗口/资产/字段可用性")
+    key = f"{interval}|{start}|{end}|{len(assets or [])}"
+    _LABEL_CACHE[f"__panel__{key}"] = panel
+    tt = v.index.get_level_values("time")
+    return {"pool": s.pool_id, "interval": interval, "panel_key": key,
+            "n_rows": int(v.shape[0]),
+            "n_assets": int(v.index.get_level_values("base_asset").nunique()),
+            "time_range": [str(tt.min().date()), str(tt.max().date())],
+            "columns": list(v.columns),
+            "excluded": panel.excluded[:5],
+            "note": "面板已缓存; compute_labels 用 panel_key 取用"}
+
+
+def _get_panel(panel_key: str):
+    p = _LABEL_CACHE.get(f"__panel__{panel_key}")
+    if p is None:
+        raise KeyError(f"panel_key {panel_key!r} 不在会话缓存里; "
+                       f"请先调 load_price_panel。可用: "
+                       f"{[k.replace('__panel__', '') for k in _LABEL_CACHE if k.startswith('__panel__')]}")
+    return p
+
+
+def tool_compute_labels(panel_key: str, name: str = "ret_10d",
+                        save: bool = True) -> dict:
+    """在价格面板上算标签 (阶段1)。返回标签分布统计 + 可用时间语义。
+
+    标签是**未来函数** (t 的标签用到 t+H+1 的价格) —— 因此 valid/oos 拒算
+    (标签视同原始数据, 拿到标签≈拿到未来收益)。
+    """
+    s = _require_dev_pool("算标签")
+    from .labels import compute_labels, get_label, save_label   # noqa: PLC0415
+    panel = _get_panel(panel_key)
+    spec = get_label(name)
+    v = panel.values
+    px = pd.DataFrame({"open": v["cd_open"] if "cd_open" in v else v["open"],
+                       "close": v["cd_close"] if "cd_close" in v else v["close"]})
+    px = px.dropna().sort_index()
+    grid = 1.0 if spec.horizon_bars and "1d" in panel_key else 1.0
+    res = compute_labels(spec, px, grid_days=grid)
+    _LABEL_CACHE[name] = res
+    out = {"label": name, "objective": spec.objective, "kind": spec.kind,
+           "horizon_bars": res.horizon_bars,
+           "cost_round_trip": spec.cost.round_trip,
+           "n_rows": int(len(res.values)),
+           "n_labeled": int(res.values.notna().sum()),
+           "mean": float(res.values.mean()),
+           "std": float(res.values.std()),
+           "pos_rate": float((res.values.dropna() > 0).mean()),
+           "available_at_rule": "bar[t+H+1] 收盘 (未来函数)",
+           "label_key": name}
+    if save:
+        meta = save_label(res, pool_id=s.pool_id,
+                          assets=f"{px.index.get_level_values(0).nunique()}")
+        out["fingerprint"] = meta["fingerprint"]
+        out["saved"] = True
+    else:
+        out["saved"] = False
+    return out
+
+
+def tool_build_training_samples(features: list[str], label_name: str = "ret_10d",
+                                panel_key: str | None = None,
+                                train_len: str = "3Y", test_len: str = "6M",
+                                step: str = "6M", embargo: str | None = None,
+                                start: str | None = None,
+                                end: str | None = None,
+                                run_id: str | None = None) -> dict:
+    """构建训练样本 (阶段2 的唯一对齐处, 带双断言)。按 walk-forward 折产出。
+
+    X 来自**特征引擎** (features 必须是特征库里的特征名); 面板用 panel_key 定位
+    (价格面板与标签共用同一坐标系)。返回 run_id (后续 train_model /
+    run_backtest / evaluate_candidate 都用它)。
+    """
+    s = _require_dev_pool("构建训练样本")
+    from .labels import walk_forward_splits                        # noqa: PLC0415
+    from .training import build_sample_set                          # noqa: PLC0415
+    rid = run_id or f"run-{label_name}-{len(_SAMPLES_CACHE) + 1}"
+    lab = _LABEL_CACHE.get(label_name)
+    if lab is None:
+        raise KeyError(f"标签 {label_name!r} 未算; 请先调 compute_labels")
+    if not features:
+        raise ValueError("features 不能为空 (X 来自特征引擎)")
+    eng = _panel_engine(s, start=start, end=end)
+    try:
+        bundle = eng.compute(list(features))
+    except KeyError as e:
+        raise KeyError(
+            f"特征名不在特征库里: {e}。X 必须是**已注册特征**(不是价格字段);"
+            f"先用 list_features 看有哪些, 或 describe_feature 看口径。"
+            f"若只是想要价格/成交量这类原始字段, 用 load_price_panel。") from e
+    X, avail = bundle.values, bundle.avail
+    # 对齐: 标签面板与特征面板的资产/时间覆盖天然不同 (价格面板带预热、特征面板
+    # 按请求窗口裁剪)。供给层要求**严格同索引** (那是防错配的硬检查, 保留),
+    # 因此在这里显式取交集 —— 交集外一律不参与训练, 不做任何填充。
+    common = X.index.intersection(lab.values.index)
+    if len(common) == 0:
+        raise ValueError(
+            "标签与特征没有共同决策格: 标签面板与特征面板的资产/时间不重叠。"
+            f"标签 {len(lab.values):,} 行 vs 特征 {len(X):,} 行 —— "
+            f"检查窗口与资产设置是否一致。")
+    X, avail = X.loc[common], avail.loc[common]
+    y_aligned, ya_aligned = lab.values.loc[common], lab.available_at.loc[common]
+    folds = walk_forward_splits(s.pool_id, train_len=train_len,
+                                test_len=test_len, step=step,
+                                label=label_name, embargo=embargo,
+                                start=start, end=end)
+    pairs, skipped = {}, []
+    for f in folds:
+        try:
+            tr = build_sample_set(X, avail, y_aligned, ya_aligned,
+                                  fold=f, role="train", label_name=label_name,
+                                  pool_id=s.pool_id)
+            te = build_sample_set(X, avail, y_aligned, ya_aligned,
+                                  fold=f, role="test", label_name=label_name,
+                                  pool_id=s.pool_id)
+        except Exception as e:                       # noqa: BLE001
+            skipped.append({"fold": f.fold_id, "reason": f"{type(e).__name__}: {e}"})
+            continue
+        if len(tr) and len(te):
+            pairs[f.fold_id] = {"train": tr, "test": te}
+        else:
+            skipped.append({"fold": f.fold_id,
+                            "reason": f"empty (train={len(tr)} test={len(te)})"})
+    if not pairs:
+        raise ValueError(f"没有可用折: {skipped[:3]}")
+    _SAMPLES_CACHE[rid] = pairs
+    return {"run_id": rid, "pool": s.pool_id, "n_features": X.shape[1],
+            "n_common_grid": int(len(common)),
+            "n_folds": len(pairs), "skipped": skipped[:5],
+            "folds": [{"fold_id": k, "train_rows": len(v["train"]),
+                       "test_rows": len(v["test"]),
+                       "fingerprint": v["train"].fingerprint[:12]}
+                      for k, v in pairs.items()]}
+
+
+def tool_train_model(run_id: str, family: str = "linear",
+                     label_name: str = "ret_10d", task: str = "regression",
+                     register: bool = True, params: dict | None = None,
+                     model_id: str | None = None) -> dict:
+    """walk-forward 训练 (每折只用 train 折训练), 可选注册到模型注册表。
+
+    family: linear / gbdt / baseline。超参走 params 字典 (alpha / n_estimators ...),
+    不做 **kwargs 展开 —— 避免与工具参数名撞车。
+    task: regression (拟合标签值) / classification (拟合涨跌符号)。
+    model_id: 同一份样本 (run_id) 上可训练多个模型, 各自缓存分数/结果。
+             默认与 run_id 相同 (会覆盖上一次的分数缓存)。
+    """
+    s = _require_dev_pool("训练模型")
+    from .training import (make_model, register_model)            # noqa: PLC0415
+    pairs = _SAMPLES_CACHE.get(run_id)
+    if pairs is None:
+        raise KeyError(f"run_id {run_id!r} 无样本; 请先调 build_training_samples")
+    params = dict(params or {})
+    mid = model_id or run_id
+
+    def factory():
+        return make_model(family, **params)
+
+    # train/test 分离已在 build_training_samples 完成 (供给层双断言保证)
+    res = _run_walkforward_pairs(list(pairs.values()), factory, task)
+    _SCORES_CACHE[mid] = res.scores
+    out = {"run_id": run_id, "model_id": mid, "family": family, "task": task,
+           "n_folds": len(res.fold_ids), "n_scores": int(len(res.scores)),
+           "folds": [f.to_dict() for f in res.folds]}
+    if register:
+        first = pairs[res.fold_ids[0]]["train"]
+        y_first = first.y
+        if task == "classification":
+            y_first = y_first.where(y_first.notna()).gt(0).astype(float)
+        m = make_model(family, **params)
+        m.fit(first.X, y_first)
+        art = register_model(mid, m, params=params,
+                             label_name=label_name,
+                             train_fold=res.fold_ids[0])
+        out["model_hash"] = art.model_hash
+        out["version"] = art.version
+    return out
+
+
+def _run_walkforward_pairs(pairs_list, factory, task):
+    """对已切好的 {train,test} 折列表跑 walk-forward (模型协议层同一语义)。"""
+    import pandas as pd
+    from .training.walkforward import FoldResult, WalkForwardResult
+    fold_results, all_s, all_y, ids = [], [], [], []
+    for pair in pairs_list:
+        tr, te = pair["train"], pair["test"]
+        if len(tr) == 0 or len(te) == 0:
+            continue
+        model = factory()
+        if task == "classification":
+            y_tr = tr.y.where(tr.y.notna()).gt(0).astype(float)
+        else:
+            y_tr = tr.y
+        model.fit(tr.X, y_tr)
+        pred = pd.Series(model.predict(te.X), index=te.X.index, name="score")
+        fid = tr.meta.fold_id or f"fold{len(fold_results)}"
+        fold_results.append(FoldResult(fold_id=fid, train_rows=len(tr.X),
+                                        test_rows=len(te.X), scores=pred,
+                                        train_span=tr.meta.fold_id))
+        all_s.append(pred)
+        all_y.append(te.y)
+        ids.append(fid)
+    return WalkForwardResult(fold_results,
+                             pd.concat(all_s) if all_s else pd.Series(dtype=float),
+                             pd.concat(all_y) if all_y else pd.Series(dtype=float),
+                             ids)
+
+
+def tool_predict_with_model(run_id: str, model_name: str | None = None,
+                            model_hash: str | None = None,
+                            features: list[str] | None = None,
+                            start: str | None = None,
+                            end: str | None = None) -> dict:
+    """用注册模型在**当前池**的特征面板上预测 -> 分数面板摘要。"""
+    s = _require_scope()
+    assert_can_read_data(s.pool_id, "原始数据 (预测)")
+    from .training import load_model                             # noqa: PLC0415
+    name = model_name or run_id
+    model, art = load_model(name, model_hash)
+    eng = _panel_engine(s, start=start, end=end)
+    names = features or [n for n in art.params.get("features", [])] or None
+    if not names:
+        raise ValueError("请给 features (或模型注册时带特征名)")
+    bundle = eng.compute(list(names))
+    pred = pd.Series(model.predict(bundle.values),
+                     index=bundle.values.index, name="score")
+    _SCORES_CACHE.setdefault(run_id, pred)
+    return {"run_id": run_id, "model": name, "model_hash": art.model_hash,
+            "n_scores": int(len(pred)),
+            "score_mean": float(pred.mean()), "score_std": float(pred.std()),
+            "time_range": [str(pred.index.get_level_values("time").min().date()),
+                           str(pred.index.get_level_values("time").max().date())]}
+
+
+def tool_run_backtest(run_id: str, mode: str = "rank_linear", top_n: int = 5,
+                      long_short: bool = False, rebalance_every: int = 5,
+                      max_weight: float = 0.05, max_gross: float = 1.0,
+                      panel_key: str | None = None,
+                      max_abs_daily_return: float = 0.5,
+                      start: str | None = None, end: str | None = None) -> dict:
+    """分数面板 -> PanelSignal -> 仓位映射 -> 回测引擎 (同一引擎/成本)。
+
+    mode: rank_linear (排名线性权重) / top_n (前N等权, 对照基准)。
+    max_abs_daily_return: 资产筛选 —— 剔除窗口内单日涨跌幅超过该阈值的资产。
+        加密市场存在暴涨/暴跌近千倍的标的, 而回测的权重法权益是
+        `equity *= (1 + Σw·r)` 的**无破产保护**复利: 一次 r=+999 就能让权益
+        乘 100 倍, 一次 pnl<-1 直接把权益打成负数 (之后 cagr/sharpe 全废)。
+        这是实测踩到的真问题, 不是数值噪声 —— 默认剔除极端日收益资产。
+    """
+    s = _require_dev_pool("回测")
+    from .backtest.data_engine import build_data                  # noqa: PLC0415
+    from .backtest.engine import BacktestEngine                   # noqa: PLC0415
+    from .backtest.execution_engine import CostModel              # noqa: PLC0415
+    from .backtest.strategy import RiskEngine                     # noqa: PLC0415
+    from .training import ScoreWeightedStrategy, scores_to_panel_signal  # noqa
+    scores = _SCORES_CACHE.get(run_id)
+    if scores is None:
+        raise KeyError(f"run_id {run_id!r} 无预测分数; 请先 train_model")
+    panel = _get_panel(panel_key) if panel_key else None
+    if panel is None:
+        # 没有指定就现取会话里的第一个价格面板
+        keys = [k.replace("__panel__", "") for k in _LABEL_CACHE
+                if k.startswith("__panel__")]
+        if not keys:
+            raise KeyError("需先 load_price_panel (回测要价格面板)")
+        panel = _get_panel(keys[0])
+    # build_data 约定列名为 open/high/low/close/volume_quote; 价格面板里是
+    # 认证字段名 (cd_open/...) -> 这里做**列名映射**, 不改底座代码。
+    from .fields import Panel as _FieldsPanel                    # noqa: PLC0415
+    ren = {"cd_open": "open", "cd_high": "high", "cd_low": "low",
+           "cd_close": "close", "cd_volume_quote": "volume_quote"}
+    v2 = panel.values.rename(columns={k: v2 for k, v2 in ren.items()})
+    a2 = panel.avail.rename(columns={k: v2 for k, v2 in ren.items()})
+    bp = _FieldsPanel(values=v2, avail=a2, scope=panel.scope,
+                      as_of=panel.as_of, start=panel.start, end=panel.end,
+                      warmup=panel.warmup, provenance=panel.provenance,
+                      excluded=panel.excluded)
+    data = build_data(bp)
+    # 只在分数有值的时间上交易: 用分数面板的时间索引过滤
+    st = scores.index.get_level_values("time")
+    keep = data.times.isin(sorted(set(st)))
+    if int(keep.sum()) < 2:
+        raise ValueError("分数与价格时间不重叠 —— 检查 run_backtest 的窗口")
+    idx = np.where(keep)[0]
+    # **固定资产集**: 回测引擎要求每期资产集合固定 (ExecutionEngine 的持仓是
+    # 一个固定长度的权重向量), 而 DataEngine 按逐日 PIT 宇宙派发**可变**资产集
+    # —— 339 个币在窗口内不断增减会让权重维度对不上而崩。这里收敛到"窗口内
+    # 全程都有数据"的资产集 (固定维度的同时仍无幸存者偏差: 上市晚/退市的币
+    # 本来就拿不到完整样本, 它们的行会被剔除而不是被填 0)。
+    from .backtest.data_engine import BacktestData                # noqa: PLC0415
+    close_sel = data.close[idx]
+    rets = np.abs(np.nan_to_num(close_sel[1:] / close_sel[:-1] - 1.0,
+                                 nan=0.0, posinf=0.0, neginf=0.0))
+    max_ret = rets.max(axis=0) if rets.size else np.zeros(len(data.assets))
+    tradable = [a for a, mr in zip(data.assets, max_ret)
+                if np.isfinite(mr) and mr <= float(max_abs_daily_return)]
+    n_dropped_extreme = len(data.assets) - len(tradable)
+    full_assets = [a for a in tradable
+                   if bool(np.isfinite(data.close[idx, data.asset_index[a]]).all())]
+    if len(full_assets) < 5:
+        raise ValueError(
+            f"可回测资产只有 {len(full_assets)} 个 (<5) —— "
+            f"(剔除极端日收益 {n_dropped_extreme} 个后)。请放宽 "
+            f"max_abs_daily_return 或缩短窗口。")
+    cols = np.array([data.asset_index[a] for a in full_assets])
+    d2 = BacktestData(
+        open=data.open[np.ix_(idx, cols)],
+        high=data.high[np.ix_(idx, cols)],
+        low=data.low[np.ix_(idx, cols)],
+        close=data.close[np.ix_(idx, cols)],
+        volume=data.volume[np.ix_(idx, cols)],
+        available_at=data.available_at[idx], times=data.times[idx],
+        assets=tuple(full_assets),
+        universe=np.ones((len(idx), len(full_assets)), dtype=bool),
+        asset_index={a: i for i, a in enumerate(full_assets)})
+    sig = scores_to_panel_signal(scores)
+    strat = ScoreWeightedStrategy(sig, mode=mode, top_n=top_n,
+                                  long_short=long_short,
+                                  rebalance_every=rebalance_every)
+    eng = BacktestEngine(d2, strat, risk=RiskEngine(max_weight=max_weight,
+                                                    max_gross=max_gross),
+                         cost=CostModel())
+    result = eng.run()
+    _RESULTS_CACHE[run_id] = result
+    m = result.portfolio.metrics(periods_per_year=252)
+    # 数值病态自检: 无破产保护的权重法权益遇到极端收益就会爆 —— 如实标记,
+    # 不让病态数字流进指标层 (schema 门会因 max_drawdown 越界而拒绝入库)。
+    finite = np.isfinite(float(m.get("total_return", np.nan)))
+    pathological = (not finite) or abs(float(m.get("total_return", 0.0))) > 100.0
+    out = {"run_id": run_id, "mode": mode, "long_short": long_short,
+           "rebalance_every": rebalance_every,
+           "n_assets": len(full_assets),
+           "n_dropped_extreme": n_dropped_extreme,
+           "max_abs_daily_return_filter": float(max_abs_daily_return),
+           "n_bars": int(m.get("n_points", 0)),
+           "time_range": [str(d2.times[0].date()), str(d2.times[-1].date())],
+           "pathological_equity": pathological,
+           "metrics": {k: (float(v) if isinstance(v, (int, float)) else v)
+                       for k, v in m.items()}}
+    if pathological:
+        out["warning"] = (
+            "权益数值病态 (无破产保护的权重法复利遇到极端日收益): "
+            f"total_return={m.get('total_return')}, mdd={m.get('max_drawdown')}. "
+            f"已剔除 {n_dropped_extreme} 个极端日收益资产; 若仍异常, 需收紧 "
+            f"max_abs_daily_return 或复核数据质量。")
+    return out
+
+
+def tool_evaluate_candidate(run_id: str, label_name: str = "ret_10d",
+                            n_trials: int | None = None,
+                            with_backtest: bool = True,
+                            note: str = "") -> dict:
+    """三层评价 (唯一代码路径): 预测层 + 交易层 + 显著性层 (PSR/DSR)。
+
+    n_trials 默认取全局试验计数 N (含开发池) —— **N 失真则 DSR 失真**。
+    """
+    s = _require_dev_pool("评价")
+    from .evaluation import evaluate_candidate                    # noqa: PLC0415
+    from .training import trial_count                             # noqa: PLC0415
+    scores = _SCORES_CACHE.get(run_id)
+    if scores is None:
+        raise KeyError(f"run_id {run_id!r} 无预测分数; 请先 train_model")
+    lab = _LABEL_CACHE[label_name]
+    # 对齐到共同决策格 (分数与标签的覆盖可能不同), 并**拒绝**重复索引:
+    # 重复说明某一折的预测被写了两遍 —— 那是真问题, 不能静默去重。
+    common = scores.index.intersection(lab.values.index)
+    if scores.index.has_duplicates:
+        dup = scores.index[scores.index.duplicated()][:3].tolist()
+        raise ValueError(f"预测分数面板有重复决策格 (前 3 个: {dup}) —— "
+                         f"多半是折之间测试窗重叠, 检查 build_training_samples 的 "
+                         f"train_len/test_len/step 参数。")
+    if len(common) == 0:
+        raise ValueError("预测分数与标签没有共同决策格")
+    sc = scores.loc[common]
+    yy = lab.values.loc[common]
+    N = n_trials if n_trials is not None else max(1, trial_count())
+    pf = None
+    pr = None
+    if with_backtest:
+        res = _RESULTS_CACHE.get(run_id)
+        if res is not None:
+            pf = res.portfolio.metrics(periods_per_year=252)
+            pr = pd.Series(res.portfolio.period_returns)
+    metrics = evaluate_candidate(sc, yy, portfolio=pf,
+                                period_returns=pr, periods_per_year=252,
+                                n_trials=N)
+    metrics["extra"] = {"run_id": run_id, "pool": s.pool_id,
+                        "label_name": label_name, "note": note}
+    return metrics
+
+
+def tool_list_models() -> dict:
+    """列出已注册模型 (模型是第一类对象: 指纹 + 训练窗口 + 标签)。"""
+    from .training import list_models as _lm                      # noqa: PLC0415
+    return {"models": [{k: m.get(k) for k in
+                        ("name", "family", "version", "model_hash",
+                         "label_name", "train_fold", "created_at")}
+                       for m in _lm()]}
+
+
 TOOLS = [
     {"name": "list_pools", "fn": tool_list_pools,
      "desc": "列出研究池及边界"},
@@ -421,6 +881,23 @@ TOOLS = [
      "desc": "全局试验计数 N (含开发池; DSR 输入)"},
     {"name": "significance_check", "fn": tool_significance_check,
      "desc": "对逐期收益算 PSR/DSR (多重检验修正)"},
+    # -- 研究链算子 (标签 -> 样本 -> 训练 -> 回测 -> 评价) --
+    {"name": "load_price_panel", "fn": tool_load_price_panel,
+     "desc": "载入价格面板 (标签的输入; 区别于 compute_features 返回的特征)"},
+    {"name": "compute_labels", "fn": tool_compute_labels,
+     "desc": "算标签 (未来函数; 仅开发池, 标签视同原始数据)"},
+    {"name": "build_training_samples", "fn": tool_build_training_samples,
+     "desc": "构建训练样本 (唯一对齐处+双断言; 按 walk-forward 折)"},
+    {"name": "train_model", "fn": tool_train_model,
+     "desc": "walk-forward 训练 (linear/gbdt/baseline), 可注册"},
+    {"name": "predict_with_model", "fn": tool_predict_with_model,
+     "desc": "用注册模型在当前池特征上预测"},
+    {"name": "run_backtest", "fn": tool_run_backtest,
+     "desc": "分数->信号->仓位映射->回测引擎 (同一成本模型)"},
+    {"name": "evaluate_candidate", "fn": tool_evaluate_candidate,
+     "desc": "三层评价 (预测/交易/显著性 PSR-DSR), 唯一代码路径"},
+    {"name": "list_models", "fn": tool_list_models,
+     "desc": "列出已注册模型 (指纹+训练窗口+标签)"},
 ]
 
 if __name__ == "__main__":

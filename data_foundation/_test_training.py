@@ -111,6 +111,25 @@ def test_assert_a3_label_reaches_test_period_rejected():
     assert len(ss) > 0
 
 
+def test_assert_a1_uses_close_time_not_grid_time():
+    """回归: 决策时刻是**收盘**, 不是面板 open_time。
+
+    特征 avail = open_time + 1d - 1s (收盘可知)。若拿 open_time 当决策时刻,
+    每一行都会"晚于决策时刻" -> 全量假阳性 (真实数据上实测 11 万行误报)。
+    """
+    X, avail, y, yavail = make_panels()
+    # avail 已是收盘时刻 (make_panels 里 avail = time 列), 直接用应通过
+    ss = build_sample_set(X, avail, y, yavail, fold=_fold())
+    assert len(ss) > 0, "收盘语义的 avail 不应误报"
+    # 但真的前视 (avail 比收盘还晚, 如 T+2) 必须被拦
+    late = avail + pd.Timedelta(days=2)
+    try:
+        build_sample_set(X, late, y, yavail, fold=_fold())
+        raise AssertionError("真的前视应被 A1 拦下")
+    except SampleBuildError as e:
+        assert "A1" in str(e)
+
+
 def test_clean_sample_set_builds():
     X, avail, y, yavail = make_panels()
     ss = build_sample_set(X, avail, y, yavail, fold=_fold(),

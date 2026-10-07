@@ -82,6 +82,7 @@ def build_sample_set(features: pd.DataFrame, features_avail: pd.DataFrame,
                      label_name: str = "", pool_id: str = "oof",
                      feature_fingerprint: str = "", label_fingerprint: str = "",
                      fold: Fold | None = None, role: str = "train",
+                     grid_days: float = 1.0,
                      dropna: bool = True,
                      allow_protected: bool = False) -> SampleSet:
     """构建训练样本集 (唯一的 X⋈y 对齐处)。
@@ -91,6 +92,8 @@ def build_sample_set(features: pd.DataFrame, features_avail: pd.DataFrame,
     fold                      : walk-forward 折
     role                      : "train" (受断言 A3 约束: 标签须在训练窗内定稿)
                                / "test"  (标签只在评估时用, 可晚于 test_end)
+    grid_days                 : 决策格长度 (1D=1.0) —— 用于把面板 open_time 换算成
+                               决策时刻 (收盘), 见断言 A1 的语义说明
     pool_id                   : 训练池 (valid/oos 拒绝 —— 训练只发生在 oof)
     """
     if role not in ("train", "test"):
@@ -125,19 +128,24 @@ def build_sample_set(features: pd.DataFrame, features_avail: pd.DataFrame,
         mask = pd.Series(True, index=idx)
         train_mask = mask
 
-    # ---- 断言 A1: 特征可用时间 ≤ 决策时刻 (avail 是多列面板 -> 逐列比较) ----
-    dec = decision_t.reindex(features_avail.index)
+    # ---- 断言 A1: 特征可用时间 ≤ 决策时刻 ----
+    # **决策时刻不是面板网格时间**: 面板 time 层是该 bar 的 open_time, 而决策
+    # 发生在收盘 (data_available_at = open_time + 格长 - 1s)。拿 open_time 当
+    # 决策时刻会让每一行都"晚于决策时刻" —— 全量假阳性 (实测 11 万行)。
+    # 与回测引擎 BarEvent.ts 的语义一致 (ts=收盘, bar_time=open_time)。
+    dec = decision_t.reindex(features_avail.index) + \
+        pd.Timedelta(days=float(grid_days)) - pd.Timedelta(seconds=1)
     a1_any = pd.Series(False, index=features_avail.index)
     for _c in features_avail.columns:
         col = features_avail[_c]
         a1_any |= col.notna() & (col > dec)
     if bool(a1_any.any()):
-        r = features_avail.loc[a1_any].iloc[:, 0].iloc[0]
-        t_r = dec.loc[a1_any].iloc[0]
+        r = features_avail.loc[a1_any].iloc[:, 0]
+        t_r = dec.loc[a1_any]
         raise SampleBuildError(
             f"断言A1 失败(特征前视泄漏): {int(a1_any.sum())} 行的 "
-            f"data_available_at 晚于决策时刻 (例: avail={r} > t={t_r}) —— "
-            f"特征侧 PIT 被绕过")
+            f"data_available_at 晚于决策时刻 (例: avail={r.iloc[0]} > "
+            f"decision={t_r.iloc[0]}) —— 特征侧 PIT 被绕过")
     # ---- 断言 A2: 标签可知时刻 > 决策时刻 (标签是未来函数) ----
     dec_l = decision_t.reindex(label_avail.index)
     a2_bad = label_avail.notna() & (label_avail <= dec_l)

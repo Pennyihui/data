@@ -120,9 +120,13 @@ def walk_forward_splits(pool_id: str = "oof", *, train_len: str = "3Y",
                                   for x in (train_len, test_len, step))
     folds: list[Fold] = []
     cursor = t0
+    one_day = pd.Timedelta(days=1)
     while True:
         test_start = cursor + dl_train
-        test_end = test_start + dl_test
+        # 测试窗**闭区间恰好 test_len 天**。若写成 test_start + dl_test, 当
+        # step == test_len 时相邻两折会共享边界日 -> 同一个决策格被预测两次
+        # (下游 unstack/reshape 直接崩, 且评估会被重复计数)。
+        test_end = test_start + dl_test - one_day
         train_end = test_start - pd.Timedelta(days=H + 1 + E)
         if train_end < t0 or test_start >= t1:
             break
