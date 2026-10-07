@@ -91,8 +91,6 @@ class DataEngine:
                 "close": d.close[t, idx],
                 "volume": d.volume[t, idx],
             }
-            # next_open: 下一根 bar 的开盘价 (成交价来源; 最后一根没有 → None)
-            nxt = d.open[t + 1, idx] if t + 1 < d.n_time else None
             # PIT 闸门: bar 的可见时刻 (available_at) 不得**倒退** —— 数据的可用时间随
             # 事件时间单调不减; 倒退说明数据底座的 avail 有问题。
             if t > 0 and pd.notna(d.available_at[t]) and \
@@ -105,13 +103,16 @@ class DataEngine:
             # 决策时刻 = bar 的可见时刻 (收盘); 面板网格时间 = open_time (查表用)
             decision_ts = d.available_at[t] if pd.notna(d.available_at[t]) \
                 else d.times[t]
+            # **刻意不放 next_open 进事件**: 那是未来价格, 挂在策略拿得到的对象
+            # 上就是泄漏口。成交价由 BacktestEngine 按 bar_index 从自己的数据
+            # 引用取出, 显式传给 ExecutionEngine —— 策略物理上够不着。
             ev = BarEvent(
                 ts=decision_ts,
                 available_at=d.available_at[t],
                 assets=assets,
                 asset_index={a: i for i, a in enumerate(assets)},
-                next_open=nxt,
                 bar_time=d.times[t],
+                bar_index=t,
                 seq=t,           # 固定 seq = t, 保证确定性 (不依赖全局计数器)
                 **sub,
             )

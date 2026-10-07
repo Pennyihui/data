@@ -153,29 +153,67 @@ check("净值序列非空", len(e1) == 8, f"{len(e1)} bars")
 print("\n3) 时序防泄漏: 成交发生在下一根 bar 开盘")
 # ===========================================================================
 # 构造: 策略在 bar0 收盘看 close, 目标全仓 BTC。成交价 = 下一根(bar1)开盘。
-# 注意 next_open 的语义: 是"bar 之后那根的开盘价"。
+# next_open 由引擎显式传入 (不在 BarEvent 上), 这里模拟引擎的做法。
 exec_eng = ExecutionEngine(CostModel(taker_fee=0.0, slippage_bps=0.0))
 bar0 = BarEvent(ts=data.times[0], available_at=data.times[0], assets=data.assets,
                 asset_index=data.asset_index, open=data.open[0], high=data.high[0],
                 low=data.low[0], close=data.close[0], volume=data.volume[0],
-                next_open=data.open[1], seq=0)   # bar0 之后 = bar1 开盘
+                bar_time=data.times[0], bar_index=0, seq=0)
 w = np.array([1.0, 0.0])
 exec_eng.on_intent(OrderIntent(ts=bar0.ts, target_weights=w), 2)
-# 下一根 bar 到达时成交 (用 bar1 的 next_open = bar1 之后 = bar2 开盘)
+# 下一根 bar 到达时, 引擎传入它的 next_open (= 下一根之后那根的开盘)
 bar1 = BarEvent(ts=data.times[1], available_at=data.times[1], assets=data.assets,
                 asset_index=data.asset_index, open=data.open[1], high=data.high[1],
                 low=data.low[1], close=data.close[1], volume=data.volume[1],
-                next_open=data.open[2], seq=1)
-fill = exec_eng.on_bar(bar1)
+                bar_time=data.times[1], bar_index=1, seq=1)
+fill = exec_eng.on_bar(bar1, next_open=data.open[2])
 check("成交发生在下一根 bar", fill is not None and fill.ts == bar1.ts,
       f"fill.ts={fill.ts}" if fill is not None else "no fill")
-# 意图在 bar0 下, 但成交价用 bar1 的 next_open = data.open[2]
 check("成交价 = 下一根 bar 开盘价 (非当根收盘)",
       fill is not None and np.isclose(fill.price[0], data.open[2][0]),
-      f"fill={fill.price[0]} open(t+1 after fill bar)={data.open[2][0]}")
+      f"fill={fill.price[0]} next_open={data.open[2][0]}")
 # 关键: 若策略想用 bar0 收盘价成交, 引擎不会给它那个机会 —— on_bar(bar1) 才成交
 check("策略无法在本根 bar 成交 (只能下一根)",
       fill.ts > bar0.ts, f"bar0.ts={bar0.ts} fill.ts={fill.ts}")
+
+# ===========================================================================
+print("\n3b) 防泄漏断言: 策略物理上够不到未来")
+# ===========================================================================
+# 构造一个"作弊策略": 试图读下一根 bar 的开盘价。引擎的 BarEvent 上**根本没有**
+# 这个字段, 所以不是"不该看"而是"看不到" —— 结构性而非纪律性。
+import dataclasses  # noqa: E402
+
+
+class CheatingStrategy(Strategy):
+    """试图偷看未来价格 —— 应该直接 AttributeError (字段不存在)。"""
+
+    def __init__(self):
+        super().__init__("cheater")
+
+    def on_bar(self, bar):
+        _ = bar.next_open        # <- BarEvent 没有这个字段 -> AttributeError
+        return None
+
+
+check("BarEvent 不含 next_open 字段 (未来价格不在策略可见对象上)",
+      "next_open" not in {f.name for f in dataclasses.fields(BarEvent)})
+bar_probe = BarEvent(ts=data.times[0], available_at=data.times[0],
+                     assets=data.assets, asset_index=data.asset_index,
+                     open=data.open[0], high=data.high[0], low=data.low[0],
+                     close=data.close[0], volume=data.volume[0],
+                     bar_time=data.times[0], bar_index=0, seq=0)
+try:
+    CheatingStrategy().on_bar(bar_probe)
+    check("作弊策略读 next_open 被拒", False, "竟然读到了")
+except AttributeError:
+    check("作弊策略读 next_open 被拒 (字段不存在)", True)
+
+# 引擎层: 未来价格只经参数流向 ExecutionEngine, 不经事件
+import inspect  # noqa: E402
+from data_foundation.backtest import execution_engine as _ee  # noqa: E402
+sig = inspect.signature(_ee.ExecutionEngine.on_bar)
+check("ExecutionEngine.on_bar 用参数接收 next_open (不经事件)",
+      "next_open" in sig.parameters)
 
 # ===========================================================================
 print("\n4) 成本模型: 换手 × 费率, 换手独立可查")
@@ -184,13 +222,13 @@ exec2 = ExecutionEngine(CostModel(taker_fee=0.001, slippage_bps=10))
 bar_a = BarEvent(ts=data.times[0], available_at=data.times[0], assets=data.assets,
                  asset_index=data.asset_index, open=data.open[0], high=data.open[0],
                  low=data.open[0], close=data.close[0], volume=data.volume[0],
-                 next_open=data.open[1], seq=0)
+                 bar_time=data.times[0], bar_index=0, seq=0)
 exec2.on_intent(OrderIntent(ts=bar_a.ts, target_weights=np.array([0.5, 0.5])), 2)
 bar_b = BarEvent(ts=data.times[1], available_at=data.times[1], assets=data.assets,
                  asset_index=data.asset_index, open=data.open[1], high=data.open[1],
                  low=data.open[1], close=data.open[1], volume=data.volume[1],
-                 next_open=data.open[2], seq=1)
-f = exec2.on_bar(bar_b)
+                 bar_time=data.times[1], bar_index=1, seq=1)
+f = exec2.on_bar(bar_b, next_open=data.open[2])
 check("换手 = |Δw| 之和", f is not None and np.isclose(f.turnover, 1.0),
       f"turnover={f.turnover}" if f else "")
 expected_cost = f.turnover * 0.001 if f else -1

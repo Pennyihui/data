@@ -94,7 +94,14 @@ class BacktestEngine:
             if intent is not None:
                 intent = self.risk.apply(intent, bar)
             # 3) 执行: 把上一期的目标拿到本 bar 开盘成交 (此时 exec 已挂起)
-            fill = exec_engine.on_bar(bar)
+            # 3) 执行: 把上一期的目标拿到**下一根 bar 的开盘价**成交。
+            #    next_open 由引擎从自己的数据引用取 —— 不经过 BarEvent, 所以
+            #    策略拿不到未来价格 (结构性防泄漏)。
+            next_open = None
+            if 0 <= bar.bar_index < self.data.n_time - 1:
+                idx = [self.data.asset_index[a] for a in bar.assets]
+                next_open = self.data.open[bar.bar_index + 1, idx]
+            fill = exec_engine.on_bar(bar, next_open)
             if fill is not None:
                 portfolio.on_fill(fill)
                 pending_w = exec_engine.current_weights

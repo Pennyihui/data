@@ -47,13 +47,17 @@ class BarEvent:
     data_available_at <= 决策时点"的 bar —— 未来的 bar 不会进入总线。
 
     字段:
-      ts          bar 收盘时刻 (也是"信息可见时刻"的基准)
-      available_at 该 bar 的 data_available_at (何时才知道这根 bar)
+      ts          决策时刻 = 该 bar 的可见时刻 (收盘)
+      available_at data_available_at (何时才知道这根 bar)
       assets      该时刻可交易的资产 (当日 PIT 宇宙成员, 无幸存者偏差)
-      open/high/low/close  该时刻**上一根已收盘 bar** 的价格 (供 Strategy 看历史)
-      next_open   下一根 bar 的开盘价 (成交用; 只有 Engine 内部可见, 见 note)
-    note: next_open 只给 ExecutionEngine 用。Strategy 若要访问它必须显式走
-          engine 接口 —— 直接访问视为越权 (由 Strategy 基类拦截)。
+      open/high/low/close  该 bar 的价格
+      bar_time    面板网格时间 (open_time) —— 信号查表用
+      bar_index   在 BacktestData 里的行号 —— 仅引擎用来定位下一根
+
+    **刻意不含 next_open (下一根 bar 的开盘价)**: 它是"未来价格", 挂在策略
+    能拿到的事件上就等于留了泄漏口。成交价由 BacktestEngine 从自己的数据引用
+    里取出, 作为参数显式传给 ExecutionEngine —— 策略拿不到, 因为它根本不在
+    策略看得见的对象上。
     """
 
     ts: pd.Timestamp              # **决策时刻** = 该 bar 的收盘/可见时刻
@@ -65,8 +69,8 @@ class BarEvent:
     close: np.ndarray
     volume: np.ndarray
     asset_index: dict[str, int]
-    next_open: np.ndarray | None = None      # 下一根 bar 开盘价 (Engine 内部)
     bar_time: pd.Timestamp | None = None      # 面板网格时间 (open_time, 信号查表用)
+    bar_index: int = -1      # 在 BacktestData 里的行号 (引擎内部定位下一根)
     seq: int = field(default_factory=_next_seq, compare=False)
 
     @property

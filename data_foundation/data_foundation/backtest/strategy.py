@@ -22,9 +22,11 @@ __all__ = ["Strategy", "RiskEngine", "TopNStrategy"]
 class Strategy:
     """策略基类。子类实现 on_bar -> OrderIntent。
 
-    基类负责**结构性防泄漏**: on_bar 收到的 BarEvent 只含当前及历史数据;
-    next_open (下一根开盘价) 虽然挂在 BarEvent 上, 但基类把它收进 _engine_only,
-    子类若通过 self.next_open 或 event.next_open 访问会被明确拒绝。
+    防泄漏是**结构性**的, 不是纪律性的:
+      * Strategy 收到的 BarEvent 里**没有下一根 bar 的开盘价** —— 未来价格根本
+        不在它能碰到的对象上 (成交价由引擎从自己的数据引用取出, 作为参数传给
+        ExecutionEngine)。
+      * 事件流按 ts 严格排序, 策略收到的永远只有当前及之前的 bar。
     """
 
     def __init__(self, name: str = "strategy"):

@@ -66,14 +66,19 @@ class ExecutionEngine:
                 f"({n_asset},) 不一致 —— 资产集合中途变了? 每期资产集合应固定")
         self._pending = intent
 
-    def on_bar(self, bar: BarEvent) -> FillEvent | None:
-        """收到新 bar -> 执行上一期挂起的目标仓位 (用本 bar 的开盘价成交)。"""
+    def on_bar(self, bar: BarEvent, next_open: np.ndarray | None = None) -> FillEvent | None:
+        """收到新 bar -> 执行上一期挂起的目标仓位。
+
+        next_open 由 BacktestEngine 显式传入 (下一根 bar 的开盘价)。**它不在
+        BarEvent 上** —— 策略拿到的事件里没有未来价格, 所以策略无法用它成交。
+        最后一根 bar 没有下一根开盘价 -> 传 None -> 不成交 (仓位保持)。
+        """
         if self._pending is None:
             return None
         intent = self._pending
         self._pending = None
         n = len(bar.assets)
-        if bar.next_open is None:
+        if next_open is None:
             # 最后一根 bar: 无未来开盘价 -> 不成交 (挂着的仓位保持)
             return None
         target = np.asarray(intent.target_weights, dtype=float)
@@ -82,7 +87,7 @@ class ExecutionEngine:
         delta[np.abs(delta) < 1e-12] = 0.0
         if not delta.any():
             return None
-        price = self.cost.fill_price(bar.next_open, delta)
+        price = self.cost.fill_price(np.asarray(next_open, dtype=float), delta)
         # 成本: 换手 × 手续费; 滑点已内含在成交价里 (不再重复扣)
         turnover = float(np.abs(delta).sum())
         cost = turnover * self.cost.taker_fee
