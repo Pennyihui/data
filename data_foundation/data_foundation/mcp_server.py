@@ -29,8 +29,10 @@ import pandas as pd
 
 from .pool_registry import (FACTOR_AVAILABILITY, NO_PIT_COLUMN,
                             REVISION_CONTAMINATED, POOLS, RESEARCH_POOLS,
-                            PoolScope, factor_available, list_pools)
+                            PoolScope, assert_can_read_data,
+                            data_access_mode, factor_available, list_pools)
 from .reader import load_candles, load_derivatives, load_universe
+from . import eval_service
 
 # 会话状态: Agent 启动时绑定一个池, 之后所有查询都在该池内
 _SCOPE: PoolScope | None = None
@@ -72,8 +74,14 @@ def _require_scope() -> PoolScope:
 def tool_query_candles(venue: str, instrument: str, interval: str = "1h",
                        market_type: str = "spot", as_of=None,
                        cols: list[str] | None = None) -> dict:
-    """读 K 线。as_of 被钳制到本池内; 因子越界/污染会抛错。"""
+    """读 K 线。as_of 被钳制到本池内; 因子越界/污染会抛错。
+
+    **三池隔离**: 只有开发池 (oof) 允许读原始数据。反馈池(valid)/OOS 池一律
+    拒绝 —— 走 submit -> eval_service 通道。这堵的是"Agent 自己用池内行情
+    + 特征算出业绩"绕过 Agent 盲的绕门。
+    """
     s = _require_scope()
+    assert_can_read_data(s.pool_id, "原始数据")
     df = load_candles(venue, instrument, interval, as_of=as_of, cols=cols,
                       market_type=market_type, scope=s)
     return {"n_rows": int(len(df)),
@@ -84,9 +92,13 @@ def tool_query_candles(venue: str, instrument: str, interval: str = "1h",
 
 
 def tool_query_derivatives(venue: str, instrument: str, dataset: str,
-                          as_of=None) -> dict:
-    """读衍生品 (funding/OI/mark/index/ratio)。as_of 被钳制; 污染源抛错。"""
+                           as_of=None) -> dict:
+    """读衍生品 (funding/OI/mark/index/ratio)。as_of 被钳制; 污染源抛错。
+
+    **三池隔离**: 同 query_candles —— 只有开发池可读。
+    """
     s = _require_scope()
+    assert_can_read_data(s.pool_id, "原始数据")
     df = load_derivatives(venue, instrument, dataset, as_of=as_of, scope=s)
     tcol = df.columns[0] if len(df) else None
     return {"n_rows": int(len(df)), "dataset": dataset, "pool": s.pool_id,
@@ -95,8 +107,12 @@ def tool_query_derivatives(venue: str, instrument: str, dataset: str,
 
 
 def tool_query_universe(as_of=None, layer: str | None = None) -> dict:
-    """读三层宇宙成员 (研究/回测/交易)。默认取本池末日的名单。"""
+    """读三层宇宙成员 (研究/回测/交易)。默认取本池末日的名单。
+
+    **三池隔离**: 同 query_candles —— 只有开发池可读 (宇宙名单也是池内信息)。
+    """
     s = _require_scope()
+    assert_can_read_data(s.pool_id, "宇宙成员")
     a = s.clamp(as_of) if as_of is not None else s.pool.end_ts
     lay = layer or s.layer
     df = load_universe(as_of=a, layer=lay, scope=s)
@@ -207,8 +223,13 @@ def tool_compute_features(names: list[str], start: str | None = None,
                           end: str | None = None, as_of=None,
                           assets: list[str] | None = None) -> dict:
     """批量计算特征。**as_of/窗口被钳制到会话绑定的池内** (时间墙在引擎层强制);
-    返回汇总 (值面板不下发, 只给统计 —— 数据量大时让 Agent 用摘要工作)。"""
+    返回汇总 (值面板不下发, 只给统计 —— 数据量大时让 Agent 用摘要工作)。
+
+    **三池隔离**: 只有开发池可自行计算 —— 反馈池/OOS 的计算必须走 submit_candidate
+    (服务端用池内数据评), 否则 Agent 拿行情+特征自己算业绩即绕过 Agent 盲。
+    """
     s = _require_scope()
+    assert_can_read_data(s.pool_id, "原始数据 (计算特征)")
     engine_mod, _, registry = _feature_module()
     registry.load_library()
     eng = engine_mod.FeatureEngine(
@@ -236,6 +257,41 @@ def tool_feature_catalog() -> dict:
     registry.load_library()
     from .features import catalog                            # noqa: PLC0415
     return catalog.coverage_report() | catalog.index_stats()
+
+
+# ---------------------------------------------------------------------------
+# 三池隔离通道 (2026-10-05): 反馈池/OOS 不给原始数据, 走"提交->服务评->取结果"
+# ---------------------------------------------------------------------------
+def tool_pool_access_policy(pool_id: str | None = None) -> dict:
+    """查各池的数据访问策略 (Agent 能否读原始数据 / 结果怎么拿)。"""
+    pid = pool_id or (_SCOPE.pool_id if _SCOPE else "oof")
+    mode = data_access_mode(pid)
+    return {"pool": pid, "data_access": mode,
+            "can_read_raw": mode == "full",
+            "channel": ("自行读数据+算特征" if mode == "full" else
+                        "提交 -> 内部服务评 -> 限次数取结果(反馈池)" if pid == "valid"
+                        else "提交 -> 内部服务评 -> Agent 永拿不到结果(人可读)")}
+
+
+def tool_submit_candidate(code_hash: str, payload: dict | None = None,
+                          run_id: str | None = None) -> dict:
+    """向内部评估服务提交候选 (当前池)。反馈池/OOS 专用通道 —— Agent 只交代码/
+    参数, 由服务端用池内数据评估。返回 evaluation_id。"""
+    s = _require_scope()
+    eid = eval_service.submit(s.pool_id, run_id=run_id or code_hash[:16],
+                              code_hash=code_hash, payload=payload or {})
+    return {"evaluation_id": eid, "pool": s.pool_id,
+            "note": "已提交; 由内部服务在服务端评估该池数据, 结果按池规则返回。"}
+
+
+def tool_candidate_status(evaluation_id: str) -> dict:
+    """查候选评估状态 (不给分数)。任何池可用。"""
+    return eval_service.status(evaluation_id)
+
+
+def tool_read_feedback(evaluation_id: str) -> dict:
+    """取**反馈池**结果 (限次数, 防反复看结果调参)。OOS 池调用会被拒。"""
+    return eval_service.read_feedback(evaluation_id)
 
 
 TOOLS = [
@@ -267,6 +323,14 @@ TOOLS = [
      "desc": "批量算特征 (窗口钳制到本池, PIT 自检) (F7)"},
     {"name": "feature_catalog", "fn": tool_feature_catalog,
      "desc": "特征库体检 (类别/算子/深度/去重) (F7)"},
+    {"name": "pool_access_policy", "fn": tool_pool_access_policy,
+     "desc": "查各池数据访问策略 (谁能读原始数据)"},
+    {"name": "submit_candidate", "fn": tool_submit_candidate,
+     "desc": "提交候选给内部服务评估 (反馈池/OOS 通道)"},
+    {"name": "candidate_status", "fn": tool_candidate_status,
+     "desc": "查候选评估状态 (不给分数)"},
+    {"name": "read_feedback", "fn": tool_read_feedback,
+     "desc": "取反馈池结果 (限次数); OOS 拒绝"},
 ]
 
 if __name__ == "__main__":

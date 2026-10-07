@@ -93,6 +93,50 @@ DEFAULT_FACTOR_SET = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# 三池隔离策略 (2026-10-05 定案)
+# ---------------------------------------------------------------------------
+# 目标模型 (用户定案):
+#   oof  开发池: Agent 可读原始数据 / 算特征 / 看结果 (自己算)
+#   valid 反馈池: Agent **不可**读原始数据; 提交 -> 内部服务评 -> 结果限次数返给
+#                 Agent (防止反复看结果调参, 把反馈池也过拟合掉)
+#   oos   OOS:    Agent **不可**读原始数据; 提交 -> 内部服务评 -> 结果 Agent 永不
+#                 可得; 只有人 (assert_human) 能读并做 go/no-go
+#
+# 为什么 valid/oos 连原始数据都不给: 否则 Agent 拿行情 + 特征 + (自行拿到的)
+# 未来收益 就能自己算出业绩, 完全绕过 oos_ledger 的 Agent 盲 —— 这是实测确认的
+# 绕门 (原实现里 Agent 可 bind oos 并读 4080 行 OOS K线)。
+DATA_ACCESS: dict = {
+    "oof": "full",            # 原始数据 + 特征 + 结果
+    "valid": "submit_only",   # 不给原始数据, 只给提交通道
+    "oos": "submit_only",     # 同上, 且结果永不返回 Agent
+    "rolling_oos": "submit_only",
+}
+
+#: 反馈池结果允许 Agent 查看的次数 (超过 = 拒绝, 防"看结果调参")
+VALID_FEEDBACK_VIEW_LIMIT = 2
+
+
+def data_access_mode(pool_id: str) -> str:
+    """该池的数据访问策略。gap 池无策略 (建 PoolScope 时已拒绝)。"""
+    return DATA_ACCESS.get(pool_id, "full")
+
+
+def allows_raw_data(pool_id: str) -> bool:
+    return data_access_mode(pool_id) == "full"
+
+
+def assert_can_read_data(pool_id: str, what: str = "原始数据") -> None:
+    """Agent 读原始数据的代码级门禁。valid/oos 直接抛错 —— 不是靠约定。"""
+    if not allows_raw_data(pool_id):
+        raise PermissionError(
+            f"池 {pool_id} 不向 Agent 开放{what} (访问策略="
+            f"{data_access_mode(pool_id)})。该池只能走『提交 -> 内部服务评 -> "
+            f"{'限次数取结果' if pool_id == 'valid' else '结果不返回(人可读)'}』通道。"
+            f"如需自行计算请绑定开发池 (oof)。"
+        )
+
+
 def _u(s: str) -> pd.Timestamp:
     """字符串/时间戳 -> UTC 归一化日"""
     t = pd.Timestamp(s)
