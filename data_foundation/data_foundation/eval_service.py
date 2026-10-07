@@ -91,6 +91,10 @@ def evaluate(evaluation_id: str, metrics: dict, evaluated_by: str = "eval_servic
              notes: str = "") -> dict:
     """内部服务完成评估并记成绩。**只有本服务能调** (Agent 无原始数据亦无从自评)。
 
+    入库前过 **schema 门** (evaluation.metrics.validate_metrics): 白名单字段 +
+    必需顶层 + 数值域 + 指标版本 —— 防"注入指标"绕过白名单 (设计文档 §4)。
+    schema 门失败 -> 拒绝入库并抛出, 不是静默接受。
+
     OOS 池的成绩**同时**写入 oos_ledger —— 那是人审通道读的地方, 保证
     "服务评的" 和 "人读的" 是同一份记录 (否则两套账本各说各话)。Agent 读
     oos_ledger 仍被 assert_human 按身份前缀拦住。
@@ -100,6 +104,12 @@ def evaluate(evaluation_id: str, metrics: dict, evaluated_by: str = "eval_servic
     if not subs:
         raise KeyError(f"未知 evaluation_id: {evaluation_id}")
     rec = subs[-1]
+    # -- schema 门 (指标本体来自 evaluation 包, 通道只管谁能评/谁能看) --
+    from .evaluation.metrics import validate_metrics
+    problems = validate_metrics(metrics, strict=False)
+    if problems:
+        raise ValueError(
+            "评估结果未过 schema 门, 拒绝入库: " + "; ".join(problems[:8]))
     _append(SUBMISSIONS, {
         "evaluation_id": evaluation_id, "pool": rec["pool"],
         "run_id": rec["run_id"], "status": "evaluated",
@@ -168,18 +178,30 @@ def status(evaluation_id: str) -> dict:
 
 
 if __name__ == "__main__":  # pragma: no cover
+    from .evaluation.metrics import build_metrics
+    demo = build_metrics(
+        {"ic_mean": 0.031, "rank_ic_mean": 0.028, "icir": 0.21},
+        {"ann_return_net": 0.18, "sharpe": 1.1, "max_drawdown": -0.15,
+         "annualized_turnover": 3.2, "total_cost": 1200.0},
+        {"psr": 0.97, "dsr": 0.93, "n_trials": 8})
     eid = submit("valid", "demo-run", "codehash-demo", {"note": "demo"})
     print("submitted:", eid)
     print("status:", status(eid))
-    evaluate(eid, {"rank_ic": 0.031, "ir": 0.42, "note": "demo metrics"})
+    evaluate(eid, demo)
     print("feedback:", read_feedback(eid))
     try:
         read_feedback(eid)
         read_feedback(eid)
     except PermissionError as e:
         print("第3次被拒:", str(e)[:80])
+    # schema 门: 白名单外指标被拒
+    bad = submit("valid", "demo-bad", "codehash-demo")
+    try:
+        evaluate(bad, {"rank_ic": 0.031})
+    except ValueError as e:
+        print("[schema 门] 注入指标被拒:", str(e)[:70])
     oid = submit("oos", "demo-run", "codehash-demo")
-    evaluate(oid, {"rank_ic": 0.012})
+    evaluate(oid, demo)
     try:
         read_feedback(oid)
     except PermissionError as e:

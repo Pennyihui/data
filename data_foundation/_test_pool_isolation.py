@@ -104,21 +104,41 @@ check("算特征被拒", raises_perm(mcp.tool_compute_features, ["vol_24h"],
 
 # ---------------------------------------------------------------------------
 print("\n5) 反馈池通道: 提交 -> 服务评 -> 限次取结果")
+# 评估记录必须过 schema 门 (评价协议 §4): 用 build_metrics 组装合法三层指标
+from data_foundation.evaluation.metrics import build_metrics  # noqa: E402
+
+
+def _demo_metrics(rank_ic: float, sharpe: float = 1.0) -> dict:
+    return build_metrics(
+        {"ic_mean": rank_ic * 1.1, "rank_ic_mean": rank_ic},
+        {"ann_return_net": 0.15, "sharpe": sharpe, "max_drawdown": -0.12},
+        {"psr": 0.97, "dsr": 0.93, "n_trials": 5})
+
+
 eid = E.submit("valid", "run-iso-1", "hash-feedback", {"note": "iso test"})
 check("提交返回 evaluation_id", bool(eid), eid)
 check("初始状态 pending", E.status(eid)["status"] == "pending")
-E.evaluate(eid, {"rank_ic": 0.031, "ir": 0.42})
+E.evaluate(eid, _demo_metrics(0.031))
 check("服务评估后状态 evaluated", E.status(eid)["status"] == "evaluated")
 fb1 = E.read_feedback(eid)
-check("第1次取结果成功", fb1["metrics"]["rank_ic"] == 0.031, str(fb1["metrics"]))
+check("第1次取结果成功",
+      fb1["metrics"]["prediction"]["rank_ic_mean"] == 0.031,
+      str(fb1["metrics"])[:80])
 fb2 = E.read_feedback(eid)
 check("第2次取结果成功", fb2["views_used"] == 2)
 check("第3次被拒 (限次数)", raises_perm(E.read_feedback, eid))
+# schema 门: 白名单外指标拒绝入库 (评价协议 §4 不许"注入指标")
+bad_eid = E.submit("valid", "run-iso-bad", "hash-bad")
+try:
+    E.evaluate(bad_eid, {"rank_ic": 0.5})
+    check("schema 门拒白名单外指标", False, "竟然入库了")
+except ValueError:
+    check("schema 门拒白名单外指标", True)
 
 # ---------------------------------------------------------------------------
 print("\n6) OOS 通道: Agent 永不拿结果, 人可读")
 oid = E.submit("oos", "run-iso-1", "hash-oos")
-E.evaluate(oid, {"rank_ic": 0.012})
+E.evaluate(oid, _demo_metrics(0.012))
 check("OOS 走反馈接口被拒", raises_perm(E.read_feedback, oid))
 try:
     L.oos_result_read(oid, reader="agent")
@@ -136,7 +156,7 @@ except Exception as exc:
 # ---------------------------------------------------------------------------
 print("\n7) 跨池不串: 反馈池提交不能当 OOS 结果读")
 eid2 = E.submit("valid", "run-x", "h2")
-E.evaluate(eid2, {"rank_ic": 0.05})
+E.evaluate(eid2, _demo_metrics(0.05))
 check("valid 提交按 valid 读", E.read_feedback(eid2)["pool"] == "valid")
 
 # ---------------------------------------------------------------------------

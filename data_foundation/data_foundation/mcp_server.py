@@ -294,6 +294,82 @@ def tool_read_feedback(evaluation_id: str) -> dict:
     return eval_service.read_feedback(evaluation_id)
 
 
+# ---------------------------------------------------------------------------
+# 标签体系 (2026-10-07 阶段1): 目标/标签注册表 + 切分器 + oof 计算
+# ---------------------------------------------------------------------------
+def tool_list_objectives() -> dict:
+    """列出研究目标 (每个目标下挂多个标签)。"""
+    from .labels import list_objectives                          # noqa: PLC0415
+    return {"objectives": list_objectives()}
+
+
+def tool_list_labels(objective: str | None = None) -> dict:
+    """列出标签 (可按目标过滤)。同一目标可有多标签。"""
+    from .labels import list_labels                              # noqa: PLC0415
+    return {"labels": list_labels(objective)}
+
+
+def tool_describe_label(name: str) -> dict:
+    """看一个标签的完整规格: 口径/成本/horizon/指纹。"""
+    from .labels import get_label                               # noqa: PLC0415
+    spec = get_label(name)
+    return {"name": spec.name, "objective": spec.objective,
+            "kind": spec.kind, "horizon_bars": spec.horizon_bars,
+            "version": spec.version, "research_only": spec.research_only,
+            "cost": {"taker_fee": spec.cost.taker_fee,
+                     "slippage_bps": spec.cost.slippage_bps,
+                     "round_trip": spec.cost.round_trip},
+            "fingerprint": spec.fingerprint(), "desc": spec.desc,
+            "available_at_rule": "bar[t+H+1] 收盘 (标签是未来函数)"}
+
+
+def tool_walkforward_plan(pool_id: str | None = None, train_len: str = "3Y",
+                          test_len: str = "6M", step: str = "6M",
+                          horizon: str = "10D",
+                          embargo: str | None = None) -> dict:
+    """看池内 walk-forward 切分计划 (purge+embargo 已含在 train_end 里)。"""
+    from .labels import walk_forward_splits                    # noqa: PLC0415
+    pid = pool_id or (_SCOPE.pool_id if _SCOPE else "oof")
+    folds = walk_forward_splits(pid, train_len=train_len,
+                                test_len=test_len, step=step,
+                                horizon=horizon, embargo=embargo)
+    return {"pool": pid, "n_folds": len(folds),
+            "horizon_days": folds[0].horizon_days if folds else None,
+            "embargo_days": folds[0].embargo_days if folds else None,
+            "folds": [f.to_dict() for f in folds]}
+
+
+def tool_label_fingerprint(name: str, pool_id: str | None = None,
+                           data_fingerprint: str = "") -> dict:
+    """算标签的落盘指纹 (规格+数据+池 合成) —— 提交载荷需要它。"""
+    from .labels import label_fingerprint                      # noqa: PLC0415
+    pid = pool_id or (_SCOPE.pool_id if _SCOPE else "oof")
+    return {"label": name, "pool": pid,
+            "fingerprint": label_fingerprint(name, pool_id=pid,
+                                             data_fingerprint=data_fingerprint)}
+
+
+# ---------------------------------------------------------------------------
+# 评价协议 (2026-10-07): 试验计数 N + 显著性自检 (dev 侧)
+# ---------------------------------------------------------------------------
+def tool_trial_count(pool_ids: list[str] | None = None) -> dict:
+    """全局试验计数 N (含开发池) —— DSR 的输入。N 失真则 DSR 失真。"""
+    from .training.experiments import trial_count               # noqa: PLC0415
+    n = trial_count(tuple(pool_ids) if pool_ids else None)
+    return {"n_trials": n, "note": "去重 run_id; 开发池试验同样计入"}
+
+
+def tool_significance_check(period_returns: list[float], n_trials: int = 1,
+                            sharpe: float | None = None,
+                            periods_per_year: float = 365 * 24) -> dict:
+    """对一条逐期收益序列算 PSR/DSR (多重检验修正)。"""
+    from .evaluation.significance import significance_metrics  # noqa: PLC0415
+    import pandas as pd                                          # noqa: PLC0415
+    return significance_metrics(pd.Series(period_returns),
+                                n_trials=n_trials, sharpe=sharpe,
+                                periods_per_year=periods_per_year)
+
+
 TOOLS = [
     {"name": "list_pools", "fn": tool_list_pools,
      "desc": "列出研究池及边界"},
@@ -331,6 +407,20 @@ TOOLS = [
      "desc": "查候选评估状态 (不给分数)"},
     {"name": "read_feedback", "fn": tool_read_feedback,
      "desc": "取反馈池结果 (限次数); OOS 拒绝"},
+    {"name": "list_objectives", "fn": tool_list_objectives,
+     "desc": "列出研究目标 (目标下挂多个标签)"},
+    {"name": "list_labels", "fn": tool_list_labels,
+     "desc": "列出标签 (同一目标可有多标签)"},
+    {"name": "describe_label", "fn": tool_describe_label,
+     "desc": "看标签规格 (口径/成本/horizon/指纹)"},
+    {"name": "walkforward_plan", "fn": tool_walkforward_plan,
+     "desc": "池内 walk-forward 切分计划 (含 purge+embargo)"},
+    {"name": "label_fingerprint", "fn": tool_label_fingerprint,
+     "desc": "算标签落盘指纹 (提交载荷用)"},
+    {"name": "trial_count", "fn": tool_trial_count,
+     "desc": "全局试验计数 N (含开发池; DSR 输入)"},
+    {"name": "significance_check", "fn": tool_significance_check,
+     "desc": "对逐期收益算 PSR/DSR (多重检验修正)"},
 ]
 
 if __name__ == "__main__":
