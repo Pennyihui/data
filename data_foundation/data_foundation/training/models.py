@@ -26,7 +26,7 @@ import pandas as pd
 
 __all__ = [
     "Standardizer", "BaseModel", "LinearModel", "GBDTModel", "BaselineModel",
-    "make_model", "MODEL_FAMILIES", "ModelNotFitted",
+    "NNModel", "make_model", "MODEL_FAMILIES", "ModelNotFitted",
 ]
 
 
@@ -317,12 +317,138 @@ class BaselineModel(_Base):
 
 
 # ---------------------------------------------------------------------------
+# 家族: nn (torch) —— 目标函数 x 优化器 可选 (设计文档 §5 决策 M1 留位)
+# ---------------------------------------------------------------------------
+class NNModel(_Base):
+    """简单 MLP。**目标函数与优化器都是显式参数** —— 研究"不同目标函数/优化器"
+    的差异就在这里 (损失: mse / huber / bce; 优化器: adam / sgd / rmsprop)。
+
+    分数语义: 回归输出预测值; 分类输出 sigmoid 概率 (统一"越大越看好")。
+    """
+
+    family = "nn"
+    LOSSES = ("mse", "huber", "bce")
+    OPTIMIZERS = ("adam", "sgd", "rmsprop")
+
+    def __init__(self, *, task: str = "regression", loss: str = "mse",
+                 optimizer: str = "adam", hidden: int = 32, epochs: int = 20,
+                 lr: float = 0.01, weight_decay: float = 0.0,
+                 momentum: float = 0.9, standardize: bool = True, seed: int = 0):
+        super().__init__(standardize=standardize, seed=seed)
+        if loss not in self.LOSSES:
+            raise ValueError(f"loss ∈ {self.LOSSES}")
+        if optimizer not in self.OPTIMIZERS:
+            raise ValueError(f"optimizer ∈ {self.OPTIMIZERS}")
+        self.task = task
+        self.loss = loss
+        self.optimizer_kind = optimizer
+        self.hidden = int(hidden)
+        self.epochs = int(epochs)
+        self.lr = float(lr)
+        self.weight_decay = float(weight_decay)
+        self.momentum = float(momentum)
+        self.net_ = None
+        self.n_in_ = 0
+
+    def _build(self, n_in: int):
+        import torch
+        import torch.nn as nn
+        torch.manual_seed(self.seed)
+        self.n_in_ = int(n_in)
+        self.net_ = nn.Sequential(
+            nn.Linear(n_in, self.hidden), nn.ReLU(),
+            nn.Linear(self.hidden, 1))
+
+    def _objective(self, pred, y):
+        """目标函数 (设计文档 §5 的可研究维度)。"""
+        import torch
+        if self.loss == "mse":
+            return torch.mean((pred - y) ** 2)
+        if self.loss == "huber":
+            return torch.nn.functional.smooth_l1_loss(pred, y, beta=1.0)
+        # bce: 分类目标函数 (标签须在 [0,1]/±1)
+        target = (y > 0).float() if self.task != "classification" else y
+        p = torch.clamp(pred, 1e-6, 1 - 1e-6)
+        return -torch.mean(target * torch.log(p) + (1 - target) * torch.log(1 - p))
+
+    def _make_optimizer(self, params):
+        import torch
+        if self.optimizer_kind == "adam":
+            return torch.optim.Adam(params, lr=self.lr,
+                                    weight_decay=self.weight_decay)
+        if self.optimizer_kind == "sgd":
+            return torch.optim.SGD(params, lr=self.lr, momentum=self.momentum,
+                                   weight_decay=self.weight_decay)
+        return torch.optim.RMSprop(params, lr=self.lr,
+                                   weight_decay=self.weight_decay)
+
+    def _fit_core(self, Z, y):
+        import torch
+        if self.net_ is None:
+            self._build(Z.shape[1])
+        Xt = torch.tensor(Z, dtype=torch.float32)
+        yt = torch.tensor(y, dtype=torch.float32).reshape(-1, 1)
+        if self.task == "classification":
+            yt = (yt > 0).float()
+        opt = self._make_optimizer(self.net_.parameters())
+        self.net_.train()
+        for _ in range(self.epochs):
+            opt.zero_grad()
+            loss = self._objective(self.net_(Xt), yt)
+            loss.backward()
+            opt.step()
+
+    def _predict_core(self, Z):
+        import torch
+        if self.net_ is None:
+            raise ModelNotFitted("NN 未训练")
+        self.net_.eval()
+        with torch.no_grad():
+            out = self.net_(torch.tensor(Z, dtype=torch.float32)).numpy().ravel()
+        if self.task == "classification" or self.loss == "bce":
+            out = 1.0 / (1.0 + np.exp(-np.clip(out, -30, 30)))   # 概率
+        return out
+
+    def _state_core(self):
+        import io
+        import torch
+        buf = io.BytesIO()
+        if self.net_ is not None:
+            torch.save(self.net_.state_dict(), buf)
+        return {"task": self.task, "loss": self.loss,
+                "optimizer_kind": self.optimizer_kind, "hidden": self.hidden,
+                "epochs": self.epochs, "lr": self.lr,
+                "weight_decay": self.weight_decay, "momentum": self.momentum,
+                "n_in": self.n_in_,
+                "weights": buf.getvalue() if self.net_ is not None else None}
+
+    def _load_core(self, st):
+        import torch
+        self.task = st.get("task", "regression")
+        self.loss = st.get("loss", "mse")
+        self.optimizer_kind = st.get("optimizer_kind", "adam")
+        self.hidden = int(st.get("hidden", 32))
+        self.epochs = int(st.get("epochs", 20))
+        self.lr = float(st.get("lr", 0.01))
+        self.weight_decay = float(st.get("weight_decay", 0.0))
+        self.momentum = float(st.get("momentum", 0.9))
+        self.n_in_ = int(st.get("n_in", 0))
+        w = st.get("weights")
+        if w and self.n_in_:
+            self._build(self.n_in_)
+            self.net_.load_state_dict(torch.load(io.BytesIO(w),
+                                                weights_only=False))
+            self.net_.eval()
+
+
+# ---------------------------------------------------------------------------
 # 工厂
 # ---------------------------------------------------------------------------
 MODEL_FAMILIES = {
     "linear": LinearModel,
     "gbdt": GBDTModel,
     "baseline": BaselineModel,
+    "nn": NNModel,
 }
 
 

@@ -388,6 +388,7 @@ _LABEL_CACHE: dict = {}          # label_name -> LabelResult (会话内缓存)
 _SAMPLES_CACHE: dict = {}        # run_id -> {fold_id: {"train","test"}}
 _SCORES_CACHE: dict = {}         # run_id -> 预测分数面板 (回测/评价用)
 _RESULTS_CACHE: dict = {}        # run_id -> BacktestResult
+_RL_POLICY: dict = {}            # model_id -> {"policy","env","run_id"}
 
 
 def _require_dev_pool(what: str) -> PoolScope:
@@ -579,11 +580,21 @@ def tool_train_model(run_id: str, family: str = "linear",
     """
     s = _require_dev_pool("训练模型")
     from .training import (make_model, register_model)            # noqa: PLC0415
+    # task 归一化: 容忍 reg/regi/regression 与 cls/class/classification 简写
+    # (否则 "cls" 与 "classification" 不匹配 -> 分类目标函数静默失效, 实测
+    #  ridge 与 logreg 给出逐位相同的结果)
+    _t = str(task).lower()
+    task = ("classification" if _t in ("cls", "class", "classification")
+            else "regression")
     pairs = _SAMPLES_CACHE.get(run_id)
     if pairs is None:
         raise KeyError(f"run_id {run_id!r} 无样本; 请先调 build_training_samples")
     params = dict(params or {})
     mid = model_id or run_id
+    # task 若是 classification 且家族支持 -> 透传给模型构造器
+    # (否则 linear 的 logreg 会退化成 ridge, 分类目标函数形同没设)
+    if task == "classification" and family in ("linear", "gbdt", "nn"):
+        params.setdefault("task", "classification")
 
     def factory():
         return make_model(family, **params)
@@ -591,6 +602,15 @@ def tool_train_model(run_id: str, family: str = "linear",
     # train/test 分离已在 build_training_samples 完成 (供给层双断言保证)
     res = _run_walkforward_pairs(list(pairs.values()), factory, task)
     _SCORES_CACHE[mid] = res.scores
+    # **每次训练都记实验账本** (原则6): 否则 trial_count 恒为 0, DSR 的 N
+    # 完全失真 —— 多重检验修正形同虚设。RL 训练尤其依赖它。
+    from .training import ExperimentRecord, record_experiment  # noqa: PLC0415
+    record_experiment(ExperimentRecord(
+        run_id=mid, code_hash="", model_family=family,
+        model_params=dict(params), label_name=label_name,
+        fold_plan=f"{len(res.fold_ids)} folds", pool_id=s.pool_id,
+        metrics={"n_folds": len(res.fold_ids), "n_scores": int(len(res.scores))},
+        note=f"task={task}"))
     out = {"run_id": run_id, "model_id": mid, "family": family, "task": task,
            "n_folds": len(res.fold_ids), "n_scores": int(len(res.scores)),
            "folds": [f.to_dict() for f in res.folds]}
@@ -830,6 +850,104 @@ def tool_list_models() -> dict:
                        for m in _lm()]}
 
 
+# ---------------------------------------------------------------------------
+# 强化学习 (2026-10-07): Env 复用回测引擎, 训练只发生在开发池
+# 设计: docs/reinforcement-learning-design.md
+# ---------------------------------------------------------------------------
+def _rl_env(s: PoolScope, run_id: str, *, clip_reward: float = 0.05,
+            turnover_penalty: float = 0.002, reward_kind: str = "log_return",
+            max_weight: float = 0.05, start: str | None = None,
+            end: str | None = None):
+    """按某个 run_id 的训练窗口构造 RL 环境 (同一段历史, 与监督学习可比)。"""
+    from .rl import PortfolioEnv                                   # noqa: PLC0415
+    from .backtest.execution_engine import CostModel               # noqa: PLC0415
+    from .backtest.strategy import RiskEngine                      # noqa: PLC0415
+    pairs = _SAMPLES_CACHE.get(run_id)
+    if not pairs:
+        raise KeyError(f"run_id {run_id!r} 无样本; 请先调 build_training_samples")
+    keys = [k.replace("__panel__", "") for k in _LABEL_CACHE
+            if k.startswith("__panel__")]
+    if not keys:
+        raise KeyError("需先 load_price_panel (Env 要价格面板)")
+    panel = _get_panel(keys[0])
+    v = panel.values
+    ren = {"cd_open": "open", "cd_high": "high", "cd_low": "low",
+           "cd_close": "close", "cd_volume_quote": "volume_quote"}
+    px = v.rename(columns=ren).dropna(subset=["open", "close"])
+    # 因子面板: 复用会话缓存的分数面板不可行(那是预测), 这里取最简状态
+    # (只含持仓+现金) —— 因子状态留给后续按需扩展。
+    return PortfolioEnv(px, None, cost=CostModel(),
+                        risk=RiskEngine(max_weight=max_weight, max_gross=1.0),
+                        clip_reward=clip_reward,
+                        turnover_penalty=turnover_penalty,
+                        reward_kind=reward_kind)
+
+
+def tool_train_rl(run_id: str, *, hidden: int = 64, lr: float = 3e-4,
+                  gamma: float = 0.99, clip: float = 0.2, epochs: int = 4,
+                  n_steps: int = 256, batch: int = 64, seed: int = 0,
+                  clip_reward: float = 0.05, turnover_penalty: float = 0.002,
+                  model_id: str | None = None) -> dict:
+    """强化学习训练 (PPO)。环境底��复用回测引擎, 训练只发生在开发池。
+
+    奖励 = 缩尾的成本后收益 - λ·换手 (成本与回测/标签同源)。
+    """
+    s = _require_dev_pool("RL 训练")
+    from .rl import train_ppo                                       # noqa: PLC0415
+    env = _rl_env(s, run_id, clip_reward=clip_reward,
+                  turnover_penalty=turnover_penalty)
+    pol, hist = train_ppo(env, hidden=hidden, lr=lr, gamma=gamma, clip=clip,
+                          epochs=epochs, n_steps=n_steps, batch=batch,
+                          seed=seed)
+    mid = model_id or f"rl-{run_id}"
+    _RL_POLICY[mid] = {"policy": pol, "env": env, "run_id": run_id}
+    rewards = [h["reward"] for h in hist]
+    return {"model_id": mid, "run_id": run_id, "algorithm": "ppo",
+            "state_dim": env.state_dim, "n_actions": env.n_actions,
+            "n_time": env.n_time, "epochs": epochs,
+            "train_rewards": [round(r, 6) for r in rewards],
+            "reward_improved": (len(rewards) > 1 and rewards[-1] > rewards[0]),
+            "note": "环境=回测引擎组件; 成本与标签/回测同源"}
+
+
+def tool_eval_rl_policy(model_id: str, *, mode: str = "greedy",
+                        metrics: bool = True) -> dict:
+    """用训练好的 RL 策略跑一段并给出与监督学习同格式的成绩单。"""
+    s = _require_dev_pool("RL 评估")
+    import torch                                                # noqa: PLC0415
+    rec = _RL_POLICY.get(model_id)
+    if rec is None:
+        raise KeyError(f"model_id {model_id!r} 未训练; 请先调 train_rl")
+    pol, env = rec["policy"], rec["env"]
+    env.reset()
+    done = False
+    while not done:
+        with torch.no_grad():
+            ot = torch.tensor(env._state(env.t), dtype=torch.float32).unsqueeze(0)
+            a = (pol.actor(pol.net(ot)).squeeze(0).numpy()
+                 * getattr(pol, "action_scale", 1.0))
+        _, _, done, _ = env.step(a)
+    m = env.portfolio_metrics(periods_per_year=252)
+    out = {"model_id": model_id, "policy": "greedy",
+           "reward_total": env.total_reward,
+           "n_bars": int(m.get("n_points", 0)),
+           "metrics": {k: (float(v) if isinstance(v, (int, float)) else v)
+                       for k, v in m.items()}}
+    return out
+
+
+def tool_rl_env_info(run_id: str) -> dict:
+    """看 RL 环境规格 (state 维度/资产数/时间跨度) —— 研究前先体检。"""
+    s = _require_dev_pool("RL 环境")
+    env = _rl_env(s, run_id)
+    return {"run_id": run_id, "state_dim": env.state_dim,
+            "n_factor": env.n_factor, "n_actions": env.n_actions,
+            "n_assets": env.n_asset, "n_time": env.n_time,
+            "clip_reward": env.clip_reward,
+            "turnover_penalty": env.turnover_penalty,
+            "reward_kind": env.reward_kind}
+
+
 TOOLS = [
     {"name": "list_pools", "fn": tool_list_pools,
      "desc": "列出研究池及边界"},
@@ -898,6 +1016,13 @@ TOOLS = [
      "desc": "三层评价 (预测/交易/显著性 PSR-DSR), 唯一代码路径"},
     {"name": "list_models", "fn": tool_list_models,
      "desc": "列出已注册模型 (指纹+训练窗口+标签)"},
+    # -- 强化学习 (Env 复用回测引擎) --
+    {"name": "rl_env_info", "fn": tool_rl_env_info,
+     "desc": "RL 环境体检 (state 维度/动作空间/时间跨度)"},
+    {"name": "train_rl", "fn": tool_train_rl,
+     "desc": "PPO 强化学习训练 (Env=回测引擎; 成本后缩尾奖励)"},
+    {"name": "eval_rl_policy", "fn": tool_eval_rl_policy,
+     "desc": "用 RL 策略跑一段并给出与监督学习同格式的成绩单"},
 ]
 
 if __name__ == "__main__":

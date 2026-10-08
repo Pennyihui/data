@@ -73,8 +73,15 @@ def test_objective_registry():
     assert "ret_10d" in o.labels, f"ret_10d 未挂到 trend_10d, 实际 {o.labels}"
     assert parse_horizon_days("2W") == 14.0
     rows = list_labels()
-    assert len(rows) == 5, f"应注册 5 个标签, 实际 {len(rows)}"
     assert all(r["objective"] == "trend_10d" for r in rows)
+    # 缩尾标签必须声明 winsor (同一目标的多口径); quantile 天然基于秩, 不需要缩尾
+    w = [r for r in rows if r["name"].endswith("_w")]
+    assert len(w) >= 4, f"应有 >=4 个缩尾标签, 实际 {len(w)}"
+    from data_foundation.labels import get_label as _gl
+    for r in w:
+        assert _gl(r["name"]).winsor == 0.01, f"{r['name']} 应带 winsor=0.01"
+    assert "quantile_10d_w" not in {r["name"] for r in rows}, \
+        "quantile 标签基于秩, 不应提供缩尾变体"
 
 
 def test_cost_params():
@@ -130,6 +137,27 @@ def test_ret_no_cost():
         assert abs(actual - expect) < 1e-12, f"零成本 {expect} vs {actual}"
     finally:
         LABELS.pop("ret_10d_nc", None)
+
+
+def test_winsorized_label_clips_outliers():
+    """缩尾标签: 极端收益被压到截面 1%/99% 分位内 (PIT 安全: 只用同刻截面)。"""
+    frames = []
+    times = pd.date_range("2021-01-01", periods=40, freq="D", tz="UTC")
+    for a in range(20):
+        op = np.array([100.0 + a + i * 0.1 for i in range(40)])
+        if a == 19:                       # 造一个极端暴涨的资产
+            op[20:] = op[20:] * 500.0
+        frames.append(pd.DataFrame(
+            {"open": op, "close": op * 1.001},
+            index=pd.MultiIndex.from_product([[f"A{a}"], times],
+                                             names=["base_asset", "time"])))
+    px = pd.concat(frames).sort_index()
+    raw = compute_labels("ret_10d", px)
+    win = compute_labels("ret_10d_w", px)
+    assert abs(win.values.max()) < abs(raw.values.max()), \
+        "缩尾后极值应显著小于原始"
+    # 缩尾不改变可用时间语义
+    assert win.available_at.notna().sum() == raw.available_at.notna().sum()
 
 
 def test_sign_label():

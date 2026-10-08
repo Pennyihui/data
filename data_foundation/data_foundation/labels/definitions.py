@@ -57,6 +57,7 @@ class LabelSpec:
     vol_window: int = 20             # vol_scaled 的 trailing 窗口 (只用过去)
     version: str = "v1"
     research_only: bool = False
+    winsor: float | None = None      # 截面缩尾分位 (None=不缩尾; 0.01=1%/99%)
     desc: str = ""
 
     def __post_init__(self):
@@ -72,7 +73,7 @@ class LabelSpec:
     def fingerprint(self) -> str:
         return (f"{self.name}|{self.version}|obj={self.objective}|kind={self.kind}"
                 f"|H={self.horizon_bars}|q={self.n_quantiles}|vw={self.vol_window}"
-                f"|{self.cost.fingerprint()}")
+                f"|winsor={self.winsor}|{self.cost.fingerprint()}")
 
 
 # dataclasses 辅助
@@ -183,6 +184,16 @@ def compute_labels(spec: LabelSpec | str,
     c_rt = spec.cost.round_trip
     net = gross - c_rt
 
+    # -- 截面缩尾 (可选): crypto 收益分布重尾, 单期 +243 倍的样本会主导所有
+    #    统计量 (实测 gbdt 的 IC 缩尾后从 0.0705 掉到 0.0161)。按**决策日截面**
+    #    分位缩尾 —— 只用同一时刻的横截面分布, 不引入任何未来信息。
+    if spec.winsor:
+        q = float(spec.winsor)
+        by_time = net.groupby(level="time")
+        lo = by_time.transform(lambda s: s.quantile(q))
+        hi = by_time.transform(lambda s: s.quantile(1.0 - q))
+        net = net.clip(lower=lo, upper=hi)
+
     if spec.kind == "ret":
         values = net
     elif spec.kind == "sign":
@@ -220,15 +231,20 @@ def compute_labels(spec: LabelSpec | str,
 # ---------------------------------------------------------------------------
 # 首批标签 (目标 trend_10d, H=10 根日 bar) —— 设计文档 §5 表
 # ---------------------------------------------------------------------------
-for _name, _kind, _desc in [
-    ("ret_10d", "ret", "开-开净收益 (连续值), 回归目标"),
-    ("sign_10d", "sign", "净收益符号 (二分类)"),
-    ("quantile_10d", "quantile", "决策日截面 5 分位 (多分类/排序)"),
-    ("excess_10d", "excess", "净收益 - 截面中位数 (中性化回归)"),
-    ("vol_scaled_10d", "vol_scaled", "净收益 / 过去20日已实现波动 (异方差稳健)"),
+for _name, _kind, _wins, _desc in [
+    ("ret_10d", "ret", None, "开-开净收益 (连续值), 回归目标"),
+    ("ret_10d_w", "ret", 0.01, "缩尾版净收益 (截面 1%/99%) —— 重尾市场的稳健口径"),
+    ("sign_10d", "sign", None, "净收益符号 (二分类)"),
+    ("sign_10d_w", "sign", 0.01, "缩尾后净收益符号"),
+    ("quantile_10d", "quantile", None, "决策日截面 5 分位 (多分类/排序)"),
+    ("excess_10d", "excess", None, "净收益 - 截面中位数 (中性化回归)"),
+    ("excess_10d_w", "excess", 0.01, "缩尾后截面超额 (中性化稳健回归)"),
+    ("vol_scaled_10d", "vol_scaled", None,
+     "净收益 / 过去20日已实现波动 (异方差稳健)"),
+    ("vol_scaled_10d_w", "vol_scaled", 0.01, "缩尾 + 波动缩放"),
 ]:
     register_label(LabelSpec(name=_name, objective="trend_10d", kind=_kind,
-                             horizon_bars=10, desc=_desc))
+                             horizon_bars=10, winsor=_wins, desc=_desc))
 
 
 if __name__ == "__main__":  # pragma: no cover

@@ -16,7 +16,8 @@ from .dataset import SampleMeta, SampleSet, SampleBuildError, build_sample_set
 from .experiments import (ExperimentRecord, list_experiments, record_experiment,
                           trial_count)
 from .models import (BaselineModel, BaseModel, GBDTModel, LinearModel,
-                     MODEL_FAMILIES, ModelNotFitted, Standardizer, make_model)
+                     MODEL_FAMILIES, ModelNotFitted, NNModel, Standardizer,
+                     make_model)
 from .registry import (ModelArtifact, describe_model, list_models, load_model,
                        register_model)
 from .signal_adapter import ScoreWeightedStrategy, scores_to_panel_signal
@@ -25,7 +26,7 @@ from .walkforward import FoldResult, WalkForwardResult, run_walk_forward
 __all__ = [
     "SampleSet", "SampleMeta", "SampleBuildError", "build_sample_set",
     "Standardizer", "BaseModel", "LinearModel", "GBDTModel", "BaselineModel",
-    "make_model", "MODEL_FAMILIES", "ModelNotFitted",
+    "NNModel", "make_model", "MODEL_FAMILIES", "ModelNotFitted",
     "ModelArtifact", "register_model", "load_model", "list_models",
     "describe_model",
     "scores_to_panel_signal", "ScoreWeightedStrategy",
