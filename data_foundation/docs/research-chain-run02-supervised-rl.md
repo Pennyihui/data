@@ -122,3 +122,55 @@ probe 传 `task="cls"`，工具检查 `task == "classification"` → 分类分�
 | `mcp_server.py` | +3 个 RL 工具（rl_env_info/train_rl/eval_rl_policy）；`task` 简写归一化；训练写实验账本 |
 | `_test_rl.py`（新） | 8 项测试（确定性/缩尾/换手惩罚/风控/无未来/绩效） |
 | `_test_training.py` | +1 项（A1 决策时刻语义回归测试） |
+
+---
+
+## 7. 追加：四项遗留基础设施修复（2026-10-07 用户授权）
+
+用户授权修改底座后，四项遗留问题全部修复，测试从 139 增至 **152 项全绿**。
+
+### #1 底座 Portfolio 破产保护（`backtest/execution_engine.py`）
+
+- `Portfolio.__init__` 新增 `min_equity`（破产线，默认 0）与 `max_equity_mult`（上限倍数，默认 None）
+- 每根 bar 结算后调用 `_apply_equity_bounds()`：破产钳制 + 上限钳制，置 `bankrupt` / `clamped_high` 标记
+- `metrics()` 新增三个字段：`bankrupt` / `clamped_high` / **`trustworthy`** —— 调用方据此判断结果可信度
+- 修的 bug：`_apply_equity_bounds` 里 `max()` 与赋值顺序（先判后钳）
+
+### #2 底座可变资产集（`backtest/execution_engine.py` + `engine.py`）
+
+**选择：支持可变维度**（而非退回静态宇宙）—— 这样才保住 PIT 语义。
+
+- `ExecutionEngine` 新增 `current_asset_order`：记录持仓权重对应的资产顺序
+- `_realign()`：把权重向量按**资产名**对齐到新顺序（退场权重置 0，新上市初始 0）
+- `Portfolio.on_bar`：资产集合变化时按资产对齐价格与权重再算盈亏（退场资产不计收益）
+- `engine.py` 新增 `_align_to()`：把成交后的持仓按资产对齐到本期顺序
+- **关键修的 bug**：`on_intent` 曾提前更新 `current_asset_order`，导致"权重是旧顺序、顺序标记是新顺序"的错配——**会把权重安到错的资产上（静默算错，比崩溃更危险）**。现在顺序只在成交时更新
+
+### #3 RL 结构化动作（`rl/env.py` + `trainer.py`）
+
+- 新增 `TopKAction`：打分 → top-k 权重（与监督学习的 top_n/rank_linear 映射同构）
+- `PortfolioEnv` 新增 `action_mode`：`"scores"`（默认，结构化）/ `"weights"`（旧方式，保留作对照）
+- PPO 的 `action_scale` 按模式自动取：scores=1.0（要能区分优劣），weights=0.01
+- `train_rl` 新增 `assets` 参数：可先在 50 资产子集验证 RL 能否学习
+
+**效果实测**（342 资产全市场）：
+
+| 模式 | 训练回报 | 评估 bar 数 | 破产 | 总收益 | Sharpe |
+|---|---|---|---|---|---|
+| weights（旧） | [-0.124, -0.242, -0.226, -0.140] | 186（提前终止） | **是** | -0.99999 | – |
+| **scores（新）** | [0.108, -0.068, -0.047, -0.299] | **633（跑完全程）** | **否** | **+0.2902** | **0.328** |
+| scores + 50 资产 | [0.247, -0.034, 0.025, -0.361] | 跑完 | 否 | – | – |
+
+### #4 服务端评估通道（`mcp_server.py` + `evaluation/runner.py`）
+
+- 新增 2 个 MCP 工具：`evaluate_submission`（按 evaluation_id 评已提交候选）、`server_evaluate_pool`（直接评已注册模型）
+- `_get_panel_from_pool()`：服务端从**被评估的池**自行取面板 —— 修的 bug：原先用会话缓存的别的池面板，与池内特征时间完全不重叠（oof 是 2018-2023，valid 是 2024-2025）
+- `runner._assert_trained_in_oof()`：按**日期区间**比对 oof 池边界 —— 修的 bug：原先在 fold_id 字符串里找 "oof"，而 fold_id 根本不含池名，导致所有模型都被拒
+- 特征指纹改由**服务端按实际算出的特征集**计算，不信提交方声明
+- `prediction_metrics` 失败时的错误信息走 `extra`（不能进 prediction 层——schema 门会拒，那正是它该做的事）
+
+**效果实测**：valid 池服务端评估完成，611 个决策日 × 332 截面，`cost_eaten_by_top_group = 0.002`（恰为 20bps 成本），限 2 次取结果生效，RL 训练计入 N。
+
+### 新增测试
+
+`_test_foundation_guards.py`（6 项）：破产钳制、上限钳制、正常路径不受影响、ExecutionEngine 权重对齐、Portfolio 资产变化、可变宇宙端到端回测。

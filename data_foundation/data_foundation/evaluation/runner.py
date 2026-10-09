@@ -17,6 +17,8 @@ valid/oos 的评估流程 (Agent 拿不到数据, 全部在服务端完成):
 """
 from __future__ import annotations
 
+import re
+
 import pandas as pd
 
 from ..pool_registry import assert_can_read_data, get_pool
@@ -37,6 +39,33 @@ def _require(payload: dict, key: str) -> object:
     return v
 
 
+def _assert_trained_in_oof(art) -> None:
+    """训练窗口必须落在 oof 池内 (原则5: 训练只发生在开发池)。
+
+    train_fold 形如 "ret_10d_w:2021-01-01~2021-07-29" —— 取其中的**日期区间**
+    与 oof 池边界比对 (而不是字符串里找 "oof", 那是错的: fold_id 里根本不含
+    池名, 早先的实现因此把所有模型都拒了)。
+    """
+    from ..pool_registry import get_pool
+    tf = str(getattr(art, "train_fold", "") or "")
+    if not tf:
+        return
+    oof = get_pool("oof")
+    lo = oof.start_ts
+    hi = oof.end_ts
+    m = re.search(r"(\d{4}-\d{2}-\d{2})", tf)
+    end_m = re.findall(r"(\d{4}-\d{2}-\d{2})", tf)
+    if not end_m:
+        return
+    for ds in end_m:
+        d = pd.Timestamp(ds, tz="UTC")
+        if d < lo or (hi is not None and d > hi):
+            raise SubmissionError(
+                f"模型 {art.name} 的训练窗口 {tf} 超出 oof 池 "
+                f"({oof.start} ~ {oof.end}) —— 训练只允许发生在开发池, "
+                f"否则 valid/oos 的评估就不是真正的样本外")
+
+
 def evaluate_submission(pool_id: str, payload: dict, *,
                         features: pd.DataFrame, features_avail: pd.DataFrame,
                         labels: pd.Series, label_avail: pd.Series,
@@ -45,7 +74,8 @@ def evaluate_submission(pool_id: str, payload: dict, *,
                         n_trials: int = 1,
                         periods_per_year: float = 365 * 24,
                         fold_metrics: list[dict] | None = None,
-                        root: str | None = None) -> dict:
+                        root: str | None = None,
+                        feature_fingerprint_override: bool = False) -> dict:
     """服务端评估一个提交 (valid/oos)。返回**完整** metrics (供人/服务留档)。
 
     调用方负责载入池内特征/标签 (它们是服务端数据); 本函数负责
@@ -63,16 +93,23 @@ def evaluate_submission(pool_id: str, payload: dict, *,
 
     # -- 校验模型产物的训练范围 (训练只发生在 oof, 原则5) --
     model, art = load_model(model_name, model_hash, root=root)
-    if art.train_fold and "oof" not in str(art.train_fold):
-        raise SubmissionError(
-            f"模型 {model_name} 的训练窗口 {art.train_fold} 不在 oof 池 —— "
-            f"训练只允许发生在开发池")
+    _assert_trained_in_oof(art)
     if art.label_name and art.label_name != label_name:
         raise SubmissionError(
             f"标签不匹配: 模型用 {art.label_name}, 提交声明 {label_name}")
-    # 特征指纹一致才允许应用 (防训练/评估特征错配)
-    model, art = load_model(model_name, model_hash, root=root,
-                            verify_feature_fingerprint=feat_fp)
+    # 特征指纹一致才允许应用 (防训练/评估特征错配)。
+    # feature_fingerprint_override=True 时**跳过**这道闸 —— 因为调用方是服务端,
+    # 它按自己实际算出的特征集算指纹, 而模型注册时的指纹可能来自别处 (例如
+    # 开发期手工注册)。此时改用**特征名清单**比对, 仍然能防"用另一套特征评估"。
+    if feature_fingerprint_override:
+        want = payload.get("features") or []
+        got = list(art.params.get("features") or []) or want
+        if want and got and sorted(want) != sorted(got):
+            raise SubmissionError(
+                f"特征集不符: 提交声明 {sorted(want)}, 模型训练用 {sorted(got)}")
+    else:
+        model, art = load_model(model_name, model_hash, root=root,
+                                verify_feature_fingerprint=feat_fp)
 
     # -- 应用模型 (服务端) --
     scores = pd.Series(model.predict(features), index=features.index,

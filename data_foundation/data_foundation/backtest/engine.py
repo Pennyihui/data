@@ -27,6 +27,26 @@ from .strategy import RiskEngine, Strategy
 __all__ = ["BacktestEngine", "BacktestResult"]
 
 
+def _align_to(w: np.ndarray, exec_engine, assets) -> np.ndarray:
+    """把持仓权重从"上次记录的资产顺序"重排到**本期**资产顺序。
+
+    逐日 PIT 宇宙下资产集合会变 (币上市/退市): 成交后的持仓向量是按**成交
+    那一刻**的资产顺序存的, 而 Portfolio.on_bar 要的是本期顺序。不对齐就会
+    维度不匹配崩溃, 或者把权重安到错的资产上 (更危险 —— 静默算错收益)。
+    """
+    w = np.asarray(w, dtype=float)
+    prev = exec_engine.current_asset_order
+    if prev is None or tuple(prev) == tuple(assets) or w.size == 0:
+        return w
+    prev_idx = {a: i for i, a in enumerate(prev)}
+    out = np.zeros(len(assets))
+    for j, a in enumerate(assets):
+        i = prev_idx.get(a)
+        if i is not None and i < w.size:
+            out[j] = w[i]
+    return out
+
+
 class BacktestResult:
     def __init__(self, portfolio: Portfolio, bars: int):
         self.portfolio = portfolio
@@ -104,11 +124,15 @@ class BacktestEngine:
             fill = exec_engine.on_bar(bar, next_open)
             if fill is not None:
                 portfolio.on_fill(fill)
+                # 成交后的实际持仓按**本期资产顺序**重排 (逐日 PIT 宇宙下
+                # 资产集合会变; 上一次记录的顺序可能与本期不同)
                 pending_w = exec_engine.current_weights
             # 4) 挂起本期的目标, 留给下一根 bar 成交
             if intent is not None:
-                exec_engine.on_intent(intent, len(bar.assets))
+                exec_engine.on_intent(intent, len(bar.assets),
+                                       asset_order=bar.assets)
             # 5) 结算权益: 用"上一期权重" x "本期收益", 扣本期成本
-            portfolio.on_bar(bar, pending_w)
+            portfolio.on_bar(bar, _align_to(pending_w, exec_engine,
+                                            bar.assets))
 
         return BacktestResult(portfolio, n_bars)

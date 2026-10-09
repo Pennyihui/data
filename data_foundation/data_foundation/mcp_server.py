@@ -734,11 +734,10 @@ def tool_run_backtest(run_id: str, mode: str = "rank_linear", top_n: int = 5,
     if int(keep.sum()) < 2:
         raise ValueError("分数与价格时间不重叠 —— 检查 run_backtest 的窗口")
     idx = np.where(keep)[0]
-    # **固定资产集**: 回测引擎要求每期资产集合固定 (ExecutionEngine 的持仓是
-    # 一个固定长度的权重向量), 而 DataEngine 按逐日 PIT 宇宙派发**可变**资产集
-    # —— 339 个币在窗口内不断增减会让权重维度对不上而崩。这里收敛到"窗口内
-    # 全程都有数据"的资产集 (固定维度的同时仍无幸存者偏差: 上市晚/退市的币
-    # 本来就拿不到完整样本, 它们的行会被剔除而不是被填 0)。
+    # **可变资产集** (2026-10-07 修复): 引擎现在支持逐日 PIT 宇宙的可变资产集合,
+    # 因此**不再**强制"窗口内全程有数据"的固定资产集 —— 那样会把晚上市/早退场
+    # 的币整体剔除, 削弱 PIT 语义 (它们本该"上市那天进宇宙、退市那天退场")。
+    # 只保留**极端日收益资产**的剔除 (那个是数值病态防护, 与 PIT 无关)。
     from .backtest.data_engine import BacktestData                # noqa: PLC0415
     close_sel = data.close[idx]
     rets = np.abs(np.nan_to_num(close_sel[1:] / close_sel[:-1] - 1.0,
@@ -747,14 +746,8 @@ def tool_run_backtest(run_id: str, mode: str = "rank_linear", top_n: int = 5,
     tradable = [a for a, mr in zip(data.assets, max_ret)
                 if np.isfinite(mr) and mr <= float(max_abs_daily_return)]
     n_dropped_extreme = len(data.assets) - len(tradable)
-    full_assets = [a for a in tradable
-                   if bool(np.isfinite(data.close[idx, data.asset_index[a]]).all())]
-    if len(full_assets) < 5:
-        raise ValueError(
-            f"可回测资产只有 {len(full_assets)} 个 (<5) —— "
-            f"(剔除极端日收益 {n_dropped_extreme} 个后)。请放宽 "
-            f"max_abs_daily_return 或缩短窗口。")
-    cols = np.array([data.asset_index[a] for a in full_assets])
+    cols = np.array([data.asset_index[a] for a in tradable])
+    uni = np.isfinite(data.close[np.ix_(idx, cols)])     # 逐日 PIT 宇宙
     d2 = BacktestData(
         open=data.open[np.ix_(idx, cols)],
         high=data.high[np.ix_(idx, cols)],
@@ -762,9 +755,8 @@ def tool_run_backtest(run_id: str, mode: str = "rank_linear", top_n: int = 5,
         close=data.close[np.ix_(idx, cols)],
         volume=data.volume[np.ix_(idx, cols)],
         available_at=data.available_at[idx], times=data.times[idx],
-        assets=tuple(full_assets),
-        universe=np.ones((len(idx), len(full_assets)), dtype=bool),
-        asset_index={a: i for i, a in enumerate(full_assets)})
+        assets=tuple(tradable), universe=uni,
+        asset_index={a: i for i, a in enumerate(tradable)})
     sig = scores_to_panel_signal(scores)
     strat = ScoreWeightedStrategy(sig, mode=mode, top_n=top_n,
                                   long_short=long_short,
@@ -857,7 +849,8 @@ def tool_list_models() -> dict:
 def _rl_env(s: PoolScope, run_id: str, *, clip_reward: float = 0.05,
             turnover_penalty: float = 0.002, reward_kind: str = "log_return",
             max_weight: float = 0.05, start: str | None = None,
-            end: str | None = None):
+            end: str | None = None, action_mode: str = "weights",
+            top_k: int = 10, assets: list[str] | None = None):
     """按某个 run_id 的训练窗口构造 RL 环境 (同一段历史, 与监督学习可比)。"""
     from .rl import PortfolioEnv                                   # noqa: PLC0415
     from .backtest.execution_engine import CostModel               # noqa: PLC0415
@@ -874,39 +867,64 @@ def _rl_env(s: PoolScope, run_id: str, *, clip_reward: float = 0.05,
     ren = {"cd_open": "open", "cd_high": "high", "cd_low": "low",
            "cd_close": "close", "cd_volume_quote": "volume_quote"}
     px = v.rename(columns=ren).dropna(subset=["open", "close"])
+    if assets:
+        px = px[px.index.get_level_values("base_asset").isin(set(assets))]
+        if len(px) == 0:
+            raise ValueError(f"指定的资产在池内没有价格数据: {assets[:5]}")
     # 因子面板: 复用会话缓存的分数面板不可行(那是预测), 这里取最简状态
     # (只含持仓+现金) —— 因子状态留给后续按需扩展。
     return PortfolioEnv(px, None, cost=CostModel(),
                         risk=RiskEngine(max_weight=max_weight, max_gross=1.0),
                         clip_reward=clip_reward,
                         turnover_penalty=turnover_penalty,
-                        reward_kind=reward_kind)
+                        reward_kind=reward_kind,
+                        action_mode=action_mode, top_k=top_k)
 
 
 def tool_train_rl(run_id: str, *, hidden: int = 64, lr: float = 3e-4,
                   gamma: float = 0.99, clip: float = 0.2, epochs: int = 4,
                   n_steps: int = 256, batch: int = 64, seed: int = 0,
                   clip_reward: float = 0.05, turnover_penalty: float = 0.002,
+                  action_mode: str = "scores", top_k: int = 10,
+                  assets: list[str] | None = None,
                   model_id: str | None = None) -> dict:
-    """强化学习训练 (PPO)。环境底��复用回测引擎, 训练只发生在开发池。
+    """强化学习训练 (PPO)。环境底层复用回测引擎, 训练只发生在开发池。
 
-    奖励 = 缩尾的成本后收益 - λ·换手 (成本与回测/标签同源)。
+    action_mode: "scores" (默认, **结构化动作**: 打分 -> top-k 权重, PPO 可学)
+                 / "weights" (每资产一个连续权重, 342 维时 PPO 学不动 ——
+                 实测训练回报不涨; 保留作对照)。
+    assets: 限定资产子集 (先用 50 个币验证 RL 能否学习, 再扩全市场)。
+    奖励 = 缩尾的成本后收益 − λ·换手 (成本与回测/标签同源)。
     """
     s = _require_dev_pool("RL 训练")
     from .rl import train_ppo                                       # noqa: PLC0415
     env = _rl_env(s, run_id, clip_reward=clip_reward,
-                  turnover_penalty=turnover_penalty)
+                  turnover_penalty=turnover_penalty,
+                  action_mode=action_mode, top_k=top_k, assets=assets)
     pol, hist = train_ppo(env, hidden=hidden, lr=lr, gamma=gamma, clip=clip,
                           epochs=epochs, n_steps=n_steps, batch=batch,
                           seed=seed)
     mid = model_id or f"rl-{run_id}"
     _RL_POLICY[mid] = {"policy": pol, "env": env, "run_id": run_id}
     rewards = [h["reward"] for h in hist]
+    # **RL 训练计入试验次数 N** (设计原则6): 超参搜索是 N 的主要来源,
+    # 不记就等于多重检验修正失效
+    from .training import ExperimentRecord, record_experiment   # noqa: PLC0415
+    record_experiment(ExperimentRecord(
+        run_id=mid, code_hash="", model_family="rl_ppo",
+        model_params={"hidden": hidden, "lr": lr, "gamma": gamma,
+                      "action_mode": action_mode, "top_k": top_k,
+                      "turnover_penalty": turnover_penalty},
+        pool_id=s.pool_id,
+        metrics={"train_rewards": rewards},
+        note=f"RL epochs={epochs} n_steps={n_steps}"))
     return {"model_id": mid, "run_id": run_id, "algorithm": "ppo",
+            "action_mode": action_mode, "top_k": top_k,
             "state_dim": env.state_dim, "n_actions": env.n_actions,
-            "n_time": env.n_time, "epochs": epochs,
-            "train_rewards": [round(r, 6) for r in rewards],
+            "n_assets": env.n_asset, "n_time": env.n_time,
+            "epochs": epochs, "train_rewards": [round(r, 6) for r in rewards],
             "reward_improved": (len(rewards) > 1 and rewards[-1] > rewards[0]),
+            "bankrupt": env.portfolio.bankrupt,
             "note": "环境=回测引擎组件; 成本与标签/回测同源"}
 
 
@@ -930,7 +948,10 @@ def tool_eval_rl_policy(model_id: str, *, mode: str = "greedy",
     m = env.portfolio_metrics(periods_per_year=252)
     out = {"model_id": model_id, "policy": "greedy",
            "reward_total": env.total_reward,
+           "action_mode": getattr(env, "action_mode", "weights"),
            "n_bars": int(m.get("n_points", 0)),
+           "bankrupt": bool(getattr(env.portfolio, "bankrupt", False)),
+           "clamped_high": bool(getattr(env.portfolio, "clamped_high", False)),
            "metrics": {k: (float(v) if isinstance(v, (int, float)) else v)
                        for k, v in m.items()}}
     return out
@@ -943,9 +964,115 @@ def tool_rl_env_info(run_id: str) -> dict:
     return {"run_id": run_id, "state_dim": env.state_dim,
             "n_factor": env.n_factor, "n_actions": env.n_actions,
             "n_assets": env.n_asset, "n_time": env.n_time,
+            "action_mode": getattr(env, "action_mode", "weights"),
             "clip_reward": env.clip_reward,
             "turnover_penalty": env.turnover_penalty,
             "reward_kind": env.reward_kind}
+
+
+# ---------------------------------------------------------------------------
+# 服务端评估通道 (valid/oos): 三池纪律"提交 -> 服务端评 -> 取结果"的最后一段
+# 设计: docs/evaluation-protocol-design.md §4 / supervised-learning-... §10
+# 之前 evaluate_submission 实现了但**没挂工具** —— 反馈池/OOS 的流程在"提交
+# 之后"断掉 (银行后台建好了结算系统, 营业厅没开窗口)。这里补上这一段。
+# ---------------------------------------------------------------------------
+def _server_n_trials() -> int:
+    from .training.experiments import trial_count            # noqa: PLC0415
+    return max(1, trial_count())
+
+
+def tool_evaluate_submission(evaluation_id: str) -> dict:
+    """服务端执行一次已提交候选的评估 (valid/oos)。
+
+    流程: 读提交载荷 -> 服务端取池内特征/标签 -> 应用已注册模型 -> 预测 ->
+    三层指标 -> 写回 eval_service。**只有本工具能评 valid/oos** (Agent 无池内
+    数据, 物理上无法自评 —— 这是三池隔离的服务端那一半)。
+    """
+    from .evaluation.runner import evaluate_submission        # noqa: PLC0415
+    _es = eval_service                                     # 模块顶部已导入
+    subs = [r for r in _es._read_all(_es.SUBMISSIONS)
+            if r["evaluation_id"] == evaluation_id]
+    if not subs:
+        raise KeyError(f"未知 evaluation_id: {evaluation_id}")
+    rec = subs[-1]
+    pool = rec["pool"]
+    if pool not in ("valid", "oos", "rolling_oos"):
+        raise ValueError(f"池 {pool} 不走服务端评估 (开发池自行 compute+evaluate)")
+    payload = dict(rec.get("payload") or {})
+    s = PoolScope(pool)
+    from .labels import compute_labels, get_label             # noqa: PLC0415
+    keys = [k.replace("__panel__", "") for k in _LABEL_CACHE
+            if k.startswith("__panel__")]
+    label_name = payload.get("label_name") or "ret_10d"
+    spec = get_label(label_name)
+    payload["label_name"] = label_name
+    # **标签必须从被评估的那个池取数** —— 用会话里缓存的别的池面板会与池内
+    # 特征的时间完全不重叠 (oof 是 2018-2023, valid 是 2024-2025), 对齐后为空。
+    panel = _get_panel_from_pool(s)
+    v = panel.values
+    ocol = "cd_open" if "cd_open" in v else "open"
+    ccol = "cd_close" if "cd_close" in v else "close"
+    px = pd.DataFrame({"open": v[ocol], "close": v[ccol]}).dropna().sort_index()
+    lab = compute_labels(spec, px)
+    names = payload.get("features") or []
+    if not names:
+        raise ValueError("提交载荷必须带 features (服务端据此自行取特征)")
+    eng = _panel_engine(s)
+    bundle = eng.compute(list(names))
+    # **特征指纹由服务端按实际算出的特征集算**, 而不是相信提交方声明 ——
+    # 否则 Agent 声明一个指纹就能绕过"训练/评估特征错配"这道闸。
+    from .features.cache import data_fingerprint as _dfp      # noqa: PLC0415
+    payload["feature_fingerprint"] = _dfp(sorted(names))
+    metrics = evaluate_submission(
+        pool, payload, features=bundle.values, features_avail=bundle.avail,
+        labels=lab.values, label_avail=lab.available_at,
+        n_trials=_server_n_trials(), root=None,
+        feature_fingerprint_override=True)
+    _es.evaluate(evaluation_id, metrics, evaluated_by="eval_service",
+                 notes=f"server-side {pool}")
+    return {"evaluation_id": evaluation_id, "pool": pool,
+            "status": "evaluated", "metrics": metrics,
+            "note": "valid 限 2 次取结果; oos Agent 永不返回 (人审)"}
+
+
+def tool_server_evaluate_pool(pool_id: str, model_name: str,
+                              label_name: str, features: list[str],
+                              model_hash: str | None = None) -> dict:
+    """服务端直接评估一个已注册模型 (不经 eval_service 提交记录)。"""
+    from .evaluation.runner import evaluate_submission        # noqa: PLC0415
+    s = _require_scope()
+    if pool_id not in ("valid", "oos", "rolling_oos"):
+        raise ValueError("服务端评估只适用于 valid/oos/rolling_oos")
+    from .labels import compute_labels, get_label             # noqa: PLC0415
+    keys = [k.replace("__panel__", "") for k in _LABEL_CACHE
+            if k.startswith("__panel__")]
+    panel = _get_panel(keys[0]) if keys else _get_panel_from_pool(s)
+    spec = get_label(label_name)
+    v = panel.values
+    ocol = "cd_open" if "cd_open" in v else "open"
+    ccol = "cd_close" if "cd_close" in v else "close"
+    px = pd.DataFrame({"open": v[ocol], "close": v[ccol]}).dropna().sort_index()
+    lab = compute_labels(spec, px)
+    eng = _panel_engine(s)
+    bundle = eng.compute(list(features))
+    payload = {"model_name": model_name, "model_hash": model_hash,
+               "label_name": label_name, "feature_fingerprint": ""}
+    metrics = evaluate_submission(
+        pool_id, payload, features=bundle.values, features_avail=bundle.avail,
+        labels=lab.values, label_avail=lab.available_at,
+        n_trials=_server_n_trials())
+    return {"pool": pool_id, "model": model_name, "metrics": metrics}
+
+
+def _get_panel_from_pool(s: PoolScope):
+    """服务端直接从**池内**取价格面板 (不走会话缓存)。
+
+    这是服务端评估的取数入口: valid/oos 的面板只能由服务端自己读, Agent
+    碰不到 (三池隔离的服务端那一半)。
+    """
+    names = ["cd_open", "cd_close", "cd_high", "cd_low", "cd_volume_quote"]
+    eng = _panel_engine(s)
+    return eng.panel(names)
 
 
 TOOLS = [
@@ -1023,6 +1150,11 @@ TOOLS = [
      "desc": "PPO 强化学习训练 (Env=回测引擎; 成本后缩尾奖励)"},
     {"name": "eval_rl_policy", "fn": tool_eval_rl_policy,
      "desc": "用 RL 策略跑一段并给出与监督学习同格式的成绩单"},
+    # -- 服务端评估通道 (valid/oos 三池纪律的最后一公里) --
+    {"name": "evaluate_submission", "fn": tool_evaluate_submission,
+     "desc": "服务端评估已提交的候选 (valid/oos; Agent 无池内数据只能走这条)"},
+    {"name": "server_evaluate_pool", "fn": tool_server_evaluate_pool,
+     "desc": "服务端直接评估已注册模型 (valid/oos)"},
 ]
 
 if __name__ == "__main__":

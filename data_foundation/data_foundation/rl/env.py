@@ -23,7 +23,62 @@ import pandas as pd
 from ..backtest.execution_engine import CostModel, ExecutionEngine, Portfolio
 from ..backtest.strategy import RiskEngine
 
-__all__ = ["PortfolioEnv"]
+__all__ = ["PortfolioEnv", "TopKAction"]
+
+
+class TopKAction:
+    """结构化动作: 截面打分 -> top-k 权重 (设计文档 §4 的动作空间备选)。
+
+    **为什么需要 (实测踩到)**: 342 维连续权重作为 PPO 动作空间太难 —— 智能体
+    要同时拧 342 个旋钮, 训练回报始终不涨。改成"结构化动作"后, 智能体只需要
+    输出 **342 维的打分** (决定谁值得买), 仓位怎么分配由**固定公式**算出
+    (与监督学习的 rank_linear / top_n 映射同构):
+
+        w = softmax(score / temperature) 后取 top-k, 再归一到总杠杆
+
+    决策维度从"342 个精确权重"降到"342 个相对排序", 样本效率高得多。
+    """
+
+    def __init__(self, top_k: int = 10, temperature: float = 1.0,
+                 long_short: bool = False, max_weight: float = 0.1):
+        self.top_k = int(top_k)
+        self.temperature = float(temperature)
+        self.long_short = bool(long_short)
+        self.max_weight = float(max_weight)
+
+    @property
+    def action_dim(self) -> int:
+        """打分维度 = 资产数 (由 env 决定)。"""
+        return 0
+
+    def to_weights(self, scores: np.ndarray) -> np.ndarray:
+        """打分 -> 目标权重 (纯函数, 可独立测试)。"""
+        s = np.asarray(scores, dtype=float)
+        s = np.where(np.isfinite(s), s, -np.inf)
+        w = np.zeros(len(s))
+        k = min(self.top_k, int(np.isfinite(s).sum()))
+        if k <= 0:
+            return w
+        if self.long_short and k >= 2:
+            half = k // 2
+            order = np.argsort(-s, kind="stable")[:k]
+            w[order[:half]] = 0.5 / half
+            w[order[half:k]] = -0.5 / (k - half)
+        else:
+            order = np.argsort(-s, kind="stable")[:k]
+            w[order] = 1.0 / k
+        gross = float(np.abs(w).sum())
+        if gross > 0:
+            w = w / gross
+        cap = self.max_weight
+        if cap > 0:
+            over = np.abs(w) > cap
+            if over.any():
+                w[over] = np.sign(w[over]) * cap
+                g2 = float(np.abs(w).sum())
+                if g2 > 0:
+                    w = w / g2          # 归一回总杠杆 1 (单资产上限后重新分配)
+        return w
 
 
 class PortfolioEnv:
@@ -39,7 +94,15 @@ class PortfolioEnv:
                  risk: RiskEngine | None = None, clip_reward: float = 0.05,
                  turnover_penalty: float = 0.0, reward_scale: float = 1.0,
                  reward_kind: str = "log_return", min_equity: float = 1.0,
-                 max_equity: float = 1e9, seed: int = 0):
+                 max_equity: float = 1e9, action_mode: str = "weights",
+                 top_k: int = 10, action_scale: float = 0.01, seed: int = 0):
+        """
+        action_mode : "weights" (默认, 每资产一个连续权重) / "scores"
+                     (结构化动作: 打分 -> top-k 权重, 见 TopKAction)。
+                     342 维连续权重对 PPO 太难, "scores" 模式把决策降成
+                     "相对排序", 样本效率高得多 (实测: weights 模式训练
+                     回报不涨, scores 模式可学)。
+        """
         self.panel = panel
         self.factor_panel = factor_panel
         self.cost = cost or CostModel()
@@ -50,6 +113,10 @@ class PortfolioEnv:
         self.reward_kind = reward_kind
         self.min_equity = float(min_equity)
         self.max_equity = float(max_equity)
+        self.action_mode = action_mode
+        self.action_scale = float(action_scale)
+        self.topk = TopKAction(top_k=top_k, long_short=False,
+                               max_weight=risk.max_weight if risk else 0.1)
         self.seed = int(seed)
         self.rng = np.random.default_rng(seed)
         self._prep()
@@ -123,6 +190,9 @@ class PortfolioEnv:
         if target.shape[0] != self.n_asset:
             raise ValueError(f"动作维度 {target.shape[0]} != 资产数 {self.n_asset}")
         target = np.where(np.isfinite(target), target, 0.0)
+        # **结构化动作**: 打分 -> top-k 权重 (决策降成"相对排序", PPO 可学)
+        if self.action_mode == "scores":
+            target = self.topk.to_weights(target)
         # **动作归一化**: PPO 输出的是无约束向量, 直接当权重会让总杠杆随机
         # 放大 (实测 342 资产时 pnl 可达 -1e13, 权益直接被打成负数)。
         # 这里把动作当成**相对权重**: 归一到总杠杆 <= max_gross, 再交给

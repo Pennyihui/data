@@ -51,15 +51,22 @@ class PolicyNetwork:
 
 def train_ppo(env, *, hidden: int = 64, lr: float = 3e-4, gamma: float = 0.99,
               clip: float = 0.2, epochs: int = 4, n_steps: int = 256,
-              batch: int = 64, seed: int = 0, verbose: bool = False):
+              batch: int = 64, seed: int = 0, verbose: bool = False,
+              action_scale: float | None = None):
     """跑一次 PPO 训练。返回 (policy, history)。
 
-    训练完全在 env 内进行 —— env 底��就是回测引擎组件 (原则1)。
+    训练完全在 env 内进行 —— env 底层就是回测引擎组件 (原则1)。
+    action_scale: 默认按 env 的动作模式取 (weights=0.01; scores=1.0 ——
+                  打分要能区分优劣, 幅度太小学不出来)。
     """
     torch, nn = _torch()
     torch.manual_seed(seed)
     np.random.seed(seed)
-    pol = PolicyNetwork(env.state_dim, env.n_actions, hidden, seed)
+    if action_scale is None:
+        action_scale = 1.0 if getattr(env, "action_mode", "weights") == "scores" \
+            else 0.01
+    pol = PolicyNetwork(env.state_dim, env.n_actions, hidden, seed,
+                        action_scale=action_scale)
     opt = torch.optim.Adam(pol.params(), lr=lr)
     hist = []
     s = env.reset()

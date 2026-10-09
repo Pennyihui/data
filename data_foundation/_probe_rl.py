@@ -15,23 +15,32 @@ b = mcp.tool_build_training_samples(FEATS, "ret_10d_w", pk["panel_key"],
 rid = b["run_id"]
 print(f"样本 run_id={rid} folds={b['n_folds']}")
 
+print("\n=== RL: 结构化动作 (#3) vs 连续权重对照 ===")
 info = mcp.tool_rl_env_info(rid)
 print(f"环境: state_dim={info['state_dim']} actions={info['n_actions']} "
-      f"time={info['n_time']} clip={info['clip_reward']} lam={info['turnover_penalty']}")
+      f"time={info['n_time']} mode={info['action_mode']}")
 
-t = mcp.tool_train_rl(rid, hidden=32, epochs=3, n_steps=128, batch=32, seed=7)
-print(f"训练: model_id={t['model_id']} state_dim={t['state_dim']} "
-      f"actions={t['n_actions']} rewards={t['train_rewards']} "
-      f"improved={t['reward_improved']}")
-
+t = mcp.tool_train_rl(rid, hidden=32, epochs=4, n_steps=128, batch=32, seed=7,
+                      action_mode="scores", top_k=10)
+print(f"scores模式: rewards={t['train_rewards']} improved={t['reward_improved']}")
 e = mcp.tool_eval_rl_policy(t["model_id"])
 mm = e["metrics"]
-print(f"评估: bars={e['n_bars']} reward_total={e['reward_total']:.4f} "
-      f"total={mm.get('total_return')} sharpe={mm.get('sharpe')} "
-      f"mdd={mm.get('max_drawdown')} cost={mm.get('total_cost')}")
+print(f"  评估: bars={e['n_bars']} mode={e['action_mode']} bankrupt={e['bankrupt']} "
+      f"total={mm.get('total_return'):.4f} sharpe={mm.get('sharpe'):.3f} "
+      f"trustworthy={mm.get('trustworthy')}")
 
-# 换手惩罚对照
-t2 = mcp.tool_train_rl(rid, hidden=32, epochs=3, n_steps=128, batch=32, seed=7,
-                       turnover_penalty=0.02, model_id="rl-hi-lam")
-print(f"对照(高换手惩罚 λ=0.02): rewards={t2['train_rewards']}")
-print("DONE")
+t_w = mcp.tool_train_rl(rid, hidden=32, epochs=4, n_steps=128, batch=32, seed=7,
+                        action_mode="weights", model_id="rl-weights-cmp")
+print(f"weights对照: rewards={t_w['train_rewards']} improved={t_w['reward_improved']}")
+
+print("\n=== 子集验证 (50 资产) ===")
+all_assets = [a for a in sorted(set(mcp._LABEL_CACHE["ret_10d_w"].values.index.get_level_values(0)))]
+subset = all_assets[:50]
+t_s = mcp.tool_train_rl(rid, hidden=32, epochs=4, n_steps=128, batch=32, seed=7,
+                        action_mode="scores", top_k=10, assets=subset,
+                        model_id="rl-subset50")
+print(f"50资产: n_actions={t_s['n_actions']} rewards={t_s['train_rewards']} "
+      f"improved={t_s['reward_improved']}")
+
+print("\n=== 试验计数 (RL 是否计入 N) ===")
+print("N =", mcp.tool_trial_count()["n_trials"])

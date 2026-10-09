@@ -44,10 +44,12 @@ def evaluate_candidate(scores: pd.Series, labels: pd.Series, *,
     out: dict = {"metrics_version": METRICS_VERSION}
 
     # -- 预测层 --
+    pred_error = None
     try:
         pred = prediction_metrics(scores, labels, cost=cost)
     except Exception as e:                       # 样本不足等 -> 记 nan 不崩
-        pred = {"error": f"{type(e).__name__}: {e}"}
+        pred = {}
+        pred_error = f"{type(e).__name__}: {e}"
 
     # -- 交易层 --
     if portfolio is not None:
@@ -64,7 +66,12 @@ def evaluate_candidate(scores: pd.Series, labels: pd.Series, *,
                                    periods_per_year=periods_per_year)
     stability = walkforward_stability(fold_metrics) if fold_metrics else None
 
-    metrics = build_metrics(pred, trd, sig, stability=stability, extra=extra)
+    # 错误信息走 extra (白名单外字段不能进 prediction/trading/significance 层 ——
+    # schema 门会拒, 这正是它该做的事)
+    ext = dict(extra or {})
+    if pred_error:
+        ext["prediction_error"] = pred_error
+    metrics = build_metrics(pred, trd, sig, stability=stability, extra=ext or None)
     metrics["decision"] = go_no_go(metrics)      # 人审闸 (决策 E5)
     validate_metrics(metrics, strict=strict)      # schema 门
     return metrics
